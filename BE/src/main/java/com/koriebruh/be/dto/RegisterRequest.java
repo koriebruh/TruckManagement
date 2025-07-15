@@ -1,8 +1,6 @@
 package com.koriebruh.be.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,4 +22,13 @@ public class RegisterRequest {
     @NotBlank(message = "email can't be blank")
     @Email(message = "should contain email")
     private String email;
+
+    @NotBlank(message = "phone number can't be blank")
+    @Size(min = 8, max = 15, message = "length phone around 8 - 15 digit")
+    private String phoneNumber;
+
+    @NotNull(message = "age can't be null")
+    @Min(value = 18, message = "age minimum 18 Y.O.")
+    @Max(value = 65, message = "age maximum 65 Y.O.")
+    private Long age;
 }

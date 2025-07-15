@@ -20,4 +20,6 @@ public class UpdateRequest {
 
     @Email(message = "should contain email")
     private String email;
+
+    private String phoneNumber;
 }

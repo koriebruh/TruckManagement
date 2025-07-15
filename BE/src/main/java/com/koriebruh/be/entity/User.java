@@ -37,6 +37,12 @@ public class User {
     @Column(nullable = false)
     private String role;
 
+    @Column(nullable = false)
+    private String phoneNumber;
+
+    @Column(nullable = false)
+    private Long age;
+
     @Column(name = "created_at", nullable = false)
     private Long createdAt;
 

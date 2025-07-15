@@ -7,6 +7,7 @@ import com.koriebruh.be.dto.RegisterRequest;
 import com.koriebruh.be.dto.WebResponse;
 import com.koriebruh.be.service.AuthService;
 import com.koriebruh.be.utils.JwtUtil;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -28,7 +29,7 @@ public class AuthController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<WebResponse<LoginResponse>> loginUser(@RequestBody LoginRequest request) {
+    public ResponseEntity<WebResponse<LoginResponse>> loginUser(@RequestBody @Valid LoginRequest request) {
         LoginResponse response = authService.loginUser(request);
         return ResponseEntity.status(HttpStatus.OK).body(
                 WebResponse.<LoginResponse>builder()
@@ -42,9 +43,9 @@ public class AuthController {
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<WebResponse<String>> registerUser(@RequestBody RegisterRequest request) {
+    public ResponseEntity<WebResponse<String>> registerUser(@RequestBody @Valid RegisterRequest request) {
         String msg = authService.registerUser(request);
-
+        System.out.println("REGISTER REACHED");
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 WebResponse.<String>builder()
                         .status("CREATED")

@@ -49,6 +49,8 @@ public class AuthService {
         newUser.setEmail(request.getEmail());
         newUser.setPassword(encryptedPass);
         newUser.setCreatedAt(Instant.now().getEpochSecond());
+        newUser.setPhoneNumber(request.getPhoneNumber());
+        newUser.setAge(request.getAge());
         newUser.setRole("driver"); // Default role, can be changed later
 
         userRepository.save(newUser);

@@ -14,9 +14,12 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "admin1234",
+  "username": "bunderess",
   "password": "admin1234#",
-  "email": "admin1234@gmail.com"
+  "email": "bunderess4@gmail.com",
+  "phoneNumber": 3213132132,
+  "age": 199
+
 }
 
 ### registration request to example server
