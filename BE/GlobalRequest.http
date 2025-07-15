@@ -1,0 +1,26 @@
+### login request to example server
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "admin1234",
+  "password": "admin1234#"
+}
+
+### registration request to example server
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "admin1234",
+  "password": "admin1234#",
+  "email": "admin1234@gmail.com"
+}
+
+### registration request to example server
+GET http://localhost:8080/auth/validate
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjEyMzQiLCJpYXQiOjE3NTI1ODA0MDQsImV4cCI6MTc1MjY2NjgwNH0.TNfM2XNXwdnA6QFCWNswYb7QYPyrniEkmTJFDKKzK2U
