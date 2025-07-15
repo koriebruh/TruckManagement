@@ -4,7 +4,7 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "admin1234",
+  "username": "bunderess",
   "password": "admin1234#"
 }
 
@@ -18,12 +18,17 @@ Accept: application/json
   "password": "admin1234#",
   "email": "bunderess4@gmail.com",
   "phoneNumber": 3213132132,
-  "age": 199
-
+  "age": 19
 }
 
 ### registration request to example server
 GET http://localhost:8080/auth/validate
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjEyMzQiLCJpYXQiOjE3NTI1ODA0MDQsImV4cCI6MTc1MjY2NjgwNH0.TNfM2XNXwdnA6QFCWNswYb7QYPyrniEkmTJFDKKzK2U
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjEyMzQiLCJpYXQiOjE3NTI1ODA0MDQsImV4cCI6MTc1MjY2NjgwNH0.TNfM2XNXwdnA6QFCWNswYb7QYPyrniEkmTJFDKKzK2U\
+
+### registration request to example server
+GET http://localhost:8080/api/hello
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTI2MDg5MDAsImV4cCI6MTc1MjYwOTgwMH0.3S_bZQaUPMLCmOOpIkISozkmxxFgV7KkTW9Kba05DOc

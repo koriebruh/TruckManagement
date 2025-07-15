@@ -11,8 +11,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "positions")
-public class Position {
+@Table(name = "delivery_transits")
+public class DeliveryTransit {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -22,11 +22,10 @@ public class Position {
     @JoinColumn(name = "delivery_id")
     private Delivery delivery;
 
-    private Double latitude;
+    @ManyToOne
+    @JoinColumn(name = "transit_point_id")
+    private TransitPoint transitPoint;
 
-    private Double longitude;
-
-    @Column(name = "recorded_at", nullable = false, updatable = false)
-    private Long recordedAt;
-
+    @Column(name = "arrived_at", nullable = false, updatable = false)
+    private Long arrivedAt;
 }

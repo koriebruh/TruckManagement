@@ -15,8 +15,8 @@ import lombok.Setter;
 public class Truck {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     private String licensePlate;
 
