@@ -31,4 +31,45 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjEyMzQiLCJpYXQiOjE3N
 GET http://localhost:8080/api/hello
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTI2MDg5MDAsImV4cCI6MTc1MjYwOTgwMH0.3S_bZQaUPMLCmOOpIkISozkmxxFgV7KkTW9Kba05DOc
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI2NzEyODcsImV4cCI6MTc1MjY3MjE4N30.GaEjrLupVI44S7Ir4deLt7-jeWghtLtBWpwo2Veg1pM
+
+###------------------------------------------------
+
+### CREATE ROUTE
+POST http://localhost:8080/api/routes
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI2NzEyODcsImV4cCI6MTc1MjY3MjE4N30.GaEjrLupVI44S7Ir4deLt7-jeWghtLtBWpwo2Veg1pM
+
+{
+  "startCityId": 1,
+  "endCityId": 2,
+  "details": "Route from Jakarta to Bandung via toll road",
+  "basePrice": 150000.0,
+  "isActive": true
+}
+
+
+### UPDATE ROUTE
+PUT http://localhost:8080/api/routes
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer
+
+### ACHIEVE ROUTE
+DELETE http://localhost:8080/api/routes/9e53c0c0-8dd1-4d4d-b9eb-2db980e71cfa
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI2NzA4ODQsImV4cCI6MTc1Mjc1NzI4NH0.eNdAOAqH8nh9P9_usLvcy0QgEHCPIk2nxAvJFYlMK7o
+
+### GET ALL
+GET http://localhost:8080/api/routes
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI2NzA4ODQsImV4cCI6MTc1Mjc1NzI4NH0.eNdAOAqH8nh9P9_usLvcy0QgEHCPIk2nxAvJFYlMK7o
+
+### GET BY ID
+GET http://localhost:8080/api/routes
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer

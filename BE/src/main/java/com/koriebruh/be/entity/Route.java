@@ -1,11 +1,11 @@
 package com.koriebruh.be.entity;
 
-import com.koriebruh.be.entity.Enum.RouteStatusType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 
 @Entity
 @Getter
@@ -21,20 +21,22 @@ public class Route {
 
     @ManyToOne
     @JoinColumn(name = "start_id", referencedColumnName = "id", nullable = false)
-    private Cities startCity;
+    private City startCity;
 
     @ManyToOne
     @JoinColumn(name = "end_id", referencedColumnName = "id", nullable = false)
-    private Cities endCity;
+    private City endCity;
 
-    private Float basePrice;
+    private String details;
 
-    private Float distanceKM;
+    private Double basePrice;
 
-    private Long estimatedDurationHours;
+    private Double distanceKM;
 
-    @Enumerated(EnumType.STRING)
-    private RouteStatusType status; // e.g., "active", "inactive", "archived"
+    private Double estimatedDurationHours;
+
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Long createdAt;

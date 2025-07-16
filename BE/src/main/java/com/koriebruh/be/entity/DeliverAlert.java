@@ -1,6 +1,7 @@
 package com.koriebruh.be.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.koriebruh.be.entity.Enum.DeliverAlertType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,6 +24,9 @@ public class DeliverAlert {
     @JoinColumn(name = "delivery_id", nullable = false)
     @JsonIgnore
     private Delivery delivery;
+
+    @Enumerated(EnumType.STRING)
+    private DeliverAlertType type;
 
     private String message;
 
