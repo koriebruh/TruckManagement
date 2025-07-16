@@ -12,22 +12,25 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "delivery_transits")
-public class DeliveryTransit {
+@Table(name = "deliver_alerts")
+public class DeliverAlert {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
     @ManyToOne
-    @JoinColumn(name = "delivery_id")
+    @JoinColumn(name = "delivery_id", nullable = false)
     @JsonIgnore
     private Delivery delivery;
 
-    @ManyToOne
-    @JoinColumn(name = "transit_point_id")
-    private TransitPoint transitPoint;
+    private String message;
 
-    @Column(name = "arrived_at", nullable = false, updatable = false)
-    private Long arrivedAt;
+    @Column(name = "created_at", nullable = false)
+    private Long createdAt;
+
 }
+/*
+* This Entity represents an alert for a delivery. where got anomaly like
+* Stay in one place for too long, or not moving at all.
+* */

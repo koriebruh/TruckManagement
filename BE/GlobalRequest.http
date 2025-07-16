@@ -4,8 +4,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "bunderess",
-  "password": "admin1234#"
+  "username": "jamalgantenk",
+  "password": "jamal123"
 }
 
 ### registration request to example server

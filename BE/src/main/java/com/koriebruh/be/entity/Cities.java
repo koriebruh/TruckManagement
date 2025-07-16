@@ -11,19 +11,22 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "trucks")
-public class Truck {
+@Table(name = "cities")
+public class Cities {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String licensePlate;
+    @Column(unique = true)
+    private String name;
 
-    private String model;
+    private Double latitude;
 
-    private double capacityKG;
+    private Double longitude;
 
-    private Boolean isAvailable;
+    private String country;
 
+    @Column(name = "created_at", nullable = false, updatable = false)
+    private Long createdAt;
 }

@@ -19,9 +19,13 @@ public class Route {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String startCity;
+    @ManyToOne
+    @JoinColumn(name = "start_id", referencedColumnName = "id", nullable = false)
+    private Cities startCity;
 
-    private String endCity;
+    @ManyToOne
+    @JoinColumn(name = "end_id", referencedColumnName = "id", nullable = false)
+    private Cities endCity;
 
     private Float basePrice;
 

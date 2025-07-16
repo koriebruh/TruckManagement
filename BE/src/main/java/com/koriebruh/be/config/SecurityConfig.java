@@ -28,6 +28,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/**").authenticated() // API endpoints butuh auth
                         .anyRequest().authenticated()) // Yang lain bebas
                 .csrf(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable) // ⬅️ ini yang nonaktifkan form login
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);;

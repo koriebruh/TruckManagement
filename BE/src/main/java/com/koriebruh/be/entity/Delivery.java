@@ -1,11 +1,13 @@
 package com.koriebruh.be.entity;
 
-import com.koriebruh.be.entity.Enum.DeliveryStatusType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,12 +33,18 @@ public class Delivery {
     @JoinColumn(name = "worker_id")
     private User worker;
 
-    @Enumerated(EnumType.STRING)
-    private DeliveryStatusType deliveryStatus;
-
-    @Column(name = "starte_at", nullable = false, updatable = false)
+    @Column(name = "started_at", nullable = false, updatable = false)
     private Long startedAt;
 
     @Column(name = "finished_at")
     private Long finishedAt;
+
+    // satu delivery bisa memiliki banyak alert
+    @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DeliverAlert> alerts = new ArrayList<>();
+
+    // satu delivery bisa memiliki banyak transit
+    @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DeliveryTransit> transits = new ArrayList<>();
+
 }
