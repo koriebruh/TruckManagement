@@ -24,7 +24,7 @@ const TabLayout = () => {
   if (!isSignedIn) {
     return <Redirect href="/sign-in" />;
   }
-  
+
   return (
     <Tabs
       screenOptions={{
@@ -111,6 +111,7 @@ const TabLayout = () => {
         name="profile"
         options={{
           title: "Profile",
+          header: () => <CustomHeader />,
           tabBarIcon: ({ focused, color }) => (
             <View className="items-center h-full">
               <Ionicons
