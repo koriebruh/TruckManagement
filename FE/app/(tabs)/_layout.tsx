@@ -27,7 +27,7 @@ const TabLayout = () => {
           backgroundColor: "white",
           borderRadius: 30,
           marginHorizontal: 20,
-          marginBottom: insets.bottom + 8, // 👈 tambahkan safe area bottom
+          marginBottom: insets.bottom + 8, 
           height: 60,
           position: "absolute",
           borderTopWidth: 0,

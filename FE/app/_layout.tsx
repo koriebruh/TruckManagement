@@ -5,7 +5,10 @@ export default function RootLayout() {
   return (
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-      <Stack.Screen name="movies" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="truck/[value]"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 }

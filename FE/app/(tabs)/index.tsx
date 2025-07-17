@@ -1,6 +1,10 @@
+import TruckList from "@/components/TruckList";
+import TruckStats from "@/components/TruckStats";
 import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
 import React from "react";
 import {
+  Pressable,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -69,26 +73,7 @@ const TruckTracker = () => {
         contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
         showsVerticalScrollIndicator={false}>
         {/* Stats Cards */}
-        <View className="px-4 py-4">
-          <View className="flex-row">
-            {statsData.map((stat, index) => (
-              <View
-                key={index}
-                className={`flex-1 p-4 rounded-lg border ${stat.color} ${index !== 0 ? "ml-4" : ""}`}>
-                <View className="flex-row items-center mb-2">
-                  <Text className={`text-sm font-medium ${stat.textColor}`}>
-                    {stat.title}
-                  </Text>
-                  <Ionicons name={stat.icon} size={20} color={stat.iconColor} />
-                </View>
-                <Text className={`text-2xl font-bold ${stat.textColor}`}>
-                  {stat.value}
-                </Text>
-              </View>
-            ))}
-          </View>
-        </View>
-
+      <TruckStats statsData={statsData} />
         {/* Map Container */}
         <View className="mx-4 mb-4">
           <View className="bg-blue-100 rounded-lg h-64 items-center justify-center border border-blue-200">
@@ -99,7 +84,6 @@ const TruckTracker = () => {
             </Text>
           </View>
         </View>
-
         {/* Section Headers */}
         <View className="px-4 mb-4">
           <View className="flex-row">
@@ -115,46 +99,8 @@ const TruckTracker = () => {
             </TouchableOpacity>
           </View>
         </View>
-
         {/* Tracking List */}
-        <View className="px-4">
-          {trackingData.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              className="bg-white rounded-lg p-4 mb-3 border border-gray-200">
-              <View className="flex-row items-center justify-between">
-                <View className="flex-1">
-                  <View className="flex-row items-center mb-2">
-                    <View
-                      className={`w-3 h-3 rounded-full ${item.statusColor} mr-2`}
-                    />
-                    <Text className="text-sm font-medium text-gray-600">
-                      {item.status}
-                    </Text>
-                  </View>
-                  <Text className="text-lg font-semibold text-gray-800 mb-1">
-                    {item.route}
-                  </Text>
-                  {item.driver && (
-                    <View className="flex-row items-center mb-1">
-                      <Ionicons name="person" size={16} color="#6B7280" />
-                      <Text className="text-gray-600 ml-1">{item.driver}</Text>
-                    </View>
-                  )}
-                  {item.time && (
-                    <View className="flex-row items-center">
-                      <Ionicons name="time" size={16} color="#6B7280" />
-                      <Text className="text-gray-600 ml-1">
-                        Mulai: {item.time}
-                      </Text>
-                    </View>
-                  )}
-                </View>
-                <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
-              </View>
-            </TouchableOpacity>
-          ))}
-        </View>
+        <TruckList trackingData={trackingData} />
       </ScrollView>
     </SafeAreaView>
   );
