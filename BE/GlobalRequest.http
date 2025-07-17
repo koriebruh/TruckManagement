@@ -1,3 +1,6 @@
+@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI3MTY2NzMsImV4cCI6MTc1MjgwMzA3M30.tEwhYumUFtFn_WgPEd6TN8pDR6ylt8Hm5AyPeuT8Cbs
+
+
 ### login request to example server
 POST http://localhost:8080/auth/login
 Content-Type: application/json
@@ -39,22 +42,30 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiO
 POST http://localhost:8080/api/routes
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI2NzEyODcsImV4cCI6MTc1MjY3MjE4N30.GaEjrLupVI44S7Ir4deLt7-jeWghtLtBWpwo2Veg1pM
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI2ODI1OTYsImV4cCI6MTc1MjY4MzQ5Nn0.6_yxFSyu68wgFxXnJStkBdEYNXPXGaP_8-OCKV9eFFU
 
 {
-  "startCityId": 1,
-  "endCityId": 2,
-  "details": "Route from Jakarta to Bandung via toll road",
-  "basePrice": 150000.0,
-  "isActive": true
+  "start_city_id": 3,
+  "end_city_id": 2,
+  "details": "Route of roadd boiii",
+  "base_price": 150000.0,
+  "is_active": true
 }
 
-
 ### UPDATE ROUTE
-PUT http://localhost:8080/api/routes
+PUT http://localhost:8080/api/routes/9e53c0c0-8dd1-4d4d-b9eb-2db980e71cfa
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI2ODI1OTYsImV4cCI6MTc1MjY4MzQ5Nn0.6_yxFSyu68wgFxXnJStkBdEYNXPXGaP_8-OCKV9eFFU
+
+{
+  "start_city_id": 3,
+  "end_city_id": 2,
+  "details": "Route of roadd boiii",
+  "base_price": 150000.0,
+  "is_active": true
+}
+
 
 ### ACHIEVE ROUTE
 DELETE http://localhost:8080/api/routes/9e53c0c0-8dd1-4d4d-b9eb-2db980e71cfa
@@ -69,7 +80,57 @@ Accept: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI2NzA4ODQsImV4cCI6MTc1Mjc1NzI4NH0.eNdAOAqH8nh9P9_usLvcy0QgEHCPIk2nxAvJFYlMK7o
 
 ### GET BY ID
-GET http://localhost:8080/api/routes
+GET http://localhost:8080/api/routes/9e53c0c0-8dd1-4d4d-b9eb-2db980e71cfa
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI2NzA4ODQsImV4cCI6MTc1Mjc1NzI4NH0.eNdAOAqH8nh9P9_usLvcy0QgEHCPIk2nxAvJFYlMK7o
+
+###------------------------------------------------
+### CREATE TRUCK
+### GET BY ID
+POST http://localhost:8080/api/trucks/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "license_plate": "B1234XYZ",
+  "model": "Hino Dutro",
+  "cargo_type": "Barang Elektronik",
+  "capacity_kg": 5000.0,
+  "is_available": true
+}
+
+
+### UPDATE TRUCK
+PUT http://localhost:8080/api/trucks/77271071-84d0-4702-9bda-2cb85c6ec7e4
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "license_plate": "B1XXXX",
+  "model": "Hino Dutro",
+  "cargo_type": "Barang Elektronik",
+  "capacity_kg": 5000.0,
+  "is_available": false
+}
+
+### DEKETE TRUCK
+### FINDBY ID TRUCK
+GET http://localhost:8080/api/trucks/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### GET AVALUABEL TRUCK
+GET http://localhost:8080/api/trucks/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### GET ALL TRUCK
+GET http://localhost:8080/api/trucks/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}

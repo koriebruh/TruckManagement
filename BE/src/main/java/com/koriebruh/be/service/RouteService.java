@@ -2,6 +2,7 @@ package com.koriebruh.be.service;
 
 
 import com.koriebruh.be.dto.RouteRequest;
+import com.koriebruh.be.dto.RouteResponse;
 import com.koriebruh.be.entity.City;
 import com.koriebruh.be.entity.Route;
 import com.koriebruh.be.repository.CityRepository;
@@ -58,9 +59,22 @@ public class RouteService {
     }
 
 
-    public Route getRouteById(String routeId) {
-        return routeRepository.findById(routeId)
+    public RouteResponse getRouteById(String routeId) {
+        Route route = routeRepository.findById(routeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found"));
+
+        RouteResponse response = new RouteResponse();
+        response.setId(route.getId());
+        response.setStartCityName(route.getStartCity().getName());
+        response.setEndCityName(route.getEndCity().getName());
+        response.setDetails(route.getDetails());
+        response.setBasePrice(route.getBasePrice());
+        response.setDistanceKM(route.getDistanceKM());
+        response.setEstimatedDurationHours(route.getEstimatedDurationHours());
+        response.setIsActive(route.getIsActive());
+        response.setCreatedAt(route.getCreatedAt());
+
+        return response;
     }
 
 
@@ -107,8 +121,20 @@ public class RouteService {
         return "Route updated successfully";
     }
 
-    public List<Route> getAllRoutes() {
-        return routeRepository.findAll();
+    public List<RouteResponse> getAllRoutes() {
+        List<Route> routes = routeRepository.findAll();
+        return routes.stream().map(route -> RouteResponse.builder()
+                .id(route.getId())
+                .startCityName(route.getStartCity().getName())
+                .endCityName(route.getEndCity().getName())
+                .details(route.getDetails())
+                .basePrice(route.getBasePrice())
+                .distanceKM(route.getDistanceKM())
+                .estimatedDurationHours(route.getEstimatedDurationHours())
+                .isActive(route.getIsActive())
+                .createdAt(route.getCreatedAt())
+                .build()
+        ).toList();
     }
 
 }

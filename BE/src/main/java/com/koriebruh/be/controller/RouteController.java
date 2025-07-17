@@ -1,6 +1,7 @@
 package com.koriebruh.be.controller;
 
 import com.koriebruh.be.dto.RouteRequest;
+import com.koriebruh.be.dto.RouteResponse;
 import com.koriebruh.be.dto.WebResponse;
 import com.koriebruh.be.entity.Route;
 import com.koriebruh.be.service.RouteService;
@@ -42,10 +43,10 @@ public class RouteController {
     @GetMapping(value = "/routes/{routeId}",
             produces = "application/json"
     )
-    public ResponseEntity<WebResponse<Route>> getRouteById(String routeId) {
-        Route routeResponse = routeService.getRouteById(routeId);
+    public ResponseEntity<WebResponse<RouteResponse>> getRouteById(@PathVariable String routeId) {
+        RouteResponse routeResponse = routeService.getRouteById(routeId);
         return ResponseEntity.ok(
-                WebResponse.<Route>builder()
+                WebResponse.<RouteResponse>builder()
                         .status("OK")
                         .data(routeResponse)
                         .build()
@@ -55,10 +56,10 @@ public class RouteController {
     @GetMapping(value = "/routes",
             produces = "application/json"
     )
-    public ResponseEntity<WebResponse<List<Route>>> getAllRoutes() {
-        List<Route> routes = routeService.getAllRoutes();
+    public ResponseEntity<WebResponse<List<RouteResponse>>> getAllRoutes() {
+        List<RouteResponse> routes = routeService.getAllRoutes();
         return ResponseEntity.ok(
-                WebResponse.<List<Route>>builder()
+                WebResponse.<List<RouteResponse>>builder()
                         .status("OK")
                         .data(routes)
                         .build()
@@ -69,7 +70,7 @@ public class RouteController {
             consumes = "application/json",
             produces = "application/json"
     )
-    public ResponseEntity<WebResponse<String>> updateRoute(String routeId, @RequestBody @Valid RouteRequest request) {
+    public ResponseEntity<WebResponse<String>> updateRoute(@PathVariable String routeId, @RequestBody @Valid RouteRequest request) {
         String msg = routeService.updateRoute(routeId, request);
         return ResponseEntity.ok(
                 WebResponse.<String>builder()

@@ -24,6 +24,10 @@ public class TruckRequest {
     @Size(max = 50, message = "Model can't exceed 50 characters")
     private String model;
 
+    @NotBlank(message = "cargoType is required")
+    @Size(max = 100, message = "cargoType can't exceed 50 characters")
+    private String cargoType;
+
     @NotNull(message = "Capacity is required")
     @Positive(message = "Capacity must be greater than 0")
     private Double capacityKG;

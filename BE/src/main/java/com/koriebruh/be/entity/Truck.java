@@ -18,6 +18,7 @@ public class Truck {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    @Column(unique = true, nullable = false)
     private String licensePlate;
 
     private String model;
