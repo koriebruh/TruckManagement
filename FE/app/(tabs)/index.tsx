@@ -1,10 +1,10 @@
 import TruckList from "@/components/TruckList";
 import TruckStats from "@/components/TruckStats";
+import { useUser } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
 import {
-  Pressable,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -63,9 +63,14 @@ const TruckTracker = () => {
     },
   ];
 
+  const { isSignedIn } = useUser();
+  console.log(isSignedIn);
+
+
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <StatusBar barStyle="light-content" backgroundColor="#1E40AF" />
+      
 
       {/* Content with proper padding for tab bar */}
       <ScrollView

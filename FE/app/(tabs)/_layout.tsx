@@ -1,15 +1,29 @@
 import CustomHeader from "@/components/Header";
+import {  useAuth, useUser } from "@clerk/clerk-expo";
 import { Feather, Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import React from "react";
-import { Text, View } from "react-native";
+import { ActivityIndicator, Text, View } from "react-native";
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
 const TabLayout = () => {
-  const insets = useSafeAreaInsets(); // 👈 Ambil safe area bawah
+  const insets = useSafeAreaInsets(); 
+  const { isLoaded, isSignedIn } = useAuth();
+
+  if (!isLoaded) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
+  }
+
+  if (!isSignedIn) {
+    return <Redirect href="/sign-in" />;
+  }
 
   return (
     <Tabs
@@ -27,7 +41,7 @@ const TabLayout = () => {
           backgroundColor: "white",
           borderRadius: 30,
           marginHorizontal: 20,
-          marginBottom: insets.bottom + 8, 
+          marginBottom: insets.bottom,
           height: 60,
           position: "absolute",
           borderTopWidth: 0,
@@ -97,6 +111,7 @@ const TabLayout = () => {
         name="profile"
         options={{
           title: "Profile",
+          header: () => <CustomHeader />,
           tabBarIcon: ({ focused, color }) => (
             <View className="items-center h-full">
               <Ionicons
@@ -117,6 +132,7 @@ const TabLayout = () => {
 };
 
 const _Layout = () => {
+  
   return (
     <SafeAreaProvider>
       <TabLayout />
