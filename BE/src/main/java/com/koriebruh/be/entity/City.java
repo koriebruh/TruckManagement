@@ -11,24 +11,22 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "transit_points")
-public class TransitPoint {
+@Table(name = "cities")
+public class City {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String cityName;
-
-    private Long estimatedDurationMinute;
-
-    private Float extraCost;
+    @Column(unique = true)
+    private String name;
 
     private Double latitude;
 
     private Double longitude;
 
+    private String country;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Long createdAt;
-
 }
