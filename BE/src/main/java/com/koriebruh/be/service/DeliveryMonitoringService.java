@@ -32,7 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class DeliveryMonitoringService {
 
-//    @Autowired
+    //    @Autowired
 //    private DeliverAlertRepository deliverAlertRepo;
 //
 //    @Autowired
@@ -68,6 +68,18 @@ public class DeliveryMonitoringService {
 
     public void getDeliveryStatus(String deliveryId) {
 
+    }
+
+    public String reportPosition() {
+        return "Position history for truck with ID: ";
+    }
+
+    public String getPositionHistory(String truckId) {
+        // This method will return the position history of a truck
+        // based on the truckId provided.
+        // It will fetch the position history from the database
+        // and return it in a suitable format.
+        return "Position history for truck with ID: " + truckId;
     }
 
 }

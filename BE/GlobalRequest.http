@@ -145,7 +145,7 @@ Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 ### GET CITY BY ID
-GET http://localhost:8080/api/cities/515
+GET http://localhost:8080/api/cities/51
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}

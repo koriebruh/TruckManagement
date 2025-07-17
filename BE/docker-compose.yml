@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  mysql-db:
+    container_name: mysql-db
+    image: mysql:8.0
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_DATABASE: 'truck_management'
+      MYSQL_USER: 'korie'
+      MYSQL_PASSWORD: 'korie123'
+      MYSQL_ROOT_PASSWORD: 'korie123'
+      MAX_CONNECTIONS: "1000"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - truck-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pkorie123"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  truck-management:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: truck-management
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_USER: korie              # ✅ Gunakan user yang konsisten
+      DB_PASS: korie123
+    ports:
+      - "8080:8080"
+    depends_on:
+      mysql-db:
+        condition: service_healthy  # ✅ Tunggu MySQL siap
+    networks:
+      - truck-net
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s           # ✅ Berikan waktu lebih untuk startup
+    restart: unless-stopped
+
+volumes:
+  mysql_data:
+
+networks:
+  truck-net:
+    driver: bridge
