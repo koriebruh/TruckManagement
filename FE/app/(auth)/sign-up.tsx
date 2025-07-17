@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useState } from "react";
 import { Text, TextInput, TouchableOpacity, View, Image } from "react-native";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
@@ -7,13 +7,19 @@ export default function SignUpScreen() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
 
-  const [emailAddress, setEmailAddress] = React.useState("");
-  const [password, setPassword] = React.useState("");
+  const [emailAddress, setEmailAddress] = useState("");
+  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState("");
 
   const onSignUpPress = async () => {
     if (!isLoaded) return;
+
     try {
-      const result = await signUp.create({ emailAddress, password });
+      const result = await signUp.create({
+        emailAddress,
+        password,
+        username: username.trim(), 
+      });
 
       if (result.status === "complete") {
         await setActive({ session: result.createdSessionId });
@@ -36,12 +42,21 @@ export default function SignUpScreen() {
       <Text className="text-2xl font-bold mb-4">Create Account</Text>
 
       <TextInput
+        value={username}
+        onChangeText={setUsername}
+        placeholder="Username"
+        autoCapitalize="none"
+        className="border border-gray-300 w-full p-3 rounded mb-3"
+      />
+
+      <TextInput
         value={emailAddress}
         onChangeText={setEmailAddress}
         placeholder="Email"
         autoCapitalize="none"
         className="border border-gray-300 w-full p-3 rounded mb-3"
       />
+
       <TextInput
         value={password}
         onChangeText={setPassword}

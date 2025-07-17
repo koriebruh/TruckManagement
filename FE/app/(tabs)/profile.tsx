@@ -27,7 +27,7 @@ const Profile = () => {
 
         {/* User Name */}
         <Text className="text-2xl font-semibold text-gray-800 mb-1">
-          {user?.fullName || "Unnamed User"}
+          {user?.username || "Unnamed User"}
         </Text>
 
         {/* Email */}
