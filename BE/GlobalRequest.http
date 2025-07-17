@@ -71,21 +71,21 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiO
 DELETE http://localhost:8080/api/routes/9e53c0c0-8dd1-4d4d-b9eb-2db980e71cfa
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI2NzA4ODQsImV4cCI6MTc1Mjc1NzI4NH0.eNdAOAqH8nh9P9_usLvcy0QgEHCPIk2nxAvJFYlMK7o
+Authorization: Bearer {{TOKEN}}
 
 ### GET ALL
 GET http://localhost:8080/api/routes
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI2NzA4ODQsImV4cCI6MTc1Mjc1NzI4NH0.eNdAOAqH8nh9P9_usLvcy0QgEHCPIk2nxAvJFYlMK7o
+Authorization: Bearer {{TOKEN}}
 
 ### GET BY ID
 GET http://localhost:8080/api/routes/9e53c0c0-8dd1-4d4d-b9eb-2db980e71cfa
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI2NzA4ODQsImV4cCI6MTc1Mjc1NzI4NH0.eNdAOAqH8nh9P9_usLvcy0QgEHCPIk2nxAvJFYlMK7o
+Authorization: Bearer {{TOKEN}}
 
-###------------------------------------------------
+###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### CREATE TRUCK
 ### GET BY ID
 POST http://localhost:8080/api/trucks/
@@ -131,6 +131,54 @@ Authorization: Bearer {{TOKEN}}
 
 ### GET ALL TRUCK
 GET http://localhost:8080/api/trucks/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+
+###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### GET ALL CITIES
+GET http://localhost:8080/api/cities/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### GET CITY BY ID
+GET http://localhost:8080/api/cities/515
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### CREATE
+POST http://localhost:8080/api/cities/
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "Jakarta",
+  "latitude": -6.2088,
+  "longitude": 106.8456,
+  "country": "Indonesia"
+}
+
+
+### UPDATE
+PUT http://localhost:8080/api/cities/515
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "JakartacSS",
+  "latitude": -6.2088,
+  "longitude": 106.8456,
+  "country": "Indonesia"
+}
+
+### DELETE
+DELETE http://localhost:8080/api/cities/515
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
