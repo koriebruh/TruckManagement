@@ -7,6 +7,7 @@ import com.koriebruh.be.entity.User;
 import com.koriebruh.be.repository.UserRepository;
 import com.koriebruh.be.utils.Encrypt;
 import com.koriebruh.be.utils.JwtUtil;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -71,20 +72,29 @@ public class AuthService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Username or Password wrong");
         }
 
-        /* if old token already valid return old token
-         *  then if token expired or null generate new token
+        /* Ambil user berdasarkan username + deletedAt null
+         * Cek password valid atau enggak
+         * Cek refresh token valid (tapi amanin dari error)
+         * Generate access token baru setiap login
+         * Kalau refresh token nggak valid, generate baru
          * */
         String refreshToken;
-        if (user.getRefreshToken() != null && jwtUtil.validateToken(user.getRefreshToken(), user.getUsername())) {
-            refreshToken = user.getRefreshToken();
-        } else {
-            // generate new access token
+        try {
+            if (user.getRefreshToken() != null && jwtUtil.validateToken(user.getRefreshToken(), user.getUsername())) {
+                refreshToken = user.getRefreshToken();
+            } else {
+                refreshToken = jwtUtil.generateToken(user.getUsername(), 86400000L);
+                user.setRefreshToken(refreshToken);
+                userRepository.save(user);
+            }
+        } catch (ExpiredJwtException e) {
+            // Token lama expired, generate baru (1 day)
             refreshToken = jwtUtil.generateToken(user.getUsername(), 86400000L);
             user.setRefreshToken(refreshToken);
             userRepository.save(user);
         }
 
-        // Access token always generated fresh
+        // Access token always generated fresh (15 minutes)
         String accessToken = jwtUtil.generateToken(user.getUsername(), 900000L);
 
         LoginResponse result = new LoginResponse();

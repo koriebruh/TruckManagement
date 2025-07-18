@@ -20,9 +20,10 @@ public class TransitPoint {
 
     private String cityName;
 
+    // estimation duration IN this location
     private Long estimatedDurationMinute;
 
-    private Float extraCost;
+    private Double extraCost;
 
     private Double latitude;
 
@@ -31,4 +32,6 @@ public class TransitPoint {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Long createdAt;
 
+    @Column(name = "deleted_at")
+    private Long deletedAt;
 }
