@@ -4,6 +4,8 @@ import React, {
   createContext,
   ReactNode,
   
+  useContext,
+  
   useEffect,
   useState,
 } from "react";
@@ -11,7 +13,7 @@ import api from "@/services/axios";
 import {  AuthContextProps, RegisterPayload, TokenPayload, User } from "@/types/auth.types";
 
 // ====== Create Context ======
-export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
+ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 // ====== Provider ======
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -154,3 +156,11 @@ const login = async (username: string, password: string) => {
   );
 };
 
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};

@@ -1,5 +1,5 @@
 // app/(auth)/_layout.tsx
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/context/AuthContext";
 import { Redirect, Stack } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
 

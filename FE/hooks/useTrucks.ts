@@ -3,7 +3,6 @@ import { Truck } from "@/types/truck.types";
 import { useEffect, useState } from "react";
 
 
-
 export function useTrucks() {
   const [trucks, setTrucks] = useState<Truck[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -12,17 +11,20 @@ export function useTrucks() {
   const fetchTrucks = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/trucks");
-      setTrucks(res.data.data);
+     const { data } = await api.get("/api/trucks");
+      setTrucks(data.data);
       setError(null);
+      console.log(trucks);
     } catch (err: any) {
-      setError(err.message);
+        setError(err.message);
+        console.log(error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
+    
     fetchTrucks();
   }, []);
 

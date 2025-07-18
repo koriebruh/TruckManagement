@@ -10,7 +10,7 @@ import {
   TouchableOpacity, // Impor TouchableOpacity
 } from "react-native";
 import { Link } from "expo-router"; // Impor Link untuk navigasi
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/context/AuthContext";
 
 export default function LoginScreen() {
   const [username, setUsername] = useState("");

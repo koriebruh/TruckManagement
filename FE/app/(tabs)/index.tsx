@@ -1,6 +1,6 @@
 import TruckList from "@/components/TruckList";
 import TruckStats from "@/components/TruckStats";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
