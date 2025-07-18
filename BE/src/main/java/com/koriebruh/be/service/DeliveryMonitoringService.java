@@ -15,11 +15,8 @@ package com.koriebruh.be.service;
  * to provide real-time monitoring and alerting capabilities.
  * */
 
-import com.koriebruh.be.dto.DeliveryRequest;
-import com.koriebruh.be.dto.DeliveryResponse;
-import com.koriebruh.be.dto.PositionRequest;
+import com.koriebruh.be.dto.*;
 import com.koriebruh.be.entity.*;
-import com.koriebruh.be.entity.Enum.DeliverAlertType;
 import com.koriebruh.be.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -87,6 +84,12 @@ public class DeliveryMonitoringService {
     @Autowired
     private ValidationService validationService;
 
+    @Autowired
+    private DeliveryTransitRepository deliveryTransitRepo;
+
+    @Autowired
+    private TransitPointRepository transitPointRepo;
+
     // get delivery detail
     // get /delivery/{deliveryId}
 //    public DeliveryResponse getDeliveryDetail(String deliveryId) {
@@ -138,13 +141,14 @@ public class DeliveryMonitoringService {
     // post /delivery/position
     public String sendPosition(PositionRequest request) {
         validationService.validate(request);
+
+        boolean isActive = deliveryRepo.existsByIdAndFinishedAtIsNull(request.getDeliveryId());
+        if (!isActive) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Delivery has already finished. Position can't be add");
+        }
+
         Delivery delivery = deliveryRepo.findById(request.getDeliveryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
-
-
-        if (delivery.getFinishedAt() != null) {
-            throw new IllegalStateException("Delivery has already been finished");
-        }
 
         Position position = new Position();
         position.setDelivery(delivery);
@@ -156,31 +160,234 @@ public class DeliveryMonitoringService {
         return "Position updated successfully for delivery ID: " + request.getDeliveryId();
     }
 
+    // get detail of a delivery
+    // get /delivery/detail/{deliveryId}
+    public DeliveryDetailResponse getDeliveryDetail(String deliveryId) {
+        Delivery delivery = deliveryRepo.findById(deliveryId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
+
+        //MAPPING
+        ProfileResponse profileResponse = ProfileResponse.builder()
+                .id(delivery.getWorker().getId())
+                .username(delivery.getWorker().getUsername())
+                .refreshToken(delivery.getWorker().getRefreshToken())
+                .email(delivery.getWorker().getEmail())
+                .role(delivery.getWorker().getRole())
+                .age(delivery.getWorker().getAge())
+                .phoneNumber(delivery.getWorker().getPhoneNumber())
+                .build();
+
+        TruckResponse truckResponse = TruckResponse.builder()
+                .id(delivery.getTrucks().getId())
+                .licensePlate(delivery.getTrucks().getLicensePlate())
+                .model(delivery.getTrucks().getModel())
+                .cargoType(delivery.getTrucks().getCargoType())
+                .capacityKG(delivery.getTrucks().getCapacityKG())
+                .isAvailable(delivery.getTrucks().getIsAvailable())
+                .build();
+
+        RouteResponse routeResponse = RouteResponse.builder()
+                .id(delivery.getRoute().getId())
+                .startCityName(delivery.getRoute().getStartCity().getName())
+                .endCityName(delivery.getRoute().getEndCity().getName())
+                .details(delivery.getRoute().getDetails())
+                .basePrice(delivery.getRoute().getBasePrice())
+                .distanceKM(delivery.getRoute().getDistanceKM())
+                .estimatedDurationHours(delivery.getRoute().getEstimatedDurationHours())
+                .isActive(delivery.getRoute().getIsActive())
+                .createdAt(delivery.getRoute().getCreatedAt())
+                .build();
+
+        //FINAL RESPONSE
+        return DeliveryDetailResponse.builder()
+                .id(delivery.getId())
+                .worker(profileResponse)
+                .truck(truckResponse)
+                .route(routeResponse)
+                .startedAt(delivery.getStartedAt())
+                .finishedAt(delivery.getFinishedAt())
+                .alerts(delivery.getAlerts())
+                .transits(delivery.getTransits())
+                .build();
+    }
+
+
+    // get all active deliveries
+    // get /delivery/active
+    public List<DeliveryDetailResponse> getAllActiveDeliveries() {
+        List<Delivery> activeDeliveries = deliveryRepo.findAllByFinishedAtIsNull();
+
+        if (activeDeliveries.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No active deliveries found");
+        }
+
+        return activeDeliveries.stream()
+                .map(delivery -> {
+                    ProfileResponse profileResponse = ProfileResponse.builder()
+                            .id(delivery.getWorker().getId())
+                            .username(delivery.getWorker().getUsername())
+                            .refreshToken(delivery.getWorker().getRefreshToken())
+                            .email(delivery.getWorker().getEmail())
+                            .role(delivery.getWorker().getRole())
+                            .age(delivery.getWorker().getAge())
+                            .phoneNumber(delivery.getWorker().getPhoneNumber())
+                            .build();
+
+                    TruckResponse truckResponse = TruckResponse.builder()
+                            .id(delivery.getTrucks().getId())
+                            .licensePlate(delivery.getTrucks().getLicensePlate())
+                            .model(delivery.getTrucks().getModel())
+                            .cargoType(delivery.getTrucks().getCargoType())
+                            .capacityKG(delivery.getTrucks().getCapacityKG())
+                            .isAvailable(delivery.getTrucks().getIsAvailable())
+                            .build();
+
+                    RouteResponse routeResponse = RouteResponse.builder()
+                            .id(delivery.getRoute().getId())
+                            .startCityName(delivery.getRoute().getStartCity().getName())
+                            .endCityName(delivery.getRoute().getEndCity().getName())
+                            .details(delivery.getRoute().getDetails())
+                            .basePrice(delivery.getRoute().getBasePrice())
+                            .distanceKM(delivery.getRoute().getDistanceKM())
+                            .estimatedDurationHours(delivery.getRoute().getEstimatedDurationHours())
+                            .isActive(delivery.getRoute().getIsActive())
+                            .createdAt(delivery.getRoute().getCreatedAt())
+                            .build();
+
+                    return DeliveryDetailResponse.builder()
+                            .id(delivery.getId())
+                            .worker(profileResponse)
+                            .truck(truckResponse)
+                            .route(routeResponse)
+                            .startedAt(delivery.getStartedAt())
+                            .finishedAt(delivery.getFinishedAt())
+                            .alerts(delivery.getAlerts())
+                            .transits(delivery.getTransits())
+                            .build();
+                })
+                .toList();
+    }
+
+
     // get all position of a deliveryId
     // get /delivery/position/{deliveryId}
-    public String getPositions(String deliveryId) {
-        // This method will return the position history of a truck
-        // based on the truckId provided.
-        // It will fetch the position history from the database
-        // and return it in a suitable format.
-        return "Position history for truck with ID: " + deliveryId;
+    public List<PositionResponse> getPositions(String deliveryId) {
+
+        deliveryRepo.findById(deliveryId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
+
+        List<Position> positions = positionRepo.findAllByDeliveryId(deliveryId);
+
+        return positions.stream()
+                .map(position -> PositionResponse.builder()
+                        .latitude(position.getLatitude())
+                        .longitude(position.getLongitude())
+                        .recordedAt(position.getRecordedAt())
+                        .build())
+                .toList();
+    }
+
+    // get last deliveries position
+    // get /delivery/position/{deliveryId}/last
+    public PositionResponse getLastPosition(String deliveryId) {
+        Delivery delivery = deliveryRepo.findById(deliveryId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
+
+        Position lastPosition = positionRepo.findTopByDeliveryIdOrderByRecordedAtDesc(deliveryId);
+
+        if (lastPosition == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No position found for this delivery");
+        }
+
+        return PositionResponse.builder()
+                .latitude(lastPosition.getLatitude())
+                .longitude(lastPosition.getLongitude())
+                .recordedAt(lastPosition.getRecordedAt())
+                .build();
+    }
+
+    // user check apakah dia sedang delivery atau tidak
+    // get /delivery/check/{userId}
+    public DeliveryDetailResponse checkUserDelivery(String userId) {
+        User user = workerRepo.findByIdAndDeletedAtIsNull(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        Delivery delivery = deliveryRepo.findByWorkerIdAndFinishedAtIsNull(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No active delivery found for this user"));
+
+        //MAPPING
+        ProfileResponse profileResponse = ProfileResponse.builder()
+                .id(delivery.getWorker().getId())
+                .username(delivery.getWorker().getUsername())
+                .refreshToken(delivery.getWorker().getRefreshToken())
+                .email(delivery.getWorker().getEmail())
+                .role(delivery.getWorker().getRole())
+                .age(delivery.getWorker().getAge())
+                .phoneNumber(delivery.getWorker().getPhoneNumber())
+                .build();
+
+        TruckResponse truckResponse = TruckResponse.builder()
+                .id(delivery.getTrucks().getId())
+                .licensePlate(delivery.getTrucks().getLicensePlate())
+                .model(delivery.getTrucks().getModel())
+                .cargoType(delivery.getTrucks().getCargoType())
+                .capacityKG(delivery.getTrucks().getCapacityKG())
+                .isAvailable(delivery.getTrucks().getIsAvailable())
+                .build();
+
+        RouteResponse routeResponse = RouteResponse.builder()
+                .id(delivery.getRoute().getId())
+                .startCityName(delivery.getRoute().getStartCity().getName())
+                .endCityName(delivery.getRoute().getEndCity().getName())
+                .details(delivery.getRoute().getDetails())
+                .basePrice(delivery.getRoute().getBasePrice())
+                .distanceKM(delivery.getRoute().getDistanceKM())
+                .estimatedDurationHours(delivery.getRoute().getEstimatedDurationHours())
+                .isActive(delivery.getRoute().getIsActive())
+                .createdAt(delivery.getRoute().getCreatedAt())
+                .build();
+
+        //FINAL RESPONSE
+        return DeliveryDetailResponse.builder()
+                .id(delivery.getId())
+                .worker(profileResponse)
+                .truck(truckResponse)
+                .route(routeResponse)
+                .startedAt(delivery.getStartedAt())
+                .finishedAt(delivery.getFinishedAt())
+                .alerts(delivery.getAlerts())
+                .transits(delivery.getTransits())
+                .build();
     }
 
     // delivery do transit
     // /delivery/transit/
-    //
+    public String doTransit(DoTransitRequest request) {
+        validationService.validate(request);
+
+        boolean isActive = deliveryRepo.existsByIdAndFinishedAtIsNull(request.getDeliveryId());
+        if (!isActive) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Delivery NotFound or has already finished");
+        }
+
+        Delivery delivery = deliveryRepo.findById(request.getDeliveryId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
+
+        TransitPoint transitPoint = transitPointRepo.findById(request.getTransitPointId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transit point not found"));
 
 
+        DeliveryTransit deliveryTransit = new DeliveryTransit();
+        deliveryTransit.setDelivery(delivery);
+        deliveryTransit.setTransitPoint(transitPoint);
+        deliveryTransit.setArrivedAt(Instant.now().getEpochSecond());
+        deliveryTransitRepo.save(deliveryTransit); // save delivery to update transits
 
-    // get last deliveries in the last 30 minutes
-    // get /delivery/position/{deliveryId}/last
-
-
-
-    // get all deliveries in process, usage condition where not finished
-    // get /delivery/in-process
+        return "Transit added successfully for delivery ID: " + request.getDeliveryId();
+    }
 
 
     // get delivery history
     // get /delivery/history
+
 }
