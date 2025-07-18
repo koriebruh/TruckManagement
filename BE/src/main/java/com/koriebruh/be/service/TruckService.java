@@ -18,7 +18,11 @@ public class TruckService {
     @Autowired
     private TruckRepository truckRepository;
 
+    @Autowired
+    private ValidationService validationService;
+
     public String createTruck(TruckRequest request) {
+        validationService.validate(request);
         // Check if license plate already exists
         if (truckRepository.existsByLicensePlate(request.getLicensePlate())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "License plate already exists");
@@ -36,6 +40,7 @@ public class TruckService {
     }
 
     public String updateTruck(String truckId, TruckRequest request) {
+        validationService.validate(request);
         Truck existingTruck = truckRepository.findById(truckId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Truck not found"));
 

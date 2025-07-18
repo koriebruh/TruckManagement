@@ -84,6 +84,9 @@ public class DeliveryMonitoringService {
     @Autowired
     private UserRepository workerRepo;
 
+    @Autowired
+    private ValidationService validationService;
+
     // get delivery detail
     // get /delivery/{deliveryId}
 //    public DeliveryResponse getDeliveryDetail(String deliveryId) {
@@ -93,7 +96,7 @@ public class DeliveryMonitoringService {
     // make delivery
     // post /delivery/create
     public String createDelivery(DeliveryRequest request) {
-
+        validationService.validate(request);
         Truck truck = truckRepo.findById(request.getTruckId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Truck not found"));
 
@@ -117,7 +120,6 @@ public class DeliveryMonitoringService {
     // finished delivery
     // post /delivery/finish/{deliveryId}
     public String finishDelivery(String deliveryId) {
-
         Delivery delivery = deliveryRepo.findById(deliveryId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
 
@@ -135,7 +137,7 @@ public class DeliveryMonitoringService {
     // for real-time position updates from the delivery truck
     // post /delivery/position
     public String sendPosition(PositionRequest request) {
-
+        validationService.validate(request);
         Delivery delivery = deliveryRepo.findById(request.getDeliveryId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
 
@@ -163,6 +165,11 @@ public class DeliveryMonitoringService {
         // and return it in a suitable format.
         return "Position history for truck with ID: " + deliveryId;
     }
+
+    // delivery do transit
+    // /delivery/transit/
+    //
+
 
 
     // get last deliveries in the last 30 minutes

@@ -88,13 +88,13 @@ Authorization: Bearer {{TOKEN}}
 ###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### CREATE TRUCK
 ### GET BY ID
-POST http://localhost:8080/api/trucks/
+POST http://localhost:8080/api/trucks
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "license_plate": "B12BI",
+  "license_plate": "B12BI2",
   "model": "Toyota Hilux",
   "cargo_type": "furniture",
   "capacity_kg": 9000.0,
@@ -129,7 +129,7 @@ Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 ### GET ALL TRUCK not deleted
-GET http://localhost:8080/api/trucks/
+GET http://localhost:8080/api/trucks
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
@@ -149,7 +149,7 @@ Authorization: Bearer {{TOKEN}}
 ###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 ### GET ALL CITIES
-GET http://localhost:8080/api/cities/
+GET http://localhost:8080/api/cities
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
@@ -161,15 +161,15 @@ Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 ### CREATE
-POST http://localhost:8080/api/cities/
+POST http://localhost:8080/api/cities
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "name": "Jakarta",
-  "latitude": -6.2088,
-  "longitude": 106.8456,
+  "name": "GunungKidul",
+  "latitude": -6.203,
+  "longitude": 106.841,
   "country": "Indonesia"
 }
 
@@ -188,7 +188,57 @@ Authorization: Bearer {{TOKEN}}
 }
 
 ### DELETE
-DELETE http://localhost:8080/api/cities/515
+DELETE http://localhost:8080/api/cities/516
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
+
+###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### CREATE TRANSIT POINT
+POST http://localhost:8080/api/transit-points
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "city_name": "Jakarta",
+  "estimated_duration_minute": 30,
+  "extra_cost": 15000.0,
+  "latitude": -6.2088,
+  "longitude": 106.8456
+}
+
+
+### UPDATE TRANSIT POINT
+PUT http://localhost:8080/api/transit-points/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "city_name": "suroboyooo",
+  "estimated_duration_minute": 30,
+  "extra_cost": 15000.0,
+  "latitude": -6.2088,
+  "longitude": 106.8456
+}
+
+### GET TRANSIT POINT by ID
+GET http://localhost:8080/api/transit-points/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### GET ALL TRANSIT POINT
+GET http://localhost:8080/api/transit-points
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### DELETE TRANSIT POINT
+DELETE http://localhost:8080/api/transit-points/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+

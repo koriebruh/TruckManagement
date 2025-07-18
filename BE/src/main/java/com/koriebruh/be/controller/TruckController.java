@@ -20,7 +20,7 @@ public class TruckController {
     private TruckService truckService;
 
 
-    @GetMapping(value = "/",
+    @GetMapping(
             produces = "application/json"
     )
     public ResponseEntity<WebResponse<List<TruckResponse>>> getTrucks() {
@@ -60,7 +60,7 @@ public class TruckController {
         );
     }
 
-    @PostMapping(value = "/",
+    @PostMapping(
             consumes = "application/json",
             produces = "application/json"
     )

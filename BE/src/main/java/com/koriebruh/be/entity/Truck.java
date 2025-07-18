@@ -32,5 +32,6 @@ public class Truck {
      * */
     private Boolean isAvailable;
 
+    @Column(name = "deleted_at")
     private Long deletedAt;
 }

@@ -33,9 +33,8 @@ public class CityController {
         );
     }
 
-    @GetMapping(value = "/",
+    @GetMapping(
             produces = "application/json"
-
     )
     public ResponseEntity<WebResponse<List<CityResponse>>> getAllCities() {
         List<CityResponse> cities = cityService.getAllCities();
@@ -48,7 +47,7 @@ public class CityController {
     }
 
 
-    @PostMapping(value = "/",
+    @PostMapping(
             produces = "application/json",
             consumes = "application/json"
     )
