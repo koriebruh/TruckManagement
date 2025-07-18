@@ -20,7 +20,7 @@ Accept: application/json
   "username": "bunderess",
   "password": "admin1234#",
   "email": "bunderess4@gmail.com",
-  "phoneNumber": 3213132132,
+  "phone_number": "32131399",
   "age": 19
 }
 

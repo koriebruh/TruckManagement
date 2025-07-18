@@ -30,8 +30,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String requestPath = request.getRequestURI();
 
         // Skip JWT validation untuk path yang tidak dimulai dengan /api/
-        if (!requestPath.startsWith("/api/")) {
-            filterChain.doFilter(request, response);
+        if (requestPath.startsWith("/swagger-ui") ||
+                requestPath.startsWith("/v3/api-docs") ||
+                requestPath.startsWith("/swagger-resources") ||
+                requestPath.startsWith("/webjars") ||
+                requestPath.startsWith("/auth")) {
+
+            filterChain.doFilter(request, response); // ⬅️ langsung lanjut tanpa validasi JWT
             return;
         }
 
