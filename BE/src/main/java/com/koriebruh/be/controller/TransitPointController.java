@@ -1,6 +1,7 @@
 package com.koriebruh.be.controller;
 
 
+import com.koriebruh.be.dto.TransitPointRequest;
 import com.koriebruh.be.dto.TransitPointResponse;
 import com.koriebruh.be.dto.WebResponse;
 import com.koriebruh.be.entity.TransitPoint;
@@ -51,7 +52,7 @@ public class TransitPointController {
             produces = "application/json",
             consumes = "application/json"
     )
-    public ResponseEntity<WebResponse<String>> createTransitPoint(@RequestBody @Valid TransitPoint request) {
+    public ResponseEntity<WebResponse<String>> createTransitPoint(@RequestBody @Valid TransitPointRequest request) {
         String msg = transitPointService.createTransitPoint(request);
         return ResponseEntity.ok(
                 WebResponse.<String>builder()
@@ -65,7 +66,7 @@ public class TransitPointController {
             produces = "application/json",
             consumes = "application/json"
     )
-    public ResponseEntity<WebResponse<String>> updateTransitPoint(@PathVariable Long id, @RequestBody @Valid TransitPoint request) {
+    public ResponseEntity<WebResponse<String>> updateTransitPoint(@PathVariable Long id, @RequestBody @Valid TransitPointRequest request) {
         String msg = transitPointService.updateTransitPoint(id, request);
         return ResponseEntity.ok(
                 WebResponse.<String>builder()

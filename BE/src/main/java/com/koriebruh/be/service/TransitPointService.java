@@ -1,6 +1,7 @@
 package com.koriebruh.be.service;
 
 
+import com.koriebruh.be.dto.TransitPointRequest;
 import com.koriebruh.be.dto.TransitPointResponse;
 import com.koriebruh.be.entity.TransitPoint;
 import com.koriebruh.be.repository.TransitPointRepository;
@@ -28,7 +29,7 @@ public class TransitPointService {
 
     }
 
-    public String createTransitPoint(TransitPoint request) {
+    public String createTransitPoint(TransitPointRequest request) {
         validationService.validate(request);
 
         TransitPoint transitPoint = new TransitPoint();
@@ -44,7 +45,7 @@ public class TransitPointService {
         return "Transit Point created successfully ";
     }
 
-    public String updateTransitPoint(Long id, TransitPoint request) {
+    public String updateTransitPoint(Long id, TransitPointRequest request) {
         validationService.validate(request);
 
         TransitPoint existingTransitPoint = transitPointRepository.findById(id).orElseThrow(() ->
