@@ -1,5 +1,5 @@
 import CustomHeader from "@/components/Header";
-import {  useAuth, useUser } from "@clerk/clerk-expo";
+import { useAuth } from "../../context/AuthContext";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import React from "react";
@@ -10,20 +10,21 @@ import {
 } from "react-native-safe-area-context";
 
 const TabLayout = () => {
-  const insets = useSafeAreaInsets(); 
-  const { isLoaded, isSignedIn } = useAuth();
+ const insets = useSafeAreaInsets();
+ const { isAuthenticated, loading } = useAuth();
 
-  if (!isLoaded) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
+ if (loading) {
+   return (
+     <View className="flex-1 justify-center items-center">
+       <ActivityIndicator size="large" />
+     </View>
+   );
+ }
 
-  if (!isSignedIn) {
-    return <Redirect href="/sign-in" />;
-  }
+ if (!isAuthenticated) {
+   return <Redirect href="/(auth)/sign-in" />;
+ }
+
 
   return (
     <Tabs
@@ -92,6 +93,7 @@ const TabLayout = () => {
         name="route"
         options={{
           title: "Rute",
+          header: () => <CustomHeader />,
           tabBarIcon: ({ focused, color }) => (
             <View className="items-center h-full">
               <Ionicons
@@ -132,7 +134,6 @@ const TabLayout = () => {
 };
 
 const _Layout = () => {
-  
   return (
     <SafeAreaProvider>
       <TabLayout />

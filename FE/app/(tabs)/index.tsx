@@ -1,8 +1,6 @@
 import TruckList from "@/components/TruckList";
 import TruckStats from "@/components/TruckStats";
-import { useUser } from "@clerk/clerk-expo";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
 import React from "react";
 import {
   SafeAreaView,
@@ -13,9 +11,11 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAuth } from "../../context/AuthContext"; // ganti Clerk ke context sendiri
 
 const TruckTracker = () => {
   const insets = useSafeAreaInsets();
+  const { isAuthenticated, user } = useAuth(); // ambil dari context
 
   const statsData = [
     {
@@ -63,23 +63,19 @@ const TruckTracker = () => {
     },
   ];
 
-  const { isSignedIn } = useUser();
-  console.log(isSignedIn);
-
+  console.log("Signed In:", isAuthenticated);
+  console.log("User:", user);
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
       <StatusBar barStyle="light-content" backgroundColor="#1E40AF" />
-      
 
-      {/* Content with proper padding for tab bar */}
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
         showsVerticalScrollIndicator={false}>
-        {/* Stats Cards */}
-      <TruckStats statsData={statsData} />
-        {/* Map Container */}
+        <TruckStats statsData={statsData} />
+
         <View className="mx-4 mb-4">
           <View className="bg-blue-100 rounded-lg h-64 items-center justify-center border border-blue-200">
             <Ionicons name="map" size={48} color="#3B82F6" />
@@ -89,7 +85,7 @@ const TruckTracker = () => {
             </Text>
           </View>
         </View>
-        {/* Section Headers */}
+
         <View className="px-4 mb-4">
           <View className="flex-row">
             <TouchableOpacity className="mr-6">
@@ -104,7 +100,7 @@ const TruckTracker = () => {
             </TouchableOpacity>
           </View>
         </View>
-        {/* Tracking List */}
+
         <TruckList trackingData={trackingData} />
       </ScrollView>
     </SafeAreaView>

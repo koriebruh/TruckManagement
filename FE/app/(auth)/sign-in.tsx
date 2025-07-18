@@ -1,70 +1,76 @@
-import { useSignIn } from "@clerk/clerk-expo";
-import { Link, useRouter } from "expo-router";
-import { View, Text, TextInput, TouchableOpacity, Image } from "react-native";
-import React from "react";
+// app/(auth)/login.tsx
 
-export default function SignInScreen() {
-  const { signIn, setActive, isLoaded } = useSignIn();
-  const router = useRouter();
+import React, { useState } from "react";
+import {
+  View,
+  TextInput,
+  Button,
+  Text,
+  Alert,
+  TouchableOpacity, // Impor TouchableOpacity
+} from "react-native";
+import { Link } from "expo-router"; // Impor Link untuk navigasi
+import { useAuth } from "../../context/AuthContext";
 
-  const [emailAddress, setEmailAddress] = React.useState("");
-  const [password, setPassword] = React.useState("");
+export default function LoginScreen() {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const { login } = useAuth();
+  const [error, setError] = useState("");
 
-  const onSignInPress = async () => {
-    if (!isLoaded) return;
+  const handleLogin = async () => {
+    if (!username || !password) {
+      setError("Username dan password harus diisi.");
+      return;
+    }
     try {
-      const signInAttempt = await signIn.create({
-        identifier: emailAddress,
-        password,
-      });
-
-      if (signInAttempt.status === "complete") {
-        await setActive({ session: signInAttempt.createdSessionId });
-        router.replace("/");
-      } else {
-        console.error(JSON.stringify(signInAttempt, null, 2));
-      }
-    } catch (err) {
-      console.error(JSON.stringify(err, null, 2));
+      setError("");
+      await login(username, password);
+      // Navigasi ke halaman utama akan ditangani oleh _layout.tsx
+    } catch (e) {
+      setError(e.message);
+      Alert.alert("Login Gagal", e.message);
     }
   };
 
   return (
-    <View className="flex-1 items-center justify-center bg-white px-6">
-      <Image
-        source={require("../../assets/images/logo.png")} // Pastikan kamu punya file ini
-        className="w-40 h-40 mb-6"
-        resizeMode="contain"
-      />
-      <Text className="text-2xl font-bold mb-4">Welcome Back</Text>
+    <View className="flex-1 justify-center p-5 bg-white">
+      <Text className="text-2xl font-bold text-center mb-5">
+        Selamat Datang!
+      </Text>
 
       <TextInput
-        value={emailAddress}
-        onChangeText={setEmailAddress}
-        placeholder="Email"
+        className="h-12 border border-gray-300 rounded-md px-3 mb-4"
+        placeholder="Username"
+        value={username}
+        onChangeText={setUsername}
         autoCapitalize="none"
-        className="border border-gray-300 w-full p-3 rounded mb-3"
       />
+
       <TextInput
+        className="h-12 border border-gray-300 rounded-md px-3 mb-4"
+        placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        placeholder="Password"
         secureTextEntry
-        className="border border-gray-300 w-full p-3 rounded mb-4"
       />
 
-      <TouchableOpacity
-        onPress={onSignInPress}
-        className="bg-blue-600 w-full py-3 rounded mb-4">
-        <Text className="text-white text-center font-semibold">Sign In</Text>
-      </TouchableOpacity>
+      {error ? (
+        <Text className="text-red-500 text-center mb-3">{error}</Text>
+      ) : null}
 
-      <View className="flex-row justify-center mt-2">
-        <Text className="text-gray-600">Don&apos;t have an account? </Text>
-        <Link href="/sign-up">
-          <Text className="text-blue-600 font-semibold">Sign Up</Text>
-        </Link>
+      <View className="mb-4">
+        <Button title="Login" onPress={handleLogin} />
       </View>
+
+      {/* Tombol untuk mengarah ke halaman register */}
+      <Link href="/sign-up" asChild>
+        <TouchableOpacity>
+          <Text className="text-blue-500 text-center">
+            Belum punya akun? Daftar di sini.
+          </Text>
+        </TouchableOpacity>
+      </Link>
     </View>
   );
 }

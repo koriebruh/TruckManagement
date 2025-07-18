@@ -1,14 +1,14 @@
 import React from "react";
-import { View, Text, TouchableOpacity, Image } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
+import { useAuth } from "../context/AuthContext";
 
 export default function CustomHeader() {
   const insets = useSafeAreaInsets();
-  const { user } = useUser();
   const router = useRouter();
+  const { user } = useAuth(); 
 
   return (
     <View className="bg-blue-700" style={{ paddingTop: insets.top }}>
@@ -29,24 +29,11 @@ export default function CustomHeader() {
             </View>
           </View>
 
-          {/* Profile */}
-          <TouchableOpacity
-            className="w-9 h-9 rounded-full bg-blue-600 overflow-hidden"
-            onPress={() => router.push("/profile")}>
-            {user?.imageUrl ? (
-              <Image
-                source={{ uri: user.imageUrl }}
-                className="w-full h-full"
-                resizeMode="cover"
-              />
-            ) : (
-              <Ionicons
-                name="person"
-                size={20}
-                color="white"
-                className="m-auto"
-              />
-            )}
+          {/* Tampilkan nama pengguna */}
+          <TouchableOpacity onPress={() => router.push("/profile")}>
+            <Text className="text-white font-semibold text-sm">
+              {user?.username || "Guest"}
+            </Text>
           </TouchableOpacity>
         </View>
       </View>
