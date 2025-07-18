@@ -1,3 +1,6 @@
+ docker-compose down --volumes --rmi all
+
+docker logs truck-management
 
 docker-compose up -d --build
 

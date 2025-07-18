@@ -24,11 +24,13 @@ public class Truck {
     private String model;
 
     // is jenis muatan
-    private String CargoType;
+    private String cargoType;
 
     private double capacityKG;
 
     /*AVALIABEL INI MAKSUDNYA TRUCK NYA ADA TIDAK SEDANG MAINTANECE ATAU APA GITU
      * */
     private Boolean isAvailable;
+
+    private Long deletedAt;
 }
