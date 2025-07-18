@@ -1,13 +1,22 @@
-import { Redirect, Stack } from 'expo-router'
-import { useAuth } from '@clerk/clerk-expo'
+// app/(auth)/_layout.tsx
+import { Redirect, Stack } from "expo-router";
+import { ActivityIndicator, View } from "react-native";
+import { useAuth } from "../../context/AuthContext";
 
 export default function AuthRoutesLayout() {
-  const { isSignedIn } = useAuth()
+  const { isAuthenticated, loading } = useAuth();
 
-  if (isSignedIn) {
-    return <Redirect href={'/(tabs)/index'} />
+  if (loading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" />
+      </View>
+    );
   }
 
+  if (isAuthenticated) {
+    return <Redirect href="/(tabs)" />;
+  }
 
-  return <Stack screenOptions={{ headerShown: false }} />
+  return <Stack screenOptions={{ headerShown: false }} />;
 }

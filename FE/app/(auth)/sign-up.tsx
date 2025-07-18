@@ -1,82 +1,122 @@
-import { useState } from "react";
-import { Text, TextInput, TouchableOpacity, View, Image } from "react-native";
-import { useSignUp } from "@clerk/clerk-expo";
-import { Link, useRouter } from "expo-router";
+// app/(auth)/register.tsx
 
-export default function SignUpScreen() {
-  const { isLoaded, signUp, setActive } = useSignUp();
+import React, { useState } from "react";
+import {
+  View,
+  TextInput,
+  Button,
+  Alert,
+  Text,
+  ScrollView,
+  TouchableOpacity, // Digunakan untuk link
+} from "react-native";
+import { useRouter, Link } from "expo-router";
+import { useAuth } from "../../context/AuthContext";
+
+export default function RegisterScreen() {
+  const { register } = useAuth();
   const router = useRouter();
+  const [formData, setFormData] = useState({
+    username: "",
+    email: "",
+    password: "",
+    phone_number: "",
+    age: "",
+  });
 
-  const [emailAddress, setEmailAddress] = useState("");
-  const [password, setPassword] = useState("");
-  const [username, setUsername] = useState("");
+  const handleInputChange = (name, value) => {
+    setFormData({ ...formData, [name]: value });
+  };
 
-  const onSignUpPress = async () => {
-    if (!isLoaded) return;
+  const handleRegister = async () => {
+    for (const key in formData) {
+      if (!formData[key]) {
+        Alert.alert("Validasi Gagal", `Kolom "${key}" tidak boleh kosong.`);
+        return; // Hentikan eksekusi
+      }
+    }
+
+    console.log("Data yang akan dikirim ke backend:", formData); 
 
     try {
-      const result = await signUp.create({
-        emailAddress,
-        password,
-        username: username.trim(), 
+      await register({
+        ...formData,
+        age: parseInt(formData.age, 10),
       });
-
-      if (result.status === "complete") {
-        await setActive({ session: result.createdSessionId });
-        router.replace("/");
+      Alert.alert("Sukses", "Registrasi berhasil! Silakan login.");
+      router.push("/sign-in");
+    } catch (error) {
+      console.log("Full error object:", JSON.stringify(error, null, 2));
+      if (error.response) {
+        Alert.alert(
+          "Registrasi Gagal",
+          error.response.data.errors?.phone_number || // Ambil pesan spesifik jika ada
+            error.response.data.errors?.username ||
+            error.response.data.errors?.email ||
+            "Data yang Anda masukkan tidak valid."
+        );
       } else {
-        console.warn("Unexpected signup status:", result.status);
+        Alert.alert("Registrasi Gagal", "Terjadi kesalahan jaringan.");
       }
-    } catch (err) {
-      console.error("Signup error", JSON.stringify(err, null, 2));
     }
   };
 
   return (
-    <View className="flex-1 items-center justify-center bg-white px-6">
-      <Image
-        source={require("../../assets/images/logo.png")}
-        className="w-40 h-40 mb-6"
-        resizeMode="contain"
-      />
-      <Text className="text-2xl font-bold mb-4">Create Account</Text>
+    // Gunakan contentContainerClassName untuk styling di dalam ScrollView
+    <ScrollView
+      className="bg-white"
+      contentContainerClassName="flex-grow justify-center p-5">
+      <Text className="text-2xl font-bold text-center mb-5">
+        Buat Akun Baru
+      </Text>
 
       <TextInput
-        value={username}
-        onChangeText={setUsername}
+        className="h-12 border border-gray-300 rounded-md px-3 mb-4"
         placeholder="Username"
-        autoCapitalize="none"
-        className="border border-gray-300 w-full p-3 rounded mb-3"
+        value={formData.username}
+        onChangeText={(v) => handleInputChange("username", v)}
       />
-
       <TextInput
-        value={emailAddress}
-        onChangeText={setEmailAddress}
+        className="h-12 border border-gray-300 rounded-md px-3 mb-4"
         placeholder="Email"
+        value={formData.email}
+        onChangeText={(v) => handleInputChange("email", v)}
+        keyboardType="email-address"
         autoCapitalize="none"
-        className="border border-gray-300 w-full p-3 rounded mb-3"
       />
-
       <TextInput
-        value={password}
-        onChangeText={setPassword}
+        className="h-12 border border-gray-300 rounded-md px-3 mb-4"
         placeholder="Password"
+        value={formData.password}
+        onChangeText={(v) => handleInputChange("password", v)}
         secureTextEntry
-        className="border border-gray-300 w-full p-3 rounded mb-4"
+      />
+      <TextInput
+        className="h-12 border border-gray-300 rounded-md px-3 mb-4"
+        placeholder="Nomor Telepon"
+        value={formData.phone_number}
+        onChangeText={(v) => handleInputChange("phone_number", v)}
+        keyboardType="phone-pad"
+      />
+      <TextInput
+        className="h-12 border border-gray-300 rounded-md px-3 mb-4"
+        placeholder="Umur"
+        value={formData.age}
+        onChangeText={(v) => handleInputChange("age", v)}
+        keyboardType="numeric"
       />
 
-      <TouchableOpacity
-        onPress={onSignUpPress}
-        className="bg-blue-600 w-full py-3 rounded mb-4">
-        <Text className="text-white text-center font-semibold">Sign Up</Text>
-      </TouchableOpacity>
-
-      <View className="flex-row justify-center mt-2">
-        <Text className="text-gray-600">Already have an account? </Text>
-        <Link href="/sign-in">
-          <Text className="text-blue-600 font-semibold">Sign In</Text>
-        </Link>
+      <View className="mb-4">
+        <Button title="Register" onPress={handleRegister} />
       </View>
-    </View>
+
+      <Link href="/sign-in" asChild>
+        <TouchableOpacity>
+          <Text className="text-blue-500 text-center">
+            Sudah punya akun? Login.
+          </Text>
+        </TouchableOpacity>
+      </Link>
+    </ScrollView>
   );
 }
