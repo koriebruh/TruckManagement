@@ -14,7 +14,6 @@ export function useTrucks() {
      const { data } = await api.get("/api/trucks");
       setTrucks(data.data);
       setError(null);
-      console.log(trucks);
     } catch (err: any) {
         setError(err.message);
         console.log(error);
@@ -24,7 +23,6 @@ export function useTrucks() {
   };
 
   useEffect(() => {
-    
     fetchTrucks();
   }, []);
 
