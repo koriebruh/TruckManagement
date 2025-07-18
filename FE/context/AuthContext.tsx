@@ -1,57 +1,17 @@
-import axios from "axios";
 import {jwtDecode} from "jwt-decode";
 import * as SecureStore from "expo-secure-store";
 import React, {
   createContext,
   ReactNode,
-  useContext,
+  
   useEffect,
   useState,
 } from "react";
-
-// ✅ Ganti IP address ini dengan IP lokal backend kamu
-const API_URL = "http://192.168.0.110:8080";
-
-// ====== Interfaces ======
-interface User {
-  // id: string;
-  username: string;
-  // email: string;
-  // role: string;
-  // phoneNumber: string;
-  // age: number;
-}
-
-interface RegisterPayload {
-  username?: string;
-  email?: string;
-  password?: string;
-  role?: string;
-  phoneNumber?: string;
-  age?: number;
-}
-
-interface AuthContextProps {
-  user: User | null;
-  token: string | null;
-  loading: boolean;
-  isAuthenticated: boolean;
-  login: (username: string, password: string) => Promise<void>;
-  register: (payload: RegisterPayload) => Promise<void>;
-  logout: () => Promise<void>;
-}
-interface TokenPayload {
-  sub: string; // username dari JWT
-  
-}
+import api from "@/services/axios";
+import {  AuthContextProps, RegisterPayload, TokenPayload, User } from "@/types/auth.types";
 
 // ====== Create Context ======
-const AuthContext = createContext<AuthContextProps | undefined>(undefined);
-
-// ====== Axios Instance ======
-const api = axios.create({
-  baseURL: API_URL,
-});
+export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 // ====== Provider ======
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -194,11 +154,3 @@ const login = async (username: string, password: string) => {
   );
 };
 
-// ====== Hook ======
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};

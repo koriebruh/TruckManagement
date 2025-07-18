@@ -1,4 +1,4 @@
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 import React from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -23,10 +23,6 @@ const Profile = () => {
           {user?.username || "Unnamed User"}
         </Text>
 
-        {/* Email */}
-        <Text className="text-gray-500 mb-5 text-center">
-          {user?.email || "no-email@example.com"}
-        </Text>
 
         {/* Logout Button */}
         <TouchableOpacity

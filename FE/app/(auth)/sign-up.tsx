@@ -11,7 +11,7 @@ import {
   TouchableOpacity, // Digunakan untuk link
 } from "react-native";
 import { useRouter, Link } from "expo-router";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function RegisterScreen() {
   const { register } = useAuth();
