@@ -1,5 +1,4 @@
-@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI4MTEyMTgsImV4cCI6MTc1Mjg5NzYxOH0.FAAz19pGKJ-Ptic_U6XZIdxeXhlIuvQ8_ks0WhJyvHI
-
+@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTI4NDIyNTUsImV4cCI6MTc1MjkyODY1NX0.QvQl4j7Lj5molgwI9TI3Qb-l6MKiVStnsTWe9sVfiQc
 
 ### login request to example server
 POST http://localhost:8080/auth/login
@@ -7,8 +6,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "jamalgantenk",
-  "password": "jamal123"
+  "username": "bunderess",
+  "password": "newSecurePass456"
 }
 
 ### registration request to example server
@@ -36,7 +35,40 @@ Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
-###------------------------------------------------
+###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### get PROFILE
+GET http://localhost:8080/api/profile
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### update profile
+POST http://localhost:8080/api/profile
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "username": "bunderess",
+  "email": "bunderess4@gmail.com",
+  "phone_number": "321313990",
+  "age": 20
+}
+
+### update password
+PATCH http://localhost:8080/api/profile/password
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "current_password": "admin1234#",
+  "new_password": "newSecurePass456",
+  "confirm_password": "newSecurePass456"
+}
+
+###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 ### CREATE ROUTE
 POST http://localhost:8080/api/routes
@@ -94,7 +126,7 @@ Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "license_plate": "B12BI2",
+  "license_plate": "B12BI28",
   "model": "Toyota Hilux",
   "cargo_type": "furniture",
   "capacity_kg": 9000.0,
