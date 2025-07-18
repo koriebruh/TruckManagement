@@ -92,6 +92,7 @@ const login = async (username: string, password: string) => {
 
     console.log("✅ Login successful");
     console.log("👤 User:", userData);
+    
   } catch (error: any) {
     console.error("❌ Login failed:", error);
 
