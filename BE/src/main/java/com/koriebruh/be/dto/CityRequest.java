@@ -1,22 +1,23 @@
 package com.koriebruh.be.dto;
 
+
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PositionRequest {
+@Builder
+@Data
+public class CityRequest {
 
-    @NotNull(message = "Delivery ID must not be null")
-    private String deliveryId;
+    @NotBlank(message = "Name must not be blank")
+    private String name;
 
     @NotNull(message = "Latitude must not be null")
     @DecimalMin(value = "-90.0", inclusive = true, message = "Latitude must be at least -90.0")
@@ -28,7 +29,8 @@ public class PositionRequest {
     @DecimalMax(value = "180.0", inclusive = true, message = "Longitude must be at most 180.0")
     private Double longitude;
 
-    @NotNull(message = "recordedAt must not be null")
-    @Positive(message = "recordedAt must be a positive timestamp (epoch time)")
-    private Long recordedAt;
+    @NotBlank(message = "Country must not be blank")
+    private String country;
+
+
 }

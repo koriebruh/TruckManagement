@@ -15,15 +15,23 @@ import lombok.Setter;
 public class Truck {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
+    @Column(unique = true, nullable = false)
     private String licensePlate;
 
     private String model;
 
-    private String capacityKG;
+    // is jenis muatan
+    private String cargoType;
 
+    private double capacityKG;
+
+    /*AVALIABEL INI MAKSUDNYA TRUCK NYA ADA TIDAK SEDANG MAINTANECE ATAU APA GITU
+     * */
     private Boolean isAvailable;
 
+    @Column(name = "deleted_at")
+    private Long deletedAt;
 }

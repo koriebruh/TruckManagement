@@ -93,6 +93,13 @@
             <scope>test</scope>
         </dependency>
 
+        <!--generate documentation open api-->
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>

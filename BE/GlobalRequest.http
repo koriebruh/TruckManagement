@@ -1,11 +1,14 @@
+@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI4MTEyMTgsImV4cCI6MTc1Mjg5NzYxOH0.FAAz19pGKJ-Ptic_U6XZIdxeXhlIuvQ8_ks0WhJyvHI
+
+
 ### login request to example server
 POST http://localhost:8080/auth/login
 Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "admin1234",
-  "password": "admin1234#"
+  "username": "jamalgantenk",
+  "password": "jamal123"
 }
 
 ### registration request to example server
@@ -17,13 +20,225 @@ Accept: application/json
   "username": "bunderess",
   "password": "admin1234#",
   "email": "bunderess4@gmail.com",
-  "phoneNumber": 3213132132,
-  "age": 199
-
+  "phone_number": "32131399",
+  "age": 19
 }
 
 ### registration request to example server
 GET http://localhost:8080/auth/validate
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjEyMzQiLCJpYXQiOjE3NTI1ODA0MDQsImV4cCI6MTc1MjY2NjgwNH0.TNfM2XNXwdnA6QFCWNswYb7QYPyrniEkmTJFDKKzK2U
+Authorization: Bearer {{TOKEN}}
+
+### registration request to example server
+GET http://localhost:8080/api/hello
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+###------------------------------------------------
+
+### CREATE ROUTE
+POST http://localhost:8080/api/routes
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "start_city_id": 3,
+  "end_city_id": 2,
+  "details": "Route of roadd boiii",
+  "base_price": 150000.0,
+  "is_active": true
+}
+
+### UPDATE ROUTE
+PUT http://localhost:8080/api/routes/9e53c0c0-8dd1-4d4d-b9eb-2db980e71cfa
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "start_city_id": 3,
+  "end_city_id": 2,
+  "details": "Route of roadd boiii",
+  "base_price": 150000.0,
+  "is_active": true
+}
+
+
+### ACHIEVE ROUTE
+DELETE http://localhost:8080/api/routes/9e53c0c0-8dd1-4d4d-b9eb-2db980e71cfa
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### GET ALL
+GET http://localhost:8080/api/routes
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### GET BY ID
+GET http://localhost:8080/api/routes/9e53c0c0-8dd1-4d4d-b9eb-2db980e71cfa
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### CREATE TRUCK
+### GET BY ID
+POST http://localhost:8080/api/trucks
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "license_plate": "B12BI2",
+  "model": "Toyota Hilux",
+  "cargo_type": "furniture",
+  "capacity_kg": 9000.0,
+  "is_available": true
+}
+
+
+### UPDATE TRUCK
+PUT http://localhost:8080/api/trucks/77271071-84d0-4702-9bda-2cb85c6ec7e4
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "license_plate": "B1XXXX",
+  "model": "Hino Dutro",
+  "cargo_type": "Barang Elektronik",
+  "capacity_kg": 5000.0,
+  "is_available": false
+}
+
+### DELETE TRUCK
+DELETE http://localhost:8080/api/trucks/aaf6253c-661b-4a8f-8d80-cc417988d3d1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### GET Truck Avaliable to make delivery
+GET http://localhost:8080/api/trucks/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### GET ALL TRUCK not deleted
+GET http://localhost:8080/api/trucks
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### GET TRUCK BY ID
+GET http://localhost:8080/api/trucks/aaf6253c-661b-4a8f-8d80-cc417988d3d1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### update to make truck x maintance
+PUT http://localhost:8080/api/trucks/maintenance/aaf6253c-661b-4a8f-8d80-cc417988d3d1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+### GET ALL CITIES
+GET http://localhost:8080/api/cities
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### GET CITY BY ID
+GET http://localhost:8080/api/cities/51
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### CREATE
+POST http://localhost:8080/api/cities
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "GunungKidul",
+  "latitude": -6.203,
+  "longitude": 106.841,
+  "country": "Indonesia"
+}
+
+
+### UPDATE
+PUT http://localhost:8080/api/cities/515
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "JakartacSS",
+  "latitude": -6.2088,
+  "longitude": 106.8456,
+  "country": "Indonesia"
+}
+
+### DELETE
+DELETE http://localhost:8080/api/cities/516
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### CREATE TRANSIT POINT
+POST http://localhost:8080/api/transit-points
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "city_name": "Jakarta",
+  "estimated_duration_minute": 30,
+  "extra_cost": 15000.0,
+  "latitude": -6.2088,
+  "longitude": 106.8456
+}
+
+
+### UPDATE TRANSIT POINT
+PUT http://localhost:8080/api/transit-points/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "city_name": "suroboyooo",
+  "estimated_duration_minute": 30,
+  "extra_cost": 15000.0,
+  "latitude": -6.2088,
+  "longitude": 106.8456
+}
+
+### GET TRANSIT POINT by ID
+GET http://localhost:8080/api/transit-points/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### GET ALL TRANSIT POINT
+GET http://localhost:8080/api/transit-points
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### DELETE TRANSIT POINT
+DELETE http://localhost:8080/api/transit-points/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+
