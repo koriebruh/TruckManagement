@@ -1,7 +1,7 @@
 // app/(auth)/_layout.tsx
+import { useAuth } from "@/context/AuthContext";
 import { Redirect, Stack } from "expo-router";
 import { ActivityIndicator, View } from "react-native";
-import { useAuth } from "../../context/AuthContext";
 
 export default function AuthRoutesLayout() {
   const { isAuthenticated, loading } = useAuth();

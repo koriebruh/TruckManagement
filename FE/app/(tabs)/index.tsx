@@ -1,5 +1,6 @@
 import TruckList from "@/components/TruckList";
 import TruckStats from "@/components/TruckStats";
+import { useAuth } from "@/context/AuthContext";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import {
@@ -11,11 +12,10 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useAuth } from "../../context/AuthContext"; // ganti Clerk ke context sendiri
 
 const TruckTracker = () => {
   const insets = useSafeAreaInsets();
-  const { isAuthenticated, user } = useAuth(); // ambil dari context
+  const { isAuthenticated, user } = useAuth(); 
 
   const statsData = [
     {
