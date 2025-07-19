@@ -1,4 +1,5 @@
 import { useTrucks } from "@/hooks/useTrucks";
+import { Truck } from "@/types/truck.types";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import React from "react";
@@ -41,7 +42,7 @@ export default function TruckList() {
       </View>
 
       <View className="space-y-3">
-        {trucks.map((truck: any, index: number) => (
+        {trucks.map((truck: Truck, index: number) => (
           <View
             key={index}
             className="p-4 rounded-lg border border-gray-300 bg-white">
@@ -50,7 +51,7 @@ export default function TruckList() {
                 <Text className="text-lg font-semibold text-gray-900">
                   {truck.licensePlate}
                 </Text>
-                <Text className="text-sm text-gray-500">{truck.status}</Text>
+                <Text className="text-sm text-gray-500">{truck.isAvailable}</Text>
               </View>
               <Ionicons name="bus" size={28} color="#4B5563" />
             </View>
