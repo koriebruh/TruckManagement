@@ -1,8 +1,7 @@
 export type Truck = {
-  id: string;
-  licensePlate: string;
+  license_plate: string;
   model: string;
-  cargoType: string;
-  capacityKG: number;
-  isAvailable: boolean;
+  cargo_type: string;
+  capacity_kg: number;
+  is_available: boolean;
 };

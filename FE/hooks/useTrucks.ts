@@ -11,6 +11,7 @@ export function useTrucks() {
     setLoading(true);
     try {
       const { data } = await api.get("/api/trucks");
+      console.log(data.data);
       setTrucks(data.data);
       setError(null);
     } catch (err: any) {
@@ -42,20 +43,20 @@ export function useTrucks() {
     try {
       // Validasi payload sebelum dikirim
       if (
-        !truck.licensePlate ||
+        !truck.license_plate ||
         !truck.model ||
-        !truck.cargoType ||
-        !truck.capacityKG
+        !truck.cargo_type||
+        !truck.capacity_kg
       ) {
         throw new Error("Semua field wajib diisi");
       }
 
       // Bersihkan dan konversi data dengan tipe yang tepat
-      const licensePlate = String(truck.licensePlate).trim().toUpperCase();
+      const licensePlate = String(truck.license_plate).trim().toUpperCase();
       const model = String(truck.model).trim();
-      const cargoType = String(truck.cargoType).trim();
-      const capacityKG = parseFloat(String(truck.capacityKG));
-      const isAvailable = Boolean(truck.isAvailable ?? true);
+      const cargoType = String(truck.cargo_type).trim();
+      const capacityKG = parseFloat(String(truck.capacity_kg));
+      const isAvailable = Boolean(truck.is_available ?? true);
 
       // Validasi tambahan
       if (isNaN(capacityKG) || capacityKG <= 0) {

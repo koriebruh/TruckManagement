@@ -98,9 +98,9 @@ const login = async (username: string, password: string) => {
 
     let errorMessage = "Login failed.";
     if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
+      errorMessage = "Username atau password salah.";
     } else if (error.message) {
-      errorMessage = error.message;
+      errorMessage = "Username atau password salah.";
     }
 
     throw new Error(errorMessage);

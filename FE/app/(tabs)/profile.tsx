@@ -43,9 +43,9 @@ const Profile = () => {
           </Text>
 
           {/* User Email if available */}
-          {user?.email && (
+          {/* {user?.email && (
             <Text className="text-sm text-gray-500 mb-4">{user.email}</Text>
-          )}
+          )} */}
         </View>
 
         {/* User Info Section */}
@@ -61,7 +61,7 @@ const Profile = () => {
                 {user?.username || "-"}
               </Text>
             </View>
-
+{/* 
             {user?.email && (
               <View className="flex-row justify-between items-center py-3 border-b border-gray-100">
                 <Text className="text-gray-600">Email</Text>
@@ -85,7 +85,7 @@ const Profile = () => {
                   {user.age} tahun
                 </Text>
               </View>
-            )}
+            )} */}
           </View>
         </View>
 

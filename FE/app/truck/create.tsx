@@ -1,4 +1,5 @@
 import { useTrucks } from "@/hooks/useTrucks";
+import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import {
@@ -38,6 +39,7 @@ export default function CreateTruck() {
     const model = form.model.trim();
     const cargoType = form.cargoType.trim();
     const capacityKG = form.capacityKG;
+    const isAvailable = form.isAvailable;
 
     if (!licensePlate || !model || !cargoType || !capacityKG) {
       setError("Semua kolom wajib diisi.");
@@ -80,13 +82,13 @@ export default function CreateTruck() {
 
     try {
       // Payload yang akan dikirim - pastikan tipe data sesuai
-      const payload = {
-        licensePlate: licensePlate.toUpperCase(), // Convert ke uppercase
-        model: model,
-        cargoType: cargoType,
-        capacityKG: capacity, // Sudah dalam bentuk number
-        isAvailable: form.isAvailable,
-      };
+       const payload = {
+         license_plate: licensePlate,
+         model,
+         cargo_type: cargoType,
+         capacity_kg: Number(capacityKG),
+         is_available: isAvailable,
+       };
 
       console.log(
         "🚚 Payload yang akan dikirim:",
@@ -128,13 +130,20 @@ export default function CreateTruck() {
   return (
     <ScrollView className="flex-1 bg-gradient-to-br from-slate-50 to-gray-100">
       <View className="flex-1 justify-center px-8 py-8">
-        <View className="mb-12">
-          <Text className="text-4xl font-light text-gray-800 text-center mb-2">
-            Tambah Truk Baru
-          </Text>
-          <Text className="text-base text-gray-500 text-center font-light">
-            Masukkan informasi truk yang akan ditambahkan
-          </Text>
+        <View className="mb-8">
+          <View className="flex-row items-center mb-4">
+            <TouchableOpacity
+              onPress={() => router.back()}
+              className="mr-4 p-2 rounded-full bg-white shadow-sm"
+              disabled={loading}>
+              <Ionicons name="arrow-back" size={24} color="#374151" />
+            </TouchableOpacity>
+            <View className="flex-1">
+              <Text className="text-3xl font-light text-gray-800 mb-1">
+                Masukan Data Truk
+              </Text>
+            </View>
+          </View>
         </View>
 
         <View className="bg-white rounded-2xl shadow-lg p-8 mb-8">
