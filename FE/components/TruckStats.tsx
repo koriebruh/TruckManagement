@@ -12,8 +12,7 @@ const TruckStats = ({ statsData} : any) => {
           <Pressable
             key={index}
             onPress={() => {
-              console.log("Go to:", `/truck/${stat.value}`);
-              router.push(`/truck/${stat.value}`);
+              router.push(`/truck`);
             }}
             android_ripple={{ color: "#ccc" }}
             className={`flex-1 p-4 rounded-lg border ${stat.color} ${index !== 0 ? "ml-4" : ""}`}>

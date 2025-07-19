@@ -7,7 +7,7 @@ export default function RootLayout() {
     <AuthProvider>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="truck/[value]" options={{ headerShown: false }} />
+        <Stack.Screen name="truck" options={{ headerShown: false }} />
       </Stack>
     </AuthProvider>
   );

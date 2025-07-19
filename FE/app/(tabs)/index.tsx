@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const TruckTracker = () => {
   const insets = useSafeAreaInsets();
-  const { isAuthenticated, user } = useAuth(); 
+  const { isAuthenticated, user } = useAuth();
 
   const statsData = [
     {
@@ -74,6 +74,7 @@ const TruckTracker = () => {
         className="flex-1"
         contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
         showsVerticalScrollIndicator={false}>
+          
         <TruckStats statsData={statsData} />
 
         <View className="mx-4 mb-4">
