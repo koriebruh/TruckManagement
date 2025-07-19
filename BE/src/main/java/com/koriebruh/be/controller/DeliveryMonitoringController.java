@@ -88,11 +88,11 @@ public class DeliveryMonitoringController {
     @GetMapping(value = "/active",
             produces = "application/json"
     )
-    public ResponseEntity<WebResponse<List<DeliveryDetailResponse>>> getActiveDeliveries() {
+    public ResponseEntity<WebResponse<List<AllDeliveryActiveResponse>>> getActiveDeliveries() {
 
-        List<DeliveryDetailResponse> activeDeliveries = deliveryMonitoringService.getAllActiveDeliveries();
+        List<AllDeliveryActiveResponse> activeDeliveries = deliveryMonitoringService.getAllActiveDeliveries();
         return ResponseEntity.ok(
-                WebResponse.<List<DeliveryDetailResponse>>builder()
+                WebResponse.<List<AllDeliveryActiveResponse>>builder()
                         .status("OK")
                         .data(activeDeliveries)
                         .build()
@@ -143,5 +143,18 @@ public class DeliveryMonitoringController {
         );
     }
 
+    @GetMapping(value = "/detail/{deliveryId}",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<DeliveryDetailResponse>> getDetailDeliveryById(@PathVariable String deliveryId) {
+        DeliveryDetailResponse detail = deliveryMonitoringService.getDeliveryDetailById(deliveryId);
+
+        return ResponseEntity.ok(
+                WebResponse.<DeliveryDetailResponse>builder()
+                        .status("OK")
+                        .data(detail)
+                        .build()
+        );
+    }
 
 }

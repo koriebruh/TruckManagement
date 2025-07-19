@@ -172,7 +172,7 @@ public class DeliveryMonitoringService {
         delivery.setFinishedAt(Instant.now().getEpochSecond());
         deliveryRepo.save(delivery);
 
-        return   username + " has been finished successfully delivery.";
+        return username + " has been finished successfully delivery.";
     }
 
 
@@ -200,44 +200,12 @@ public class DeliveryMonitoringService {
         Delivery delivery = deliveryRepo.findByWorkerUsernameAndFinishedAtIsNull(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "right now you don't have any active delivery"));
 
-        //MAPPING
-        ProfileResponse profileResponse = ProfileResponse.builder()
-                .id(delivery.getWorker().getId())
-                .username(delivery.getWorker().getUsername())
-                .refreshToken(delivery.getWorker().getRefreshToken())
-                .email(delivery.getWorker().getEmail())
-                .role(delivery.getWorker().getRole())
-                .age(delivery.getWorker().getAge())
-                .phoneNumber(delivery.getWorker().getPhoneNumber())
-                .build();
-
-        TruckResponse truckResponse = TruckResponse.builder()
-                .id(delivery.getTrucks().getId())
-                .licensePlate(delivery.getTrucks().getLicensePlate())
-                .model(delivery.getTrucks().getModel())
-                .cargoType(delivery.getTrucks().getCargoType())
-                .capacityKg(delivery.getTrucks().getCapacityKG())
-                .isAvailable(delivery.getTrucks().getIsAvailable())
-                .build();
-
-        RouteResponse routeResponse = RouteResponse.builder()
-                .id(delivery.getRoute().getId())
-                .startCityName(delivery.getRoute().getStartCity().getName())
-                .endCityName(delivery.getRoute().getEndCity().getName())
-                .details(delivery.getRoute().getDetails())
-                .basePrice(delivery.getRoute().getBasePrice())
-                .distanceKM(delivery.getRoute().getDistanceKM())
-                .estimatedDurationHours(delivery.getRoute().getEstimatedDurationHours())
-                .isActive(delivery.getRoute().getIsActive())
-                .createdAt(delivery.getRoute().getCreatedAt())
-                .build();
-
         //FINAL RESPONSE
         return DeliveryDetailResponse.builder()
                 .id(delivery.getId())
-                .worker(profileResponse)
-                .truck(truckResponse)
-                .route(routeResponse)
+                .workerId(delivery.getWorker().getId())
+                .truckId(delivery.getTrucks().getId())
+                .routeId(delivery.getRoute().getId())
                 .startedAt(delivery.getStartedAt())
                 .finishedAt(delivery.getFinishedAt())
                 .alerts(delivery.getAlerts())
@@ -248,7 +216,7 @@ public class DeliveryMonitoringService {
 
     // get all active deliveries, nanti mungkin hanya owner yg bisa cek
     // get /delivery/active
-    public List<DeliveryDetailResponse> getAllActiveDeliveries() {
+    public List<AllDeliveryActiveResponse> getAllActiveDeliveries() {
         List<Delivery> activeDeliveries = deliveryRepo.findAllByFinishedAtIsNull();
 
         if (activeDeliveries.isEmpty()) {
@@ -257,46 +225,12 @@ public class DeliveryMonitoringService {
 
         return activeDeliveries.stream()
                 .map(delivery -> {
-                    ProfileResponse profileResponse = ProfileResponse.builder()
-                            .id(delivery.getWorker().getId())
-                            .username(delivery.getWorker().getUsername())
-                            .refreshToken(delivery.getWorker().getRefreshToken())
-                            .email(delivery.getWorker().getEmail())
-                            .role(delivery.getWorker().getRole())
-                            .age(delivery.getWorker().getAge())
-                            .phoneNumber(delivery.getWorker().getPhoneNumber())
-                            .build();
-
-                    TruckResponse truckResponse = TruckResponse.builder()
-                            .id(delivery.getTrucks().getId())
-                            .licensePlate(delivery.getTrucks().getLicensePlate())
-                            .model(delivery.getTrucks().getModel())
-                            .cargoType(delivery.getTrucks().getCargoType())
-                            .capacityKg(delivery.getTrucks().getCapacityKG())
-                            .isAvailable(delivery.getTrucks().getIsAvailable())
-                            .build();
-
-                    RouteResponse routeResponse = RouteResponse.builder()
-                            .id(delivery.getRoute().getId())
-                            .startCityName(delivery.getRoute().getStartCity().getName())
-                            .endCityName(delivery.getRoute().getEndCity().getName())
-                            .details(delivery.getRoute().getDetails())
-                            .basePrice(delivery.getRoute().getBasePrice())
-                            .distanceKM(delivery.getRoute().getDistanceKM())
-                            .estimatedDurationHours(delivery.getRoute().getEstimatedDurationHours())
-                            .isActive(delivery.getRoute().getIsActive())
-                            .createdAt(delivery.getRoute().getCreatedAt())
-                            .build();
-
-                    return DeliveryDetailResponse.builder()
+                    return AllDeliveryActiveResponse.builder()
                             .id(delivery.getId())
-                            .worker(profileResponse)
-                            .truck(truckResponse)
-                            .route(routeResponse)
+                            .workerId(delivery.getWorker().getId())
+                            .truckId(delivery.getTrucks().getId())
+                            .routeId(delivery.getRoute().getId())
                             .startedAt(delivery.getStartedAt())
-                            .finishedAt(delivery.getFinishedAt())
-                            .alerts(delivery.getAlerts())
-                            .transits(delivery.getTransits())
                             .build();
                 })
                 .toList();
@@ -357,6 +291,23 @@ public class DeliveryMonitoringService {
         deliveryTransitRepo.save(deliveryTransit); // save delivery to update transits
 
         return "Transit added successfully for delivery ID: " + request.getDeliveryId();
+    }
+
+    public DeliveryDetailResponse getDeliveryDetailById(String deliveryId) {
+        Delivery delivery = deliveryRepo.findById(deliveryId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "right now you don't have any active delivery"));
+
+        //FINAL RESPONSE
+        return DeliveryDetailResponse.builder()
+                .id(delivery.getId())
+                .workerId(delivery.getWorker().getId())
+                .truckId(delivery.getTrucks().getId())
+                .routeId(delivery.getRoute().getId())
+                .startedAt(delivery.getStartedAt())
+                .finishedAt(delivery.getFinishedAt())
+                .alerts(delivery.getAlerts())
+                .transits(delivery.getTransits())
+                .build();
     }
 
     // menampilkan worker yang lagi ngangur

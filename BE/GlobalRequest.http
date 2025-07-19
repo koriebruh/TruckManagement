@@ -37,13 +37,13 @@ Authorization: Bearer {{TOKEN}}
 
 ###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 ### get PROFILE
-GET http://localhost:8080/api/profile
+GET http://localhost:8080/api/users/profile
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 ### update profile
-POST http://localhost:8080/api/profile
+POST http://localhost:8080/api/users/profile
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
@@ -56,7 +56,7 @@ Authorization: Bearer {{TOKEN}}
 }
 
 ### update password
-PATCH http://localhost:8080/api/profile/password
+PATCH http://localhost:8080/api/users/profile/password
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
@@ -66,6 +66,18 @@ Authorization: Bearer {{TOKEN}}
   "new_password": "newSecurePass456",
   "confirm_password": "newSecurePass456"
 }
+
+### get all user is ready to use make delivery
+GET http://localhost:8080/api/users/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### get
+GET http://localhost:8080/api/users/96d6e8e7-655a-48ce-a0cf-031cdfc425a9
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
 
 ###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -320,7 +332,6 @@ Authorization: Bearer {{TOKEN}}
 
 
 ### actualy onlu for admin do this get all delivery active ------------------- below
-
 ###  request make  transit
 POST http://localhost:8080/api/delivery/transit
 Content-Type: application/json
@@ -332,8 +343,14 @@ Authorization: Bearer {{TOKEN}}
   "transit_point_id": 2
 }
 
-###
+### mendapatkan semua id pengiriman yg aktif
 GET http://localhost:8080/api/delivery/active
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### mendapatkan detail delivery berdasarkan id_delivery
+GET http://localhost:8080/api/delivery/detail/6f66d439-3549-4080-9e3c-804b7aced61c
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}

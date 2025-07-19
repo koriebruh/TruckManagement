@@ -1,6 +1,5 @@
 package com.koriebruh.be.dto;
 
-
 import com.koriebruh.be.entity.DeliverAlert;
 import com.koriebruh.be.entity.DeliveryTransit;
 import lombok.AllArgsConstructor;
@@ -12,10 +11,9 @@ import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Builder
-public class DeliveryDetailResponse {
-
+@Data
+public class AllDeliveryActiveResponse {
     private String id;
 
     private String workerId;
@@ -25,10 +23,4 @@ public class DeliveryDetailResponse {
     private String routeId;
 
     private Long startedAt;
-
-    private Long finishedAt;
-
-    private List<DeliverAlert> alerts;
-
-    private List<DeliveryTransit> transits;
 }

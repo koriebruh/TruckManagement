@@ -1,10 +1,7 @@
 package com.koriebruh.be.service;
 
 
-import com.koriebruh.be.dto.ProfileRequest;
-import com.koriebruh.be.dto.ProfileResponse;
-import com.koriebruh.be.dto.UpdatePassRequest;
-import com.koriebruh.be.dto.UpdateProfileResponse;
+import com.koriebruh.be.dto.*;
 import com.koriebruh.be.entity.User;
 import com.koriebruh.be.repository.UserRepository;
 import com.koriebruh.be.utils.Encrypt;
@@ -15,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -109,4 +107,38 @@ public class UserService {
     }
 
 
+    // GET USER Available DELIVERY
+    public List<UserAvailableResponse> getAvailableDrivers() {
+
+        List<User> users = userRepository.findAllActiveDriverUsersNotInOngoingDelivery();
+        if (users.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No available drivers found, all drivers are in active delivery");
+        }
+
+        return users.stream()
+                .map(user -> UserAvailableResponse.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .email(user.getEmail())
+                        .phoneNumber(user.getPhoneNumber())
+                        .age(user.getAge())
+                        .build())
+                .toList();
+    }
+
+    // GET USER BY ID
+    public UserResponse getUserById(String userId) {
+
+        User user = userRepository.findByIdAndDeletedAtIsNull(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        return UserResponse.builder()
+                .id(user.getId())
+                .username(user.getUsername())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .age(user.getAge())
+                .role(user.getRole())
+                .build();
+    }
 }
