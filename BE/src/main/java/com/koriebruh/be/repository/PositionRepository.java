@@ -17,4 +17,6 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
     List<Position> findAllByDeliveryId(String deliveryId);
 
     Position findTopByDeliveryIdOrderByRecordedAtDesc(String deliveryId);
+
+    Position findTopByDeliveryIdAndRecordedAtLessThanEqualOrderByRecordedAtDesc(String deliveryId, Long timestamp);
 }

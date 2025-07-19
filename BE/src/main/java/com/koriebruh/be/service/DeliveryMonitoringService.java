@@ -1,7 +1,5 @@
 package com.koriebruh.be.service;
 
-
-
 /* This function scheduler for monitoring
  * the delivery status of trucks and sending alerts
  * in case of illegal stops or GPS loss.
@@ -17,7 +15,9 @@ package com.koriebruh.be.service;
 
 import com.koriebruh.be.dto.*;
 import com.koriebruh.be.entity.*;
+import com.koriebruh.be.entity.Enum.DeliverAlertType;
 import com.koriebruh.be.repository.*;
+import com.koriebruh.be.utils.GeoUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,40 +31,6 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class DeliveryMonitoringService {
-
-    //    @Autowired
-//    private DeliverAlertRepository deliverAlertRepo;
-//
-//    @Autowired
-//    private PositionRepository positionRepo;
-//
-//    @Autowired
-//    private TruckRepository truckRepo;
-// NANTI
-    @Scheduled(fixedRate = 300_000)
-    public void detectLostGPS() {
-
-//        List<Truck> trucks = truckRepo.findAllByIsAvailableTrue();
-//
-//        for (Truck truck : trucks) {
-//            Position latest = positionRepo.findTopByTruckIdOrderByCreatedAtDesc(truck.getId());
-//
-//            // if in 10 minutes no GPS update, send alert
-//            if (latest == null || latest.getRecordedAt() < Instant.now().getEpochSecond() - 600) {
-//                DeliverAlert alert = new DeliverAlert();
-//                alert.setDelivery(latest.getDelivery());
-//                alert.setType(DeliverAlertType.GPS_LOST);
-//                alert.setMessage("No GPS update in the last 10 minutes.");
-//                alert.setCreatedAt(Instant.now().getEpochSecond());
-//                deliverAlertRepo.save(alert);
-//            }
-//
-//            // if truck is not moving for 10 minutes, send alert
-//
-//
-//        }
-
-    }
 
     @Autowired
     private PositionRepository positionRepo;
@@ -90,11 +56,82 @@ public class DeliveryMonitoringService {
     @Autowired
     private TransitPointRepository transitPointRepo;
 
-    // get delivery detail
-    // get /delivery/{deliveryId}
-//    public DeliveryResponse getDeliveryDetail(String deliveryId) {
-//
-//    }
+    @Autowired
+    private DeliverAlertRepository deliverAlertRepo;
+
+
+    @Scheduled(fixedRate = 300_000)
+    public void detectLostGPS() {
+        // CHECK DI DELIVERY
+        long now = Instant.now().getEpochSecond();
+        List<Delivery> activeDeliveries = deliveryRepo.findAllByFinishedAtIsNull();
+
+        for (Delivery delivery : activeDeliveries) {
+            Position latest = positionRepo.findTopByDeliveryIdOrderByRecordedAtDesc(delivery.getId());
+
+            // GPS LOST CHECK
+            if (latest == null || latest.getRecordedAt() < now - 600) {
+                DeliverAlert recent = deliverAlertRepo.findTopByDeliveryIdAndTypeOrderByCreatedAtDesc(delivery.getId(), DeliverAlertType.GPS_LOST);
+                if (recent == null || recent.getCreatedAt() < now - 600) {
+                    DeliverAlert alert = new DeliverAlert();
+                    alert.setDelivery(delivery);
+                    alert.setType(DeliverAlertType.GPS_LOST);
+                    alert.setMessage("No GPS update in the last 10 minutes.");
+                    alert.setCreatedAt(now);
+                    deliverAlertRepo.save(alert);
+                }
+            }
+
+            // ILLEGAL STOP CHECK - Transit Point Based
+            DeliverAlert lastAlert = deliverAlertRepo.findTopByDeliveryIdOrderByCreatedAtDesc(delivery.getId());
+            if (lastAlert != null && lastAlert.getType() == DeliverAlertType.TRANSIT) {
+                DeliveryTransit lastTransit = deliveryTransitRepo.findTopByDeliveryIdOrderByArrivedAtDesc(delivery.getId());
+
+                if (lastTransit != null && lastTransit.getArrivedAt() < now - 2700) {
+                    DeliverAlert recentIllegal = deliverAlertRepo.findTopByDeliveryIdAndTypeOrderByCreatedAtDesc(delivery.getId(), DeliverAlertType.ILLEGAL_STOP);
+
+                    if (recentIllegal == null || recentIllegal.getCreatedAt() < now - 2700) {
+                        DeliverAlert illegalStopAlert = new DeliverAlert();
+                        illegalStopAlert.setDelivery(delivery);
+                        illegalStopAlert.setType(DeliverAlertType.ILLEGAL_STOP);
+                        illegalStopAlert.setMessage("Illegal stop detected. No movement for more than 45 minutes.");
+                        illegalStopAlert.setCreatedAt(now);
+                        deliverAlertRepo.save(illegalStopAlert);
+                    }
+                }
+            }
+
+            // ILLEGAL STOP CHECK - GPS Location Based
+            if (latest != null) {
+                // Ambil posisi 45 menit yang lalu
+                Position oldPosition = positionRepo.findTopByDeliveryIdAndRecordedAtLessThanEqualOrderByRecordedAtDesc(delivery.getId(), now - 2700);
+
+                if (oldPosition != null) {
+                    // Check apakah masih dalam radius yang sama (100 meter)
+                    boolean stayingSameLocation = GeoUtils.isWithinRadius(
+                            oldPosition.getLatitude(), oldPosition.getLongitude(),
+                            latest.getLatitude(), latest.getLongitude(),
+                            0.1 // 100 meter radius
+                    );
+
+                    if (stayingSameLocation) {
+                        DeliverAlert recentLocationIllegal = deliverAlertRepo.findTopByDeliveryIdAndTypeOrderByCreatedAtDesc(delivery.getId(), DeliverAlertType.ILLEGAL_STOP);
+
+                        if (recentLocationIllegal == null || recentLocationIllegal.getCreatedAt() < now - 2700) {
+                            DeliverAlert locationIllegalAlert = new DeliverAlert();
+                            locationIllegalAlert.setDelivery(delivery);
+                            locationIllegalAlert.setType(DeliverAlertType.ILLEGAL_STOP);
+                            locationIllegalAlert.setMessage(String.format(
+                                    "Vehicle stationary at same location for 45+ minutes. Location: (%.6f, %.6f)",
+                                    latest.getLatitude(), latest.getLongitude()));
+                            locationIllegalAlert.setCreatedAt(now);
+                            deliverAlertRepo.save(locationIllegalAlert);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     // make delivery
     // post /delivery/create
@@ -385,9 +422,5 @@ public class DeliveryMonitoringService {
 
         return "Transit added successfully for delivery ID: " + request.getDeliveryId();
     }
-
-
-    // get delivery history
-    // get /delivery/history
 
 }
