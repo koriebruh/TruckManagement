@@ -135,7 +135,7 @@ public class DeliveryMonitoringService {
 
     // make delivery
     // post /delivery/create
-    public String createDelivery(DeliveryRequest request) {
+    public String createDelivery(DeliveryRequest request, String username) {
         validationService.validate(request);
         Truck truck = truckRepo.findById(request.getTruckId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Truck not found"));
@@ -143,8 +143,14 @@ public class DeliveryMonitoringService {
         Route route = routeRepo.findById(request.getRouteId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found"));
 
-        User worker = workerRepo.findById(request.getWorkerId())
+        User worker = workerRepo.findByUsernameAndDeletedAtIsNull(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
+
+        // CEK STATUS DELIVERY SEBELUMNYA UDAH KELAR BELUM
+        boolean isActive = deliveryRepo.existsByWorkerIdAndFinishedAtIsNull(worker.getId());
+        if (isActive) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Worker already has an active delivery");
+        }
 
         Delivery delivery = new Delivery();
         delivery.setTrucks(truck);
@@ -159,8 +165,8 @@ public class DeliveryMonitoringService {
 
     // finished delivery
     // post /delivery/finish/{deliveryId}
-    public String finishDelivery(String deliveryId) {
-        Delivery delivery = deliveryRepo.findById(deliveryId)
+    public String finishDelivery(String username) {
+        Delivery delivery = deliveryRepo.findByWorkerUsernameAndFinishedAtIsNull(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
 
         if (delivery.getFinishedAt() != null) {
@@ -170,22 +176,17 @@ public class DeliveryMonitoringService {
         delivery.setFinishedAt(Instant.now().getEpochSecond());
         deliveryRepo.save(delivery);
 
-        return "Delivery with ID: " + deliveryId + " has been finished successfully.";
+        return   username + " has been finished successfully delivery.";
     }
 
 
     // for real-time position updates from the delivery truck
     // post /delivery/position
-    public String sendPosition(PositionRequest request) {
+    public String sendPosition(PositionRequest request, String username) {
         validationService.validate(request);
 
-        boolean isActive = deliveryRepo.existsByIdAndFinishedAtIsNull(request.getDeliveryId());
-        if (!isActive) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Delivery has already finished. Position can't be add");
-        }
-
-        Delivery delivery = deliveryRepo.findById(request.getDeliveryId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
+        Delivery delivery = deliveryRepo.findByWorkerUsernameAndFinishedAtIsNull(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery has already finished. Position can't be add"));
 
         Position position = new Position();
         position.setDelivery(delivery);
@@ -194,13 +195,13 @@ public class DeliveryMonitoringService {
         position.setRecordedAt(request.getRecordedAt());
         positionRepo.save(position);
 
-        return "Position updated successfully for delivery ID: " + request.getDeliveryId();
+        return "Position recorded successfully for delivery ID: " + delivery.getId();
     }
 
     // get detail of a delivery
-    // get /delivery/detail/{deliveryId}
-    public DeliveryDetailResponse getDeliveryDetail(String deliveryId) {
-        Delivery delivery = deliveryRepo.findById(deliveryId)
+    // get /delivery/detail/
+    public DeliveryDetailResponse getDeliveryDetail(String username) {
+        Delivery delivery = deliveryRepo.findByWorkerUsernameAndFinishedAtIsNull(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
 
         //MAPPING
@@ -219,7 +220,7 @@ public class DeliveryMonitoringService {
                 .licensePlate(delivery.getTrucks().getLicensePlate())
                 .model(delivery.getTrucks().getModel())
                 .cargoType(delivery.getTrucks().getCargoType())
-                .capacityKG(delivery.getTrucks().getCapacityKG())
+                .capacityKg(delivery.getTrucks().getCapacityKG())
                 .isAvailable(delivery.getTrucks().getIsAvailable())
                 .build();
 
@@ -249,7 +250,7 @@ public class DeliveryMonitoringService {
     }
 
 
-    // get all active deliveries
+    // get all active deliveries, nanti mungkin hanya owner yg bisa cek
     // get /delivery/active
     public List<DeliveryDetailResponse> getAllActiveDeliveries() {
         List<Delivery> activeDeliveries = deliveryRepo.findAllByFinishedAtIsNull();
@@ -275,7 +276,7 @@ public class DeliveryMonitoringService {
                             .licensePlate(delivery.getTrucks().getLicensePlate())
                             .model(delivery.getTrucks().getModel())
                             .cargoType(delivery.getTrucks().getCargoType())
-                            .capacityKG(delivery.getTrucks().getCapacityKG())
+                            .capacityKg(delivery.getTrucks().getCapacityKG())
                             .isAvailable(delivery.getTrucks().getIsAvailable())
                             .build();
 
@@ -306,14 +307,14 @@ public class DeliveryMonitoringService {
     }
 
 
-    // get all position of a deliveryId
-    // get /delivery/position/{deliveryId}
-    public List<PositionResponse> getPositions(String deliveryId) {
+    // get all position of a
+    // get /delivery/position
+    public List<PositionResponse> getPositions(String username) {
 
-        deliveryRepo.findById(deliveryId)
+        Delivery delivery = deliveryRepo.findByWorkerUsernameAndFinishedAtIsNull(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
 
-        List<Position> positions = positionRepo.findAllByDeliveryId(deliveryId);
+        List<Position> positions = positionRepo.findAllByDeliveryId(delivery.getId());
 
         return positions.stream()
                 .map(position -> PositionResponse.builder()
@@ -326,11 +327,11 @@ public class DeliveryMonitoringService {
 
     // get last deliveries position
     // get /delivery/position/{deliveryId}/last
-    public PositionResponse getLastPosition(String deliveryId) {
-        Delivery delivery = deliveryRepo.findById(deliveryId)
+    public PositionResponse getLastPosition(String username) {
+        Delivery delivery = deliveryRepo.findByWorkerUsernameAndFinishedAtIsNull(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
 
-        Position lastPosition = positionRepo.findTopByDeliveryIdOrderByRecordedAtDesc(deliveryId);
+        Position lastPosition = positionRepo.findTopByDeliveryIdOrderByRecordedAtDesc(delivery.getId());
 
         if (lastPosition == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No position found for this delivery");
@@ -340,60 +341,6 @@ public class DeliveryMonitoringService {
                 .latitude(lastPosition.getLatitude())
                 .longitude(lastPosition.getLongitude())
                 .recordedAt(lastPosition.getRecordedAt())
-                .build();
-    }
-
-    // user check apakah dia sedang delivery atau tidak
-    // get /delivery/check/{userId}
-    public DeliveryDetailResponse checkUserDelivery(String userId) {
-        User user = workerRepo.findByIdAndDeletedAtIsNull(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
-
-        Delivery delivery = deliveryRepo.findByWorkerIdAndFinishedAtIsNull(userId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No active delivery found for this user"));
-
-        //MAPPING
-        ProfileResponse profileResponse = ProfileResponse.builder()
-                .id(delivery.getWorker().getId())
-                .username(delivery.getWorker().getUsername())
-                .refreshToken(delivery.getWorker().getRefreshToken())
-                .email(delivery.getWorker().getEmail())
-                .role(delivery.getWorker().getRole())
-                .age(delivery.getWorker().getAge())
-                .phoneNumber(delivery.getWorker().getPhoneNumber())
-                .build();
-
-        TruckResponse truckResponse = TruckResponse.builder()
-                .id(delivery.getTrucks().getId())
-                .licensePlate(delivery.getTrucks().getLicensePlate())
-                .model(delivery.getTrucks().getModel())
-                .cargoType(delivery.getTrucks().getCargoType())
-                .capacityKG(delivery.getTrucks().getCapacityKG())
-                .isAvailable(delivery.getTrucks().getIsAvailable())
-                .build();
-
-        RouteResponse routeResponse = RouteResponse.builder()
-                .id(delivery.getRoute().getId())
-                .startCityName(delivery.getRoute().getStartCity().getName())
-                .endCityName(delivery.getRoute().getEndCity().getName())
-                .details(delivery.getRoute().getDetails())
-                .basePrice(delivery.getRoute().getBasePrice())
-                .distanceKM(delivery.getRoute().getDistanceKM())
-                .estimatedDurationHours(delivery.getRoute().getEstimatedDurationHours())
-                .isActive(delivery.getRoute().getIsActive())
-                .createdAt(delivery.getRoute().getCreatedAt())
-                .build();
-
-        //FINAL RESPONSE
-        return DeliveryDetailResponse.builder()
-                .id(delivery.getId())
-                .worker(profileResponse)
-                .truck(truckResponse)
-                .route(routeResponse)
-                .startedAt(delivery.getStartedAt())
-                .finishedAt(delivery.getFinishedAt())
-                .alerts(delivery.getAlerts())
-                .transits(delivery.getTransits())
                 .build();
     }
 
@@ -422,5 +369,8 @@ public class DeliveryMonitoringService {
 
         return "Transit added successfully for delivery ID: " + request.getDeliveryId();
     }
+
+    // menampilkan worker yang lagi ngangur
+    //
 
 }

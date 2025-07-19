@@ -19,7 +19,7 @@ public class TruckResponse {
 
     private String cargoType;
 
-    private double capacityKG;
+    private double capacityKg;
 
     private Boolean isAvailable;
 }
