@@ -1,4 +1,4 @@
-@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTI4NDIyNTUsImV4cCI6MTc1MjkyODY1NX0.QvQl4j7Lj5molgwI9TI3Qb-l6MKiVStnsTWe9sVfiQc
+@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTI5Mzg3MzAsImV4cCI6MTc1MzAyNTEzMH0.mF8GBr5eAlHVGr2ygvsSh4HHoNCoa22e9V4YpZ6tjFw
 
 ### login request to example server
 POST http://localhost:8080/auth/login
@@ -23,13 +23,13 @@ Accept: application/json
   "age": 19
 }
 
-### registration request to example server
+### validate token
 GET http://localhost:8080/auth/validate
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
-### registration request to example server
+### heeloo request to example server
 GET http://localhost:8080/api/hello
 Content-Type: application/json
 Accept: application/json
@@ -272,5 +272,77 @@ DELETE http://localhost:8080/api/transit-points/1
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
+
+
+###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### CREATE DELIVERY
+POST http://localhost:8080/api/delivery
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "truck_id": "9e83aa03-2e73-477d-8a6e-2a39c062fd47",
+  "route_id": "207f12cc-316e-48b2-9237-2b7f7e5a8760"
+}
+
+### get detail this delivery
+GET http://localhost:8080/api/delivery/detail
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+
+### FINISHED CURENNT DELIVERY
+PATCH http://localhost:8080/api/delivery/finish
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+
+### user send delivery position
+POST http://localhost:8080/api/delivery/position
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+    "latitude": -6.2088,
+    "longitude": 106.8456,
+    "recorded_at": 1752938999
+}
+
+### user current get last positon
+GET http://localhost:8080/api/delivery/positions/latest
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+
+### actualy onlu for admin do this get all delivery active ------------------- below
+
+###  request make  transit
+POST http://localhost:8080/api/delivery/transit
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "delivery_id": "6f66d439-3549-4080-9e3c-804b7aced61c",
+  "transit_point_id": 2
+}
+
+###
+GET http://localhost:8080/api/delivery/active
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### get position delivery by  uuid, in dari record terbaru baru ke terlama
+GET http://localhost:8080/api/delivery/positions/6f66d439-3549-4080-9e3c-804b7aced61c
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
 
 

@@ -14,7 +14,7 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
 
 //    Position getCreatedAt(String truckId) ;
 
-    List<Position> findAllByDeliveryId(String deliveryId);
+    List<Position> findAllByDeliveryIdOrderByRecordedAtDesc(String deliveryId);
 
     Position findTopByDeliveryIdOrderByRecordedAtDesc(String deliveryId);
 

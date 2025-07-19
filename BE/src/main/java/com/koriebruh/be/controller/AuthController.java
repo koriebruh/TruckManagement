@@ -1,6 +1,7 @@
 package com.koriebruh.be.controller;
 
 
+import com.koriebruh.be.config.ApiStandardErrors;
 import com.koriebruh.be.dto.LoginRequest;
 import com.koriebruh.be.dto.LoginResponse;
 import com.koriebruh.be.dto.RegisterRequest;
@@ -17,6 +18,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/auth/")
+@ApiStandardErrors
 public class AuthController {
 
     @Autowired
@@ -61,15 +63,15 @@ public class AuthController {
         /* Check if the Authorization header is present and starts with "Bearer "
          *Authorization: Bearer <token>
          */
-        if(authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Authorization header is missing or invalid");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authorization header is missing or invalid");
         }
 
         String token = authHeader.substring(7);
         String username = jwtUtil.getUsernameFromToken(token);
 
         if (!jwtUtil.validateToken(token, username)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Token is invalid");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is invalid");
         }
         return ResponseEntity.status(HttpStatus.OK).body(
                 WebResponse.<String>builder()

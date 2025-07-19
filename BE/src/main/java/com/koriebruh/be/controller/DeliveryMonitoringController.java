@@ -89,8 +89,6 @@ public class DeliveryMonitoringController {
             produces = "application/json"
     )
     public ResponseEntity<WebResponse<List<DeliveryDetailResponse>>> getActiveDeliveries() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
 
         List<DeliveryDetailResponse> activeDeliveries = deliveryMonitoringService.getAllActiveDeliveries();
         return ResponseEntity.ok(
@@ -101,14 +99,12 @@ public class DeliveryMonitoringController {
         );
     }
 
-    @GetMapping(value = "/positions",
+    @GetMapping(value = "/positions/{deliveryId}",
             produces = "application/json"
     )
-    public ResponseEntity<WebResponse<List<PositionResponse>>> getPositions() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+    public ResponseEntity<WebResponse<List<PositionResponse>>> getPositions(@PathVariable String deliveryId) {
+        List<PositionResponse> positions = deliveryMonitoringService.getPositions(deliveryId);
 
-        List<PositionResponse> positions = deliveryMonitoringService.getPositions(username);
         return ResponseEntity.ok(
                 WebResponse.<List<PositionResponse>>builder()
                         .status("OK")

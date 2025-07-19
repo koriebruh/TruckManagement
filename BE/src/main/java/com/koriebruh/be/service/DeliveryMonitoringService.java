@@ -167,11 +167,7 @@ public class DeliveryMonitoringService {
     // post /delivery/finish/{deliveryId}
     public String finishDelivery(String username) {
         Delivery delivery = deliveryRepo.findByWorkerUsernameAndFinishedAtIsNull(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
-
-        if (delivery.getFinishedAt() != null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Delivery has already been finished");
-        }
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery has already been finished"));
 
         delivery.setFinishedAt(Instant.now().getEpochSecond());
         deliveryRepo.save(delivery);
@@ -202,7 +198,7 @@ public class DeliveryMonitoringService {
     // get /delivery/detail/
     public DeliveryDetailResponse getDeliveryDetail(String username) {
         Delivery delivery = deliveryRepo.findByWorkerUsernameAndFinishedAtIsNull(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "right now you don't have any active delivery"));
 
         //MAPPING
         ProfileResponse profileResponse = ProfileResponse.builder()
@@ -309,12 +305,9 @@ public class DeliveryMonitoringService {
 
     // get all position of a
     // get /delivery/position
-    public List<PositionResponse> getPositions(String username) {
+    public List<PositionResponse> getPositions(String deliveryId) {
 
-        Delivery delivery = deliveryRepo.findByWorkerUsernameAndFinishedAtIsNull(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
-
-        List<Position> positions = positionRepo.findAllByDeliveryId(delivery.getId());
+        List<Position> positions = positionRepo.findAllByDeliveryIdOrderByRecordedAtDesc(deliveryId);
 
         return positions.stream()
                 .map(position -> PositionResponse.builder()
@@ -329,13 +322,9 @@ public class DeliveryMonitoringService {
     // get /delivery/position/{deliveryId}/last
     public PositionResponse getLastPosition(String username) {
         Delivery delivery = deliveryRepo.findByWorkerUsernameAndFinishedAtIsNull(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Delivery not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No position found for this delivery bcs delivery has already finished"));
 
         Position lastPosition = positionRepo.findTopByDeliveryIdOrderByRecordedAtDesc(delivery.getId());
-
-        if (lastPosition == null) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No position found for this delivery");
-        }
 
         return PositionResponse.builder()
                 .latitude(lastPosition.getLatitude())
