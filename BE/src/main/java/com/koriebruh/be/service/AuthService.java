@@ -103,4 +103,15 @@ public class AuthService {
         result.setTokenType("Bearer");
         return result;
     }
+
+
+    public String getRole(String username) {
+        Optional<User> userOps = userRepository.findByUsernameAndDeletedAtIsNull(username);
+        if (userOps.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
+        }
+        return userOps.get().getRole();
+    }
+
+
 }

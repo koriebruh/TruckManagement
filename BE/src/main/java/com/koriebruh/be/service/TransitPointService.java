@@ -3,7 +3,9 @@ package com.koriebruh.be.service;
 
 import com.koriebruh.be.dto.TransitPointRequest;
 import com.koriebruh.be.dto.TransitPointResponse;
+import com.koriebruh.be.entity.City;
 import com.koriebruh.be.entity.TransitPoint;
+import com.koriebruh.be.repository.CityRepository;
 import com.koriebruh.be.repository.TransitPointRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,6 +21,10 @@ public class TransitPointService {
     @Autowired
     private TransitPointRepository transitPointRepository;
 
+
+    @Autowired
+    private CityRepository cityRepository;
+
     @Autowired
     private ValidationService validationService;
 
@@ -32,12 +38,17 @@ public class TransitPointService {
     public String createTransitPoint(TransitPointRequest request) {
         validationService.validate(request);
 
+        City loadingCity = cityRepository.findById(request.getLoadingCityId()).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Loading City not found with id: " + request.getLoadingCityId()));
+
+        City unloadingCity = cityRepository.findById(request.getUnloadingCityId()).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Unloading City not found with id: " + request.getUnloadingCityId()));
+
         TransitPoint transitPoint = new TransitPoint();
-        transitPoint.setCityName(request.getCityName());
+        transitPoint.setLoadingCity(loadingCity);
+        transitPoint.setUnloadingCity(unloadingCity);
         transitPoint.setEstimatedDurationMinute(request.getEstimatedDurationMinute());
         transitPoint.setExtraCost(request.getExtraCost());
-        transitPoint.setLatitude(request.getLatitude());
-        transitPoint.setLongitude(request.getLongitude());
         transitPoint.setCreatedAt(Instant.now().toEpochMilli());
         transitPoint.setDeletedAt(null); // Assuming null means not deleted
         transitPointRepository.save(transitPoint);
@@ -51,12 +62,17 @@ public class TransitPointService {
         TransitPoint existingTransitPoint = transitPointRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Transit Point not found with id: " + id));
 
+        City loadingCity = cityRepository.findById(request.getLoadingCityId()).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Loading City not found with id: " + request.getLoadingCityId()));
+
+        City unloadingCity = cityRepository.findById(request.getUnloadingCityId()).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Unloading City not found with id: " + request.getUnloadingCityId()));
+
         // Update fields
-        existingTransitPoint.setCityName(request.getCityName());
+        existingTransitPoint.setLoadingCity(loadingCity);
+        existingTransitPoint.setUnloadingCity(unloadingCity);
         existingTransitPoint.setEstimatedDurationMinute(request.getEstimatedDurationMinute());
         existingTransitPoint.setExtraCost(request.getExtraCost());
-        existingTransitPoint.setLatitude(request.getLatitude());
-        existingTransitPoint.setLongitude(request.getLongitude());
         transitPointRepository.save(existingTransitPoint);
 
         return "Transit Point updated successfully";
@@ -78,11 +94,11 @@ public class TransitPointService {
         return transitPoints.stream()
                 .map(tp -> new TransitPointResponse(
                         tp.getId(),
-                        tp.getCityName(),
+                        tp.getLoadingCity().getId(),
+                        tp.getUnloadingCity().getId(),
                         tp.getEstimatedDurationMinute(),
-                        tp.getExtraCost(),
-                        tp.getLatitude(),
-                        tp.getLongitude()))
+                        tp.getExtraCost()
+                ))
                 .toList();
     }
 

@@ -1,4 +1,4 @@
-@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTI5Mzg3MzAsImV4cCI6MTc1MzAyNTEzMH0.mF8GBr5eAlHVGr2ygvsSh4HHoNCoa22e9V4YpZ6tjFw
+@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTI5ODk4NzksImV4cCI6MTc1MzA3NjI3OX0.Zoa7TXEGYOyfZJh7AmVEbn2TvP9N7r_1gYmJV0EXNfg
 
 ### login request to example server
 POST http://localhost:8080/auth/login
@@ -7,7 +7,7 @@ Accept: application/json
 
 {
   "username": "bunderess",
-  "password": "newSecurePass456"
+  "password": "admin1234#"
 }
 
 ### registration request to example server
@@ -23,7 +23,7 @@ Accept: application/json
   "age": 19
 }
 
-### validate token
+### validate token for get role
 GET http://localhost:8080/auth/validate
 Content-Type: application/json
 Accept: application/json
@@ -199,7 +199,7 @@ Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 ### GET CITY BY ID
-GET http://localhost:8080/api/cities/51
+GET http://localhost:8080/api/cities/1
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
@@ -245,26 +245,25 @@ Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "city_name": "Jakarta",
-  "estimated_duration_minute": 30,
-  "extra_cost": 15000.0,
-  "latitude": -6.2088,
-  "longitude": 106.8456
+  "loading_city_id": 2,
+  "unloading_city_id": 1,
+  "estimated_duration_minute": 180,
+  "extra_cost": 50000.0
 }
 
 
+
 ### UPDATE TRANSIT POINT
-PUT http://localhost:8080/api/transit-points/1
+PUT http://localhost:8080/api/transit-points/2
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "city_name": "suroboyooo",
-  "estimated_duration_minute": 30,
-  "extra_cost": 15000.0,
-  "latitude": -6.2088,
-  "longitude": 106.8456
+  "loading_city_id": 1,
+  "unloading_city_id": 2,
+  "estimated_duration_minute": 20,
+  "extra_cost": 700000.0
 }
 
 ### GET TRANSIT POINT by ID

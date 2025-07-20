@@ -18,16 +18,18 @@ public class TransitPoint {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String cityName;
+    @ManyToOne
+    @JoinColumn(name = "loading_city_id", referencedColumnName = "id", nullable = false)
+    private City loadingCity;
+
+    @ManyToOne
+    @JoinColumn(name = "unloading_city_id", referencedColumnName = "id", nullable = false)
+    private City unloadingCity;
 
     // estimation duration IN this location
     private Long estimatedDurationMinute;
 
     private Double extraCost;
-
-    private Double latitude;
-
-    private Double longitude;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Long createdAt;
