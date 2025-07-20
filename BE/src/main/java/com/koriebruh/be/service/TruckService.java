@@ -32,7 +32,7 @@ public class TruckService {
         newTruck.setLicensePlate(request.getLicensePlate());
         newTruck.setModel(request.getModel());
         newTruck.setCargoType(request.getCargoType());
-        newTruck.setCapacityKG(request.getCapacityKG());
+        newTruck.setCapacityKG(request.getCapacityKg());
         newTruck.setIsAvailable(request.getIsAvailable());
         truckRepository.save(newTruck);
 
@@ -48,7 +48,7 @@ public class TruckService {
         existingTruck.setLicensePlate(request.getLicensePlate());
         existingTruck.setModel(request.getModel());
         existingTruck.setCargoType(request.getCargoType());
-        existingTruck.setCapacityKG(request.getCapacityKG());
+        existingTruck.setCapacityKG(request.getCapacityKg());
         existingTruck.setIsAvailable(request.getIsAvailable());
         truckRepository.save(existingTruck);
 
@@ -93,7 +93,7 @@ public class TruckService {
                         .licensePlate(truck.getLicensePlate())
                         .model(truck.getModel())
                         .cargoType(truck.getCargoType())
-                        .capacityKG(truck.getCapacityKG())
+                        .capacityKg(truck.getCapacityKG())
                         .isAvailable(truck.getIsAvailable())
                         .build())
                 .toList();
@@ -109,7 +109,7 @@ public class TruckService {
                         .licensePlate(truck.getLicensePlate())
                         .model(truck.getModel())
                         .cargoType(truck.getCargoType())
-                        .capacityKG(truck.getCapacityKG())
+                        .capacityKg(truck.getCapacityKG())
                         .isAvailable(truck.getIsAvailable())
                         .build())
                 .toList();

@@ -7,4 +7,5 @@ public interface DeliveryTransitRepository  extends JpaRepository<DeliveryTransi
 
     // Additional query methods can be defined here if needed
     // For example, to find deliveries by status, date, or other criteria
+    DeliveryTransit findTopByDeliveryIdOrderByArrivedAtDesc(String deliveryId);
 }

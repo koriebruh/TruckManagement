@@ -1,5 +1,4 @@
-@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTI4MTEyMTgsImV4cCI6MTc1Mjg5NzYxOH0.FAAz19pGKJ-Ptic_U6XZIdxeXhlIuvQ8_ks0WhJyvHI
-
+@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTI5Mzg3MzAsImV4cCI6MTc1MzAyNTEzMH0.mF8GBr5eAlHVGr2ygvsSh4HHoNCoa22e9V4YpZ6tjFw
 
 ### login request to example server
 POST http://localhost:8080/auth/login
@@ -7,8 +6,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "jamalgantenk",
-  "password": "jamal123"
+  "username": "bunderess",
+  "password": "newSecurePass456"
 }
 
 ### registration request to example server
@@ -24,19 +23,64 @@ Accept: application/json
   "age": 19
 }
 
-### registration request to example server
+### validate token
 GET http://localhost:8080/auth/validate
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
-### registration request to example server
+### heeloo request to example server
 GET http://localhost:8080/api/hello
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
-###------------------------------------------------
+###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### get PROFILE
+GET http://localhost:8080/api/users/profile
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### update profile
+POST http://localhost:8080/api/users/profile
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "username": "bunderess",
+  "email": "bunderess4@gmail.com",
+  "phone_number": "321313990",
+  "age": 20
+}
+
+### update password
+PATCH http://localhost:8080/api/users/profile/password
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "current_password": "admin1234#",
+  "new_password": "newSecurePass456",
+  "confirm_password": "newSecurePass456"
+}
+
+### get all user is ready to use make delivery
+GET http://localhost:8080/api/users/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### get
+GET http://localhost:8080/api/users/96d6e8e7-655a-48ce-a0cf-031cdfc425a9
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 ### CREATE ROUTE
 POST http://localhost:8080/api/routes
@@ -94,7 +138,7 @@ Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "license_plate": "B12BI2",
+  "license_plate": "B12BI28",
   "model": "Toyota Hilux",
   "cargo_type": "furniture",
   "capacity_kg": 9000.0,
@@ -240,5 +284,82 @@ DELETE http://localhost:8080/api/transit-points/1
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
+
+
+###--------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### CREATE DELIVERY
+POST http://localhost:8080/api/delivery
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "truck_id": "9e83aa03-2e73-477d-8a6e-2a39c062fd47",
+  "route_id": "207f12cc-316e-48b2-9237-2b7f7e5a8760"
+}
+
+### get detail this delivery
+GET http://localhost:8080/api/delivery/detail
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+
+### FINISHED CURENNT DELIVERY
+PATCH http://localhost:8080/api/delivery/finish
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+
+### user send delivery position
+POST http://localhost:8080/api/delivery/position
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+    "latitude": -6.2088,
+    "longitude": 106.8456,
+    "recorded_at": 1752938999
+}
+
+### user current get last positon
+GET http://localhost:8080/api/delivery/positions/latest
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+
+### actualy onlu for admin do this get all delivery active ------------------- below
+###  request make  transit
+POST http://localhost:8080/api/delivery/transit
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "delivery_id": "6f66d439-3549-4080-9e3c-804b7aced61c",
+  "transit_point_id": 2
+}
+
+### mendapatkan semua id pengiriman yg aktif
+GET http://localhost:8080/api/delivery/active
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### mendapatkan detail delivery berdasarkan id_delivery
+GET http://localhost:8080/api/delivery/detail/6f66d439-3549-4080-9e3c-804b7aced61c
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
+### get position delivery by  uuid, in dari record terbaru baru ke terlama
+GET http://localhost:8080/api/delivery/positions/6f66d439-3549-4080-9e3c-804b7aced61c
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN}}
+
 
 

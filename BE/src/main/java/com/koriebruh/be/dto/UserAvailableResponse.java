@@ -1,25 +1,25 @@
 package com.koriebruh.be.dto;
 
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Data
 @Builder
-public class TruckResponse {
+public class UserAvailableResponse {
 
     private String id;
 
-    private String licensePlate;
+    private String username;
 
-    private String model;
+    private String email;
 
-    private String cargoType;
+    private String phoneNumber;
 
-    private double capacityKg;
+    private Long age;
 
-    private Boolean isAvailable;
 }

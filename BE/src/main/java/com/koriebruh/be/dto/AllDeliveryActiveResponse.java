@@ -1,21 +1,26 @@
 package com.koriebruh.be.dto;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import com.koriebruh.be.entity.DeliverAlert;
+import com.koriebruh.be.entity.DeliveryTransit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Builder
-public class DeliveryRequest {
+@Data
+public class AllDeliveryActiveResponse {
+    private String id;
 
-    @NotNull(message = "Truck ID must not be null")
+    private String workerId;
+
     private String truckId;
 
-    @NotNull(message = "Route ID must not be null")
     private String routeId;
+
+    private Long startedAt;
 }
