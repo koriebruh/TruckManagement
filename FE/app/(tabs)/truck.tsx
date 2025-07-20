@@ -12,12 +12,13 @@ import {
   ActivityIndicator,
   RefreshControl,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TruckList() {
   const router = useRouter();
   const { trucks, isLoading, error, deleteTruck, refetch, setMaintenanceTruck } =
     useTrucks();
-    
+    const insets = useSafeAreaInsets();
 
   const handleDelete = async (id: string) => {
     Alert.alert("Hapus Truk", "Apakah kamu yakin ingin menghapus truk ini?", [
@@ -111,6 +112,7 @@ export default function TruckList() {
 
       {/* Truck List */}
       <ScrollView
+        style={{ marginBottom: insets.bottom + 58}}
         className="flex-1"
         contentContainerStyle={{ padding: 16 }}
         refreshControl={
@@ -127,7 +129,7 @@ export default function TruckList() {
             </Text>
           </View>
         ) : (
-          <View className="space-y-4">
+          <View className="gap-4">
             {trucks.map((truck: Truck, index: number) => (
               <View
                 key={truck.id || index}

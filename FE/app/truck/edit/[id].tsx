@@ -15,166 +15,132 @@ import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function EditTruckForm() {
-  const { updateTruck, fetchTruckById } = useTrucks();
-  const { id } = useLocalSearchParams<{ id: string }>();
-  const router = useRouter();
-  const insets = useSafeAreaInsets();
+   const { updateTruck, fetchTruckById } = useTrucks();
+   const { id } = useLocalSearchParams<{ id: string }>();
+   const router = useRouter();
+   const insets = useSafeAreaInsets();
 
-  const [form, setForm] = useState({
-    licensePlate: "",
-    model: "",
-    cargoType: "",
-    capacityKG: "",
-    isAvailable: true,
-  });
+   const [form, setForm] = useState({
+     license_plate: "",
+     model: "",
+     cargo_type: "",
+     capacity_kg: "",
+     is_available: true,
+   });
 
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+   const [error, setError] = useState("");
+   const [loading, setLoading] = useState(true);
+   const [submitting, setSubmitting] = useState(false);
 
-  useEffect(() => {
-    const loadTruck = async () => {
-      if (!id) {
-        setError("ID truk tidak ditemukan.");
-        setLoading(false);
-        return;
-      }
+   useEffect(() => {
+     const loadTruck = async () => {
+       if (!id) {
+         setError("ID truk tidak ditemukan.");
+         setLoading(false);
+         return;
+       }
 
-      try {
-        setLoading(true);
-        console.log("🔍 Fetching truck with ID:", id);
-        const truck = await fetchTruckById(id);
-        console.log("📦 Truck data received:", truck);
+       try {
+         setLoading(true);
+         const truck = await fetchTruckById(id);
 
-        setForm({
-          licensePlate: truck.license_plate || "",
-          model: truck.model || "",
-          cargoType: truck.cargo_type || "",
-          capacityKG: truck.capacity_kg?.toString() || "",
-          isAvailable: truck.is_available ?? true,
-        });
-        setError("");
-      } catch (err: any) {
-        console.error("❌ Error fetching truck:", err);
-        setError(err.message || "Gagal memuat data truk.");
-      } finally {
-        setLoading(false);
-      }
-    };
+           if (!truck) {
+             throw new Error("Data truk tidak ditemukan.");
+           }
 
-    loadTruck();
-  }, [id]);
 
-  const handleChange = (key: keyof typeof form, value: string | boolean) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
-    // Clear error ketika user mulai mengetik
-    if (error) setError("");
-  };
+         setForm({
+           license_plate: truck.license_plate || "",
+           model: truck.model || "",
+           cargo_type: truck.cargo_type || "",
+           capacity_kg: truck.capacity_kg?.toString() || "",
+           is_available: truck.is_available ?? true,
+         });
+         setError("");
+       } catch (err: any) {
+         setError(err.message || "Gagal memuat data truk.");
+       } finally {
+         setLoading(false);
+       }
+     };
 
-  const handleSubmit = async () => {
-    // Validasi input dengan trim
-    const licensePlate = form.licensePlate.trim();
-    const model = form.model.trim();
-    const cargoType = form.cargoType.trim();
-    const capacityKG = form.capacityKG.trim();
+     loadTruck();
+   }, [id]);
 
-    if (!licensePlate || !model || !cargoType || !capacityKG) {
-      setError("Semua kolom wajib diisi.");
-      return;
-    }
+   const handleChange = (key: keyof typeof form, value: string | boolean) => {
+     setForm((prev) => ({ ...prev, [key]: value }));
+     if (error) setError("");
+   };
 
-    // Validasi panjang string sesuai constraint backend
-    if (licensePlate.length > 20) {
-      setError("Nomor plat tidak boleh lebih dari 20 karakter.");
-      return;
-    }
+   const handleSubmit = async () => {
+     const license_plate = form.license_plate.trim();
+     const model = form.model.trim();
+     const cargo_type = form.cargo_type.trim();
+     const capacity_kg = form.capacity_kg.trim();
 
-    if (model.length > 50) {
-      setError("Model tidak boleh lebih dari 50 karakter.");
-      return;
-    }
+     if (!license_plate || !model || !cargo_type || !capacity_kg) {
+       setError("Semua kolom wajib diisi.");
+       return;
+     }
 
-    if (cargoType.length > 100) {
-      setError("Jenis muatan tidak boleh lebih dari 100 karakter.");
-      return;
-    }
+     if (license_plate.length > 20) {
+       setError("Nomor plat tidak boleh lebih dari 20 karakter.");
+       return;
+     }
 
-    // Validasi kapasitas harus berupa angka positif
-    const capacity = parseFloat(capacityKG);
-    if (isNaN(capacity) || capacity <= 0) {
-      setError(
-        "Kapasitas harus berupa angka yang valid dan lebih besar dari 0."
-      );
-      return;
-    }
+     if (model.length > 50) {
+       setError("Model tidak boleh lebih dari 50 karakter.");
+       return;
+     }
 
-    if (capacity > 100000) {
-      setError("Kapasitas tidak boleh lebih dari 100,000 kg.");
-      return;
-    }
+     if (cargo_type.length > 100) {
+       setError("Jenis muatan tidak boleh lebih dari 100 karakter.");
+       return;
+     }
 
-    setSubmitting(true);
-    setError("");
+     const capacity = parseFloat(capacity_kg);
+     if (isNaN(capacity) || capacity <= 0) {
+       setError(
+         "Kapasitas harus berupa angka yang valid dan lebih besar dari 0."
+       );
+       return;
+     }
 
-    try {
-      const payload = {
-        license_plate: licensePlate,
-        model: model,
-        cargo_type: cargoType,
-        capacity_kg: capacity,
-        is_available: form.isAvailable,
-      };
+     if (capacity > 100000) {
+       setError("Kapasitas tidak boleh lebih dari 100,000 kg.");
+       return;
+     }
 
-      console.log(
-        "🚚 Updating truck with payload:",
-        JSON.stringify(payload, null, 2)
-      );
+     setSubmitting(true);
+     setError("");
 
-      await updateTruck(id, payload);
+     try {
+       const payload = {
+         license_plate,
+         model,
+         cargo_type,
+         capacity_kg: capacity,
+         is_available: form.is_available,
+       };
 
-      Alert.alert("Sukses", "Truk berhasil diperbarui.", [
-        {
-          text: "OK",
-          onPress: () => router.back(),
-        },
-      ]);
-    } catch (err: any) {
-      console.error("❌ Error updating truck:", err);
-      const errorMessage = err.message || "Gagal mengupdate truk.";
-      setError(errorMessage);
-      Alert.alert("Error", errorMessage);
-    } finally {
-      setSubmitting(false);
-    }
-  };
+       console.log({payload});
 
-  // Loading state
-  if (loading) {
-    return (
-      <View style={{ paddingTop: insets.top }} className="flex-1 justify-center items-center bg-gradient-to-br from-slate-50 to-gray-100">
-        <ActivityIndicator size="large" color="#3B82F6" />
-        <Text className="mt-4 text-gray-600 text-lg">Memuat data truk...</Text>
-      </View>
-    );
-  }
+       await updateTruck({ truck_id: id, truck: payload });
 
-  // Error state
-  if (error && !form.licensePlate) {
-    return (
-      <View style={{ paddingTop: insets.top }} className="flex-1 justify-center items-center bg-gradient-to-br from-slate-50 to-gray-100 px-6">
-        <Ionicons name="alert-circle-outline" size={64} color="#EF4444" />
-        <Text className="mt-4 text-xl font-semibold text-gray-900 text-center">
-          Terjadi Kesalahan
-        </Text>
-        <Text className="mt-2 text-gray-600 text-center">{error}</Text>
-        <TouchableOpacity
-          className="mt-6 px-6 py-3 bg-blue-500 rounded-lg"
-          onPress={() => router.back()}>
-          <Text className="text-white font-semibold">Kembali</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
+       Alert.alert("Sukses", "Truk berhasil diperbarui.", [
+         {
+           text: "OK",
+           onPress: () => router.back(),
+         },
+       ]);
+     } catch (err: any) {
+       const errorMessage = err.message || "Gagal mengupdate truk.";
+       setError(errorMessage);
+       Alert.alert("Error", errorMessage);
+     } finally {
+       setSubmitting(false);
+     }
+   };
 
   return (
     <ScrollView style={{ paddingTop: insets.top, paddingBottom: insets.bottom }} className="flex-1 bg-gradient-to-br from-slate-50 to-gray-100">
@@ -193,7 +159,7 @@ export default function EditTruckForm() {
                 Edit Truk
               </Text>
               <Text className="text-base text-gray-500 font-light">
-                Perbarui informasi truk {form.licensePlate}
+                Perbarui informasi truk {form.license_plate}
               </Text>
             </View>
           </View>
@@ -208,8 +174,8 @@ export default function EditTruckForm() {
             </Text>
             <TextInput
               className="h-14 bg-gray-50 border border-gray-200 rounded-xl px-4 text-gray-800 text-base focus:border-blue-500 focus:bg-white"
-              value={form.licensePlate}
-              onChangeText={(text) => handleChange("licensePlate", text)}
+              value={form.license_plate}
+              onChangeText={(text) => handleChange("license_plate", text)}
               placeholder="B 1234 CD"
               placeholderTextColor="#9CA3AF"
               autoCapitalize="characters"
@@ -248,8 +214,8 @@ export default function EditTruckForm() {
             </Text>
             <TextInput
               className="h-14 bg-gray-50 border border-gray-200 rounded-xl px-4 text-gray-800 text-base focus:border-blue-500 focus:bg-white"
-              value={form.cargoType}
-              onChangeText={(text) => handleChange("cargoType", text)}
+              value={form.cargo_type}
+              onChangeText={(text) => handleChange("cargo_type", text)}
               placeholder="Barang Umum, Bahan Kimia, dll"
               placeholderTextColor="#9CA3AF"
               autoCapitalize="words"
@@ -269,10 +235,10 @@ export default function EditTruckForm() {
             <TextInput
               keyboardType="numeric"
               className="h-14 bg-gray-50 border border-gray-200 rounded-xl px-4 text-gray-800 text-base focus:border-blue-500 focus:bg-white"
-              value={form.capacityKG}
+              value={form.capacity_kg.toString()}
               onChangeText={(text) => {
                 const numericText = text.replace(/[^0-9.]/g, "");
-                handleChange("capacityKG", numericText);
+                handleChange("capacity_kg", numericText);
               }}
               placeholder="10000"
               placeholderTextColor="#9CA3AF"
@@ -296,11 +262,11 @@ export default function EditTruckForm() {
               </View>
               <View className="flex-row items-center">
                 <Text className="text-sm text-gray-600 mr-3">
-                  {form.isAvailable ? "Tersedia" : "Tidak Tersedia"}
+                  {form.is_available ? "Tersedia" : "Tidak Tersedia"}
                 </Text>
                 <Switch
-                  value={form.isAvailable}
-                  onValueChange={(val) => handleChange("isAvailable", val)}
+                  value={form.is_available}
+                  onValueChange={(val) => handleChange("is_available", val)}
                   trackColor={{ false: "#D1D5DB", true: "#3B82F6" }}
                   thumbColor="#FFFFFF"
                   disabled={submitting}
