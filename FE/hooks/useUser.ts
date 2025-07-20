@@ -1,79 +1,89 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/services/axios";
-import { ProfileResponse, UpdatePasswordPayload, UpdateProfilePayload, UserAvailableResponse, UserResponse } from "@/types/user.types";
-import { useEffect, useState } from "react";
+import {
+  ProfileResponse,
+  UpdatePasswordPayload,
+  UpdateProfilePayload,
+  UserAvailableResponse,
+  UserResponse,
+} from "@/types/user.types";
+
+// Fetch profile user
+const fetchProfile = async (): Promise<ProfileResponse> => {
+  const { data } = await api.get("/api/users/profile");
+  return data.data;
+};
+
+// Update profile user
+const updateProfileRequest = async (
+  payload: UpdateProfilePayload
+): Promise<ProfileResponse> => {
+  const { data } = await api.post("/api/users/profile", payload);
+  return data.data;
+};
+
+// Update password
+const updatePasswordRequest = async (
+  payload: UpdatePasswordPayload
+): Promise<any> => {
+  const { data } = await api.patch("/api/users/profile/password", payload);
+  return data.data;
+};
+
+// Fetch user by ID
+const fetchUserById = async (userId: string): Promise<UserResponse> => {
+  const { data } = await api.get(`/api/users/${userId}`);
+  return data.data;
+};
+
+// Fetch all available users
+const fetchAvailableUsers = async (): Promise<UserAvailableResponse[]> => {
+  const { data } = await api.get("/api/users/available");
+  return data.data;
+};
 
 export function useUsers() {
-  const [profile, setProfile] = useState<ProfileResponse | null>(null);
-  const [availableUsers, setAvailableUsers] = useState<UserAvailableResponse[]>(
-    []
-  );
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchProfile = async () => {
-    setLoading(true);
-    try {
-      const { data } = await api.get("/api/users/profile");
-      setProfile(data.data);
-      setError(null);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {
+    data: profile,
+    isLoading,
+    isError,
+    refetch: refetchProfile,
+    error,
+  } = useQuery<ProfileResponse>({
+    queryKey: ["profile"],
+    queryFn: fetchProfile,
+  });
 
-  const updateProfile = async (payload: UpdateProfilePayload) => {
-    try {
-      const { data } = await api.post("/api/users/profile", payload);
-      setProfile(data.data);
-      return data.data;
-    } catch (err: any) {
-      throw new Error(err.message);
-    }
-  };
+  const { data: availableUsers, refetch: refetchAvailableUsers } = useQuery<
+    UserAvailableResponse[]
+  >({
+    queryKey: ["availableUsers"],
+    queryFn: fetchAvailableUsers,
+  });
 
-  const updatePassword = async (payload: UpdatePasswordPayload) => {
-    try {
-      const { data } = await api.patch("/api/users/profile/password", payload);
-      return data.data;
-    } catch (err: any) {
-      throw new Error(err.message);
-    }
-  };
+  const updateProfile = useMutation({
+    mutationFn: updateProfileRequest,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["profile"] });
+    },
+  });
 
-  const fetchAvailableUsers = async () => {
-    try {
-      const { data } = await api.get("/api/users/available");
-      setAvailableUsers(data.data);
-      return data.data;
-    } catch (err: any) {
-      throw new Error(err.message);
-    }
-  };
-
-  const fetchUserById = async (userId: string): Promise<UserResponse> => {
-    try {
-      const { data } = await api.get(`/api/users/${userId}`);
-      return data.data;
-    } catch (err: any) {
-      throw new Error(err.message);
-    }
-  };
-
-  useEffect(() => {
-    fetchProfile(); // otomatis fetch profile saat hook dipakai
-  }, []);
+  const updatePassword = useMutation({
+    mutationFn: updatePasswordRequest,
+  });
 
   return {
     profile,
     availableUsers,
-    loading,
+    isLoading,
+    isError,
     error,
-    fetchProfile,
-    updateProfile,
-    updatePassword,
-    fetchAvailableUsers,
+    refetchProfile,
+    refetchAvailableUsers,
+    updateProfile: updateProfile.mutateAsync,
+    updatePassword: updatePassword.mutateAsync,
     fetchUserById,
   };
 }
