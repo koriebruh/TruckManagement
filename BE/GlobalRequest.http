@@ -1,4 +1,5 @@
-@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTI5ODk4NzksImV4cCI6MTc1MzA3NjI3OX0.Zoa7TXEGYOyfZJh7AmVEbn2TvP9N7r_1gYmJV0EXNfg
+@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTMwMTU1MjcsImV4cCI6MTc1MzAxNjQyN30.lL79wpVOzDExbB9AD7YteTUM1CQMm0sypMMR2RUfZ7M
+
 
 ### login request to example server
 POST http://localhost:8080/auth/login
@@ -23,11 +24,24 @@ Accept: application/json
   "age": 19
 }
 
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTMwMTU1MjcsImV4cCI6MTc1MzAxNjQyN30.lL79wpVOzDExbB9AD7YteTUM1CQMm0sypMMR2RUfZ7M
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTMwMTU1MjcsImV4cCI6MTc1MzYyMDMyN30.00JULBmH0zSJagWsMustM_w3nv3uuQ9QWaoumsFUsFY
+### validate token for get role
+POST http://localhost:8080/auth/refresh-token
+Content-Type: application/json
+Accept: application/json
+
+{
+  "refresh_token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTMwMTU1MjcsImV4cCI6MTc1MzAxNjQyN30.lL79wpVOzDExbB9AD7YteTUM1CQMm0sypMMR2RUfZ7M"
+}
+
+
 ### validate token for get role
 GET http://localhost:8080/auth/validate
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
+
 
 ### heeloo request to example server
 GET http://localhost:8080/api/hello
@@ -89,9 +103,9 @@ Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "start_city_id": 3,
+  "start_city_id": 1,
   "end_city_id": 2,
-  "details": "Route of roadd boiii",
+  "details": "Route PP boi dieng dari apii ihh jakarta",
   "base_price": 150000.0,
   "is_active": true
 }

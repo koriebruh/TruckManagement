@@ -106,7 +106,6 @@ public class RoutesSeeder implements CommandLineRunner {
                 );
 
 
-
         for (CityRequest cityRequest : cityData) {
             boolean exists = cityRepository.existsByName(cityRequest.getName());
             if (!exists) {

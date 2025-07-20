@@ -69,9 +69,10 @@ public class UserService {
 
         user.setPhoneNumber(profileUpdate.getPhoneNumber());
         user.setAge(profileUpdate.getAge());
+        Long sevenDaysInMillis = 604800000L;
 
         if (!username.equals(profileUpdate.getUsername())) {
-            String refresh = jwtUtil.generateToken(user.getUsername(), 86400000L);
+            String refresh = jwtUtil.generateToken(user.getUsername(), sevenDaysInMillis);
             user.setRefreshToken(refresh);
         }
 

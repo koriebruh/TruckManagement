@@ -59,7 +59,7 @@ public class AuthController {
     @GetMapping(value = "/validate",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<WebResponse<ValidateResponse>>validatedToken(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<WebResponse<ValidateResponse>> validatedToken(@RequestHeader("Authorization") String authHeader) {
         /* Check if the Authorization header is present and starts with "Bearer "
          *Authorization: Bearer <token>
          */
@@ -85,6 +85,32 @@ public class AuthController {
                 WebResponse.<ValidateResponse>builder()
                         .status("OK")
                         .data(validateResponse)
+                        .build()
+        );
+    }
+
+    @PostMapping(value = "/refresh-token",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<WebResponse<RefreshTokenResponse>> RefreshTokenGenerateAccessToken(@RequestBody @Valid RefreshTokenRequest request) {
+        /* Check if the Authorization header is present and starts with "Bearer "
+         *Authorization: Bearer <token>
+         */
+        String token = request.getRefreshToken();
+
+        String username = jwtUtil.getUsernameFromToken(token);
+
+        if (!jwtUtil.validateToken(token, username)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is invalid");
+        }
+
+        RefreshTokenResponse refreshTokenResponse = authService.getAccessToken(request);
+
+
+        return ResponseEntity.ok(
+                WebResponse.<RefreshTokenResponse>builder()
+                        .status("OK")
+                        .data(refreshTokenResponse)
                         .build()
         );
     }

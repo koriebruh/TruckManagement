@@ -1,8 +1,6 @@
 package com.koriebruh.be.service;
 
-import com.koriebruh.be.dto.LoginRequest;
-import com.koriebruh.be.dto.LoginResponse;
-import com.koriebruh.be.dto.RegisterRequest;
+import com.koriebruh.be.dto.*;
 import com.koriebruh.be.entity.User;
 import com.koriebruh.be.repository.UserRepository;
 import com.koriebruh.be.utils.Encrypt;
@@ -78,24 +76,26 @@ public class AuthService {
          * Generate access token baru setiap login
          * Kalau refresh token nggak valid, generate baru
          * */
+        Long sevenDaysInMillis = 604800000L; // 7 days in milliseconds
+        Long fifteenMillis = 900000L; // 15 minutes in milliseconds
         String refreshToken;
         try {
             if (user.getRefreshToken() != null && jwtUtil.validateToken(user.getRefreshToken(), user.getUsername())) {
                 refreshToken = user.getRefreshToken();
             } else {
-                refreshToken = jwtUtil.generateToken(user.getUsername(), 86400000L);
+                refreshToken = jwtUtil.generateToken(user.getUsername(), sevenDaysInMillis);
                 user.setRefreshToken(refreshToken);
                 userRepository.save(user);
             }
         } catch (ExpiredJwtException e) {
-            // Token lama expired, generate baru (1 day)
-            refreshToken = jwtUtil.generateToken(user.getUsername(), 86400000L);
+            // Token lama expired, generate baru (7 day)
+            refreshToken = jwtUtil.generateToken(user.getUsername(), sevenDaysInMillis);
             user.setRefreshToken(refreshToken);
             userRepository.save(user);
         }
 
         // Access token always generated fresh (15 minutes)
-        String accessToken = jwtUtil.generateToken(user.getUsername(), 900000L);
+        String accessToken = jwtUtil.generateToken(user.getUsername(), fifteenMillis);
 
         LoginResponse result = new LoginResponse();
         result.setAccessToken(accessToken);
@@ -103,7 +103,6 @@ public class AuthService {
         result.setTokenType("Bearer");
         return result;
     }
-
 
     public String getRole(String username) {
         Optional<User> userOps = userRepository.findByUsernameAndDeletedAtIsNull(username);
@@ -113,5 +112,26 @@ public class AuthService {
         return userOps.get().getRole();
     }
 
+    public RefreshTokenResponse getAccessToken(RefreshTokenRequest request) {
+        Long fifteenMillis = 900000L; // 15 minutes in milliseconds
+
+        Optional<User> userOps = userRepository.findByRefreshToken(request.getRefreshToken());
+        if (userOps.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Refresh token is not found");
+        }
+
+        User user = userOps.get();
+        if (user.getRefreshToken() == null || !jwtUtil.validateToken(user.getRefreshToken(), user.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token do login again");
+        }
+
+        // Generate new access token fresh 15 minutes
+        String tokenAccess = jwtUtil.generateToken(user.getUsername(), fifteenMillis);
+
+        // Return the new access token
+        return RefreshTokenResponse.builder()
+                .accessToken(tokenAccess)
+                .build();
+    }
 
 }
