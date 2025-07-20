@@ -8,7 +8,7 @@ const TruckList = ({ trackingData}: any) => {
 
   return (
     <View className="px-4">
-      {trackingData.map((item ) => (
+      {/* {trackingData.map((item ) => (
         <Pressable
           onPress={() => router.push(`/truck/${item.id}`)}
           key={item.id}
@@ -42,7 +42,7 @@ const TruckList = ({ trackingData}: any) => {
             <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
           </View>
         </Pressable>
-      ))}
+      ))} */}
     </View>
   );
 }

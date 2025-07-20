@@ -7,7 +7,7 @@ const TruckStats = ({ statsData} : any) => {
     const router = useRouter();
   return (
     <View className="px-4 py-4">
-      <View className="flex-row">
+      {/* <View className="flex-row">
         {statsData.map((stat, index) => (
           <Pressable
             key={index}
@@ -27,7 +27,7 @@ const TruckStats = ({ statsData} : any) => {
             </Text>
           </Pressable>
         ))}
-      </View>
+      </View> */}
     </View>
   );
 }

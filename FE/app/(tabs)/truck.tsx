@@ -15,7 +15,7 @@ import {
 
 export default function TruckList() {
   const router = useRouter();
-  const { trucks, loading, error, deleteTruck, refetch, setMaintenanceTruck } =
+  const { trucks, isLoading, error, deleteTruck, refetch, setMaintenanceTruck } =
     useTrucks();
     
 
@@ -59,7 +59,7 @@ export default function TruckList() {
     return isAvailable ? "Tersedia" : "Tidak Tersedia";
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <View className="flex-1 justify-center items-center bg-gray-50">
         <ActivityIndicator size="large" color="#3B82F6" />
@@ -114,7 +114,7 @@ export default function TruckList() {
         className="flex-1"
         contentContainerStyle={{ padding: 16 }}
         refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={refetch} />
+          <RefreshControl refreshing={isLoading} onRefresh={refetch} />
         }>
         {trucks.length === 0 ? (
           <View className="flex-1 justify-center items-center py-20">
