@@ -17,6 +17,7 @@ export default function TruckList() {
   const router = useRouter();
   const { trucks, loading, error, deleteTruck, refetch, setMaintenanceTruck } =
     useTrucks();
+    
 
   const handleDelete = async (id: string) => {
     Alert.alert("Hapus Truk", "Apakah kamu yakin ingin menghapus truk ini?", [
@@ -139,7 +140,7 @@ export default function TruckList() {
                         {truck.model}
                       </Text>
                       <Text className="text-sm text-gray-600 mt-1">
-                        {truck.cargo_type}
+                        {truck.license_plate}
                       </Text>
                     </View>
                     <View className="items-center">

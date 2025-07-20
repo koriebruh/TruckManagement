@@ -11,10 +11,12 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function CreateTruck() {
   const { createTruck } = useTrucks();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [form, setForm] = useState({
     licensePlate: "",
@@ -128,7 +130,7 @@ export default function CreateTruck() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-gradient-to-br from-slate-50 to-gray-100">
+    <ScrollView style={{ paddingTop: insets.top }} className="flex-1 bg-gradient-to-br from-slate-50 to-gray-100">
       <View className="flex-1 justify-center px-8 py-8">
         <View className="mb-8">
           <View className="flex-row items-center mb-4">
@@ -267,26 +269,6 @@ export default function CreateTruck() {
             }`}>
             <Text className="text-white font-semibold text-lg">
               {loading ? "Menyimpan..." : "Simpan"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-
-        {/* Back Link */}
-        <View className="items-center">
-          <TouchableOpacity
-            className="py-3 px-6"
-            onPress={() => router.back()}
-            disabled={loading}>
-            <Text
-              className={`text-center text-base ${
-                loading ? "text-gray-400" : "text-gray-600"
-              }`}>
-              <Text
-                className={`font-medium ${
-                  loading ? "text-gray-400" : "text-blue-600"
-                }`}>
-                Kembali ke Daftar Truk
-              </Text>
             </Text>
           </TouchableOpacity>
         </View>

@@ -12,11 +12,13 @@ import { useEffect, useState } from "react";
 import { useTrucks } from "@/hooks/useTrucks";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function EditTruckForm() {
   const { updateTruck, fetchTruckById } = useTrucks();
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [form, setForm] = useState({
     licensePlate: "",
@@ -45,11 +47,11 @@ export default function EditTruckForm() {
         console.log("📦 Truck data received:", truck);
 
         setForm({
-          licensePlate: truck.licensePlate || "",
+          licensePlate: truck.license_plate || "",
           model: truck.model || "",
-          cargoType: truck.cargoType || "",
-          capacityKG: truck.capacityKG?.toString() || "",
-          isAvailable: truck.isAvailable ?? true,
+          cargoType: truck.cargo_type || "",
+          capacityKG: truck.capacity_kg?.toString() || "",
+          isAvailable: truck.is_available ?? true,
         });
         setError("");
       } catch (err: any) {
@@ -116,11 +118,11 @@ export default function EditTruckForm() {
 
     try {
       const payload = {
-        licensePlate: licensePlate,
+        license_plate: licensePlate,
         model: model,
-        cargoType: cargoType,
-        capacityKG: capacity,
-        isAvailable: form.isAvailable,
+        cargo_type: cargoType,
+        capacity_kg: capacity,
+        is_available: form.isAvailable,
       };
 
       console.log(
@@ -149,7 +151,7 @@ export default function EditTruckForm() {
   // Loading state
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-gradient-to-br from-slate-50 to-gray-100">
+      <View style={{ paddingTop: insets.top }} className="flex-1 justify-center items-center bg-gradient-to-br from-slate-50 to-gray-100">
         <ActivityIndicator size="large" color="#3B82F6" />
         <Text className="mt-4 text-gray-600 text-lg">Memuat data truk...</Text>
       </View>
@@ -159,7 +161,7 @@ export default function EditTruckForm() {
   // Error state
   if (error && !form.licensePlate) {
     return (
-      <View className="flex-1 justify-center items-center bg-gradient-to-br from-slate-50 to-gray-100 px-6">
+      <View style={{ paddingTop: insets.top }} className="flex-1 justify-center items-center bg-gradient-to-br from-slate-50 to-gray-100 px-6">
         <Ionicons name="alert-circle-outline" size={64} color="#EF4444" />
         <Text className="mt-4 text-xl font-semibold text-gray-900 text-center">
           Terjadi Kesalahan
@@ -175,7 +177,7 @@ export default function EditTruckForm() {
   }
 
   return (
-    <ScrollView className="flex-1 bg-gradient-to-br from-slate-50 to-gray-100">
+    <ScrollView style={{ paddingTop: insets.top, paddingBottom: insets.bottom }} className="flex-1 bg-gradient-to-br from-slate-50 to-gray-100">
       <View className="flex-1 px-6 py-8">
         {/* Header */}
         <View className="mb-8">
@@ -338,42 +340,6 @@ export default function EditTruckForm() {
                 {submitting ? "Menyimpan..." : "Simpan Perubahan"}
               </Text>
             </View>
-          </TouchableOpacity>
-        </View>
-
-        {/* Info Card */}
-        <View className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6">
-          <View className="flex-row items-start">
-            <Ionicons name="information-circle" size={20} color="#3B82F6" />
-            <View className="ml-3 flex-1">
-              <Text className="text-sm font-medium text-blue-800 mb-1">
-                Informasi
-              </Text>
-              <Text className="text-xs text-blue-600 leading-relaxed">
-                Pastikan semua informasi yang dimasukkan sudah benar. Perubahan
-                akan langsung tersimpan dan mempengaruhi sistem pengiriman.
-              </Text>
-            </View>
-          </View>
-        </View>
-
-        {/* Back Link */}
-        <View className="items-center">
-          <TouchableOpacity
-            className="py-3 px-6"
-            onPress={() => router.back()}
-            disabled={submitting}>
-            <Text
-              className={`text-center text-base ${
-                submitting ? "text-gray-400" : "text-gray-600"
-              }`}>
-              <Text
-                className={`font-medium ${
-                  submitting ? "text-gray-400" : "text-blue-600"
-                }`}>
-                Kembali ke Daftar Truk
-              </Text>
-            </Text>
           </TouchableOpacity>
         </View>
       </View>

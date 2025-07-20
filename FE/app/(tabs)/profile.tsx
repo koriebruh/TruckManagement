@@ -91,7 +91,7 @@ const Profile = () => {
         {/* Action Buttons */}
         <View className="gap-4">
           <TouchableOpacity className="bg-blue-600 h-12 rounded-xl justify-center items-center shadow-sm active:bg-blue-700" onPress={() => {
-            router.push(`/profile/edit${profile?.id}`)
+            router.push(`/profile/edit/${profile?.id}`)
           }}>
             <Text className="text-white font-semibold text-base">
               Edit Profil
