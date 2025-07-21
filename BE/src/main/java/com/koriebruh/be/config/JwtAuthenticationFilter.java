@@ -1,5 +1,7 @@
 package com.koriebruh.be.config;
 
+import com.koriebruh.be.entity.User;
+import com.koriebruh.be.repository.UserRepository;
 import com.koriebruh.be.utils.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,6 +23,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -81,6 +86,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 response.getWriter().flush();
                 return;
             }
+        }
+
+        // validati token tidak boleh sama dengan token refrsh. yg ada di db
+        User user = userRepository.findByUsernameAndDeletedAtIsNull(username)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.getRefreshToken() != null && user.getRefreshToken().equals(token)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Refresh token cannot be used as access token\"}");
+            response.getWriter().flush();
+            return;
         }
 
         filterChain.doFilter(request, response);
