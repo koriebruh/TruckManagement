@@ -81,7 +81,7 @@ const Route = () => {
                     ? "bg-green-100 text-green-700"
                     : "bg-red-100 text-red-700"
                 }`}>
-                {item.isActive ? "Rute Aktif" : "Rute Nonaktif"}
+                {item.is_active ? "Rute Aktif" : "Rute Nonaktif"}
               </Text>
             </View>
 
