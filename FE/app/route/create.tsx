@@ -4,6 +4,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
+  Modal,
   ScrollView,
   Switch,
   Text,
@@ -13,7 +14,6 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useState } from "react";
-// ...import tetap sama
 
 export default function CreateRoute() {
   const { cities, isLoading: loadingCities } = useCities();
@@ -23,8 +23,8 @@ export default function CreateRoute() {
 
   const [searchStart, setSearchStart] = useState("");
   const [searchEnd, setSearchEnd] = useState("");
-  const [isStartOpen, setStartOpen] = useState(false);
-  const [isEndOpen, setEndOpen] = useState(false);
+  const [showStartModal, setShowStartModal] = useState(false);
+  const [showEndModal, setShowEndModal] = useState(false);
 
   const [form, setForm] = useState({
     startCityId: 0,
@@ -44,7 +44,6 @@ export default function CreateRoute() {
 
     try {
       setSubmitting(true);
-
       const payload = {
         start_city_id: form.startCityId,
         end_city_id: form.endCityId,
@@ -52,7 +51,6 @@ export default function CreateRoute() {
         base_price: form.basePrice,
         is_active: form.isActive,
       };
-
       await createRoute(payload);
       router.push("/(tabs)/route");
     } catch (e: any) {
@@ -66,62 +64,84 @@ export default function CreateRoute() {
     }
   };
 
-  const renderDropdown = (
+  const renderCityModal = (
     label: string,
     selectedId: number,
-    setId: (n: number) => void,
+    setId: (id: number) => void,
+    modalVisible: boolean,
+    setModalVisible: (visible: boolean) => void,
     search: string,
-    setSearch: (s: string) => void,
-    open: boolean,
-    setOpen: (b: boolean) => void
+    setSearch: (value: string) => void
   ) => (
-    <View className="mb-6 z-10">
+    <>
       <Text className="text-sm font-medium text-gray-700 mb-2">{label}</Text>
       <TouchableOpacity
-        onPress={() => setOpen((v) => !v)}
-        className="h-12 bg-gray-100 border border-gray-300 rounded-xl px-4 justify-center">
+        onPress={() => setModalVisible(true)}
+        className="h-12 bg-gray-100 border border-gray-300 rounded-xl px-4 justify-center mb-6">
         <Text className="text-gray-800">
           {selectedId
             ? cities?.find((c) => c.id === selectedId)?.name
             : "Pilih kota"}
         </Text>
       </TouchableOpacity>
-      {open && (
-        <View className="mt-2 bg-white border border-gray-300 rounded-xl p-2 max-h-48">
-          <TextInput
-            placeholder="Cari kota..."
-            value={search}
-            onChangeText={setSearch}
-            className="h-10 bg-gray-50 px-3 mb-2 rounded-md border border-gray-200"
-          />
-          {loadingCities ? (
-            <ActivityIndicator />
-          ) : (
-            cities
-              ?.filter((c) =>
-                c.name.toLowerCase().includes(search.toLowerCase())
-              )
-              .slice(0, 8)
-              .map((c) => (
-                <TouchableOpacity
-                  key={c.id}
-                  onPress={() => {
-                    setId(c.id);
-                    setOpen(false);
-                  }}
-                  className="px-3 py-2 rounded-md hover:bg-blue-50">
-                  <Text>{c.name}</Text>
-                </TouchableOpacity>
-              ))
-          )}
-        </View>
-      )}
-    </View>
+
+      <Modal
+        visible={modalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}>
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            backgroundColor: "#00000080",
+            justifyContent: "center",
+          }}
+          activeOpacity={1}
+          onPressOut={() => setModalVisible(false)}>
+          <View
+            style={{
+              margin: 20,
+              backgroundColor: "white",
+              borderRadius: 12,
+              padding: 16,
+              maxHeight: "60%",
+            }}>
+            <TextInput
+              placeholder="Cari kota..."
+              className="h-10 bg-gray-50 px-3 mb-4 rounded-md border border-gray-200"
+              onChangeText={setSearch}
+              value={search}
+            />
+            <ScrollView>
+              {loadingCities ? (
+                <ActivityIndicator />
+              ) : (
+                cities
+                  ?.filter((c) =>
+                    c.name.toLowerCase().includes(search.toLowerCase())
+                  )
+                  .map((city) => (
+                    <TouchableOpacity
+                      key={city.id}
+                      onPress={() => {
+                        setId(city.id);
+                        setModalVisible(false);
+                      }}
+                      className="px-3 py-2 rounded-md">
+                      <Text>{city.name}</Text>
+                    </TouchableOpacity>
+                  ))
+              )}
+            </ScrollView>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    </>
   );
 
   return (
     <ScrollView
-      style={{ paddingTop: insets.top }}
+      style={{ paddingTop: insets.top + 20 }}
       className="flex-1 bg-slate-50 px-6 pt-4">
       <View className="mb-6 flex-row items-center">
         <TouchableOpacity
@@ -133,23 +153,23 @@ export default function CreateRoute() {
       </View>
 
       <View className="bg-white rounded-2xl shadow-lg p-6">
-        {renderDropdown(
+        {renderCityModal(
           "Kota Awal",
           form.startCityId,
           (id) => setForm({ ...form, startCityId: id }),
+          showStartModal,
+          setShowStartModal,
           searchStart,
-          setSearchStart,
-          isStartOpen,
-          setStartOpen
+          setSearchStart
         )}
-        {renderDropdown(
+        {renderCityModal(
           "Kota Tujuan",
           form.endCityId,
           (id) => setForm({ ...form, endCityId: id }),
+          showEndModal,
+          setShowEndModal,
           searchEnd,
-          setSearchEnd,
-          isEndOpen,
-          setEndOpen
+          setSearchEnd
         )}
 
         <View className="mb-4">
@@ -166,7 +186,9 @@ export default function CreateRoute() {
           <Text className="mb-2">Harga Dasar</Text>
           <TextInput
             value={String(form.basePrice)}
-            onChangeText={(t) => setForm({ ...form, basePrice: Number(t) })}
+            onChangeText={(t) =>
+              setForm({ ...form, basePrice: Number(t.replace(/\D/g, "")) })
+            }
             placeholder="100000"
             keyboardType="numeric"
             className="h-12 bg-gray-100 rounded-xl px-4"

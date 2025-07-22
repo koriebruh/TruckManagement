@@ -1,113 +1,217 @@
+import { useCities } from "@/hooks/useCities";
+import { useRoutes } from "@/hooks/useRoutes";
+import { Ionicons } from "@expo/vector-icons";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import {
-  View,
+  ScrollView,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
-  ScrollView,
+  View,
   ActivityIndicator,
-  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useRoutes } from "@/hooks/useRoutes";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function EditRoutePage() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const router = useRouter();
   const { getRouteById, updateRoute } = useRoutes();
+  const { cities, isLoading: loadingCities } = useCities();
+  const router = useRouter();
+  const insets = useSafeAreaInsets();
 
   const [form, setForm] = useState({
-    startCityName: "",
-    endCityName: "",
+    startCityId: 0,
+    endCityId: 0,
     details: "",
-    distanceKM: "",
-    estimatedDurationHours: "",
-    basePrice: "",
+    basePrice: 0,
     isActive: true,
   });
 
+  const [searchStart, setSearchStart] = useState("");
+  const [searchEnd, setSearchEnd] = useState("");
+  const [isStartOpen, setStartOpen] = useState(false);
+  const [isEndOpen, setEndOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     if (id) {
       getRouteById(id)
         .then((data) => {
+          const start = cities.find((c) => c.name === data.start_city_name);
+          const end = cities.find((c) => c.name === data.end_city_name);
           setForm({
-            startCityName: data.startCityName,
-            endCityName: data.endCityName,
-            details: data.details,
-            distanceKM: String(data.distanceKM),
-            estimatedDurationHours: String(data.estimatedDurationHours),
-            basePrice: String(data.basePrice),
-            isActive: data.isActive,
+            startCityId: start?.id || 0,
+            endCityId: end?.id || 0,
+            details: data.details || "",
+            basePrice: data.base_price,
+            isActive: data.is_active,
           });
         })
         .finally(() => setLoading(false));
     }
-  }, [id]);
+  }, [id, cities]);
 
-  const handleUpdate = async () => {
+  const handleSubmit = async () => {
+    if (!form.startCityId || !form.endCityId) {
+      alert("Pilih kota awal dan tujuan");
+      return;
+    }
+
     try {
-      await updateRoute(id, {
-        ...form,
-        distanceKM: Number(form.distanceKM),
-        estimatedDurationHours: Number(form.estimatedDurationHours),
-        basePrice: Number(form.basePrice),
-      });
-      Alert.alert("Sukses", "Rute berhasil diperbarui");
+      setSubmitting(true);
+      const payload = {
+        start_city_id: form.startCityId,
+        end_city_id: form.endCityId,
+        details: form.details,
+        base_price: form.basePrice,
+        is_active: form.isActive,
+      };
+      await updateRoute(id, payload);
       router.back();
-    } catch (error) {
-      Alert.alert("Gagal", "Terjadi kesalahan saat memperbarui rute");
+    } catch (e: any) {
+      console.error(
+        "🚨 Gagal memperbarui rute:",
+        e.response?.data || e.message
+      );
+      alert(
+        "Error: " +
+          JSON.stringify(e.response?.data?.errors || e.message, null, 2)
+      );
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  if (loading) return <ActivityIndicator className="mt-10" size="large" />;
+  const renderDropdown = (
+    label: string,
+    selectedId: number,
+    setId: (n: number) => void,
+    search: string,
+    setSearch: (s: string) => void,
+    open: boolean,
+    setOpen: (b: boolean) => void
+  ) => (
+    <View className="mb-6 z-10" >
+      <Text className="text-sm font-medium text-gray-700 mb-2">{label}</Text>
+      <TouchableOpacity
+        onPress={() => setOpen((v) => !v)}
+        className="h-12 bg-gray-100 border border-gray-300 rounded-xl px-4 justify-center">
+        <Text className="text-gray-800">
+          {selectedId
+            ? cities?.find((c) => c.id === selectedId)?.name
+            : "Pilih kota"}
+        </Text>
+      </TouchableOpacity>
+      {open && (
+        <View className="mt-2 bg-white border border-gray-300 rounded-xl p-2 max-h-48">
+          <TextInput
+            placeholder="Cari kota..."
+            value={search}
+            onChangeText={setSearch}
+            className="h-10 bg-gray-50 px-3 mb-2 rounded-md border border-gray-200"
+          />
+          {loadingCities ? (
+            <ActivityIndicator />
+          ) : (
+            cities
+              ?.filter((c) =>
+                c.name.toLowerCase().includes(search.toLowerCase())
+              )
+              .slice(0, 8)
+              .map((c) => (
+                <TouchableOpacity
+                  key={c.id}
+                  onPress={() => {
+                    setId(c.id);
+                    setOpen(false);
+                  }}
+                  className="px-3 py-2 rounded-md hover:bg-blue-50">
+                  <Text>{c.name}</Text>
+                </TouchableOpacity>
+              ))
+          )}
+        </View>
+      )}
+    </View>
+  );
+
+  if (loading || loadingCities)
+    return <ActivityIndicator className="mt-10" size="large" />;
 
   return (
-    <ScrollView className="p-4">
-      <Text className="text-xl font-bold mb-4 text-center">Edit Rute</Text>
+    <ScrollView
+      style={{ marginTop: insets.top }}
+      className="flex-1 bg-slate-50 px-6 pt-4">
+      <View className="mb-6 flex-row items-center">
+        <TouchableOpacity
+          onPress={() => router.back()}
+          className="mr-4 p-2 rounded-full bg-white shadow">
+          <Ionicons name="arrow-back" size={24} color="#374151" />
+        </TouchableOpacity>
+        <Text className="text-2xl font-bold text-gray-800">Edit Rute</Text>
+      </View>
 
-      {[
-        { label: "Kota Awal", key: "startCityName" },
-        { label: "Kota Tujuan", key: "endCityName" },
-        { label: "Detail", key: "details" },
-        { label: "Jarak (KM)", key: "distanceKM", keyboardType: "numeric" },
-        {
-          label: "Durasi (Jam)",
-          key: "estimatedDurationHours",
-          keyboardType: "numeric",
-        },
-        { label: "Harga Dasar", key: "basePrice", keyboardType: "numeric" },
-      ].map(({ label, key, keyboardType }) => (
-        <View className="mb-4" key={key}>
-          <Text className="mb-1 font-semibold">{label}</Text>
+      <View className="bg-white rounded-2xl shadow-lg p-6">
+        {renderDropdown(
+          "Kota Awal",
+          form.startCityId,
+          (id) => setForm({ ...form, startCityId: id }),
+          searchStart,
+          setSearchStart,
+          isStartOpen,
+          setStartOpen
+        )}
+        {renderDropdown(
+          "Kota Tujuan",
+          form.endCityId,
+          (id) => setForm({ ...form, endCityId: id }),
+          searchEnd,
+          setSearchEnd,
+          isEndOpen,
+          setEndOpen
+        )}
+
+        <View className="mb-4">
+          <Text className="mb-2">Detail (opsional)</Text>
           <TextInput
-            value={form[key as keyof typeof form]}
-            onChangeText={(text) => setForm({ ...form, [key]: text })}
-            keyboardType={keyboardType}
-            className="border rounded-xl px-3 py-2 bg-white"
+            value={form.details}
+            onChangeText={(d) => setForm({ ...form, details: d })}
+            placeholder="Lewat tol, via A"
+            className="h-12 bg-gray-100 rounded-xl px-4"
           />
         </View>
-      ))}
 
-      {/* Toggle Status */}
-      <TouchableOpacity
-        className={`rounded-xl p-3 mb-4 ${
-          form.isActive ? "bg-green-100" : "bg-red-100"
-        }`}
-        onPress={() => setForm({ ...form, isActive: !form.isActive })}>
-        <Text className="text-center font-semibold">
-          {form.isActive ? "Rute Aktif" : "Rute Nonaktif"}
-        </Text>
-      </TouchableOpacity>
+        <View className="mb-4">
+          <Text className="mb-2">Harga Dasar</Text>
+          <TextInput
+            value={String(form.basePrice)}
+            onChangeText={(t) => setForm({ ...form, basePrice: Number(t) })}
+            placeholder="100000"
+            keyboardType="numeric"
+            className="h-12 bg-gray-100 rounded-xl px-4"
+          />
+        </View>
 
-      <TouchableOpacity
-        className="bg-blue-600 py-3 rounded-xl"
-        onPress={handleUpdate}>
-        <Text className="text-white text-center font-semibold">
-          Simpan Perubahan
-        </Text>
-      </TouchableOpacity>
+        <View className="flex-row justify-between items-center mb-6">
+          <Text className="text-sm font-medium text-gray-700">Aktif?</Text>
+          <Switch
+            value={form.isActive}
+            onValueChange={(v) => setForm({ ...form, isActive: v })}
+          />
+        </View>
+
+        <TouchableOpacity
+          className="bg-blue-600 py-4 rounded-xl"
+          onPress={handleSubmit}
+          disabled={submitting}>
+          <Text className="text-center text-white font-semibold text-base">
+            {submitting ? "Menyimpan..." : "Simpan Perubahan"}
+          </Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
