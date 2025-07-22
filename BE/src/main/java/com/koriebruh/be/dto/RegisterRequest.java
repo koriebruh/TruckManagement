@@ -1,5 +1,6 @@
 package com.koriebruh.be.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,6 +24,7 @@ public class RegisterRequest {
     @Email(message = "should contain email")
     private String email;
 
+    @JsonProperty("phoneNumber")
     @NotBlank(message = "phone number can't be blank")
     @Size(min = 8, max = 15, message = "length phone around 8 - 15 digit")
     private String phoneNumber;
