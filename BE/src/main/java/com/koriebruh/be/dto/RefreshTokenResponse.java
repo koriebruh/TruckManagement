@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
 @Builder
-public class ValidateResponse {
+@Data
+public class RefreshTokenResponse {
 
-    String message;
+    String accessToken;
 
-    String role;
 }

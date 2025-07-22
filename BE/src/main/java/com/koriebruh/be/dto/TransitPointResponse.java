@@ -14,15 +14,13 @@ public class TransitPointResponse {
 
     private Long id;
 
-    private String cityName;
+    private Long loadingCityId;
+
+    private Long unloadingCityId;
 
     // estimation duration IN this location
     private Long estimatedDurationMinute;
 
     private Double extraCost;
-
-    private Double latitude;
-
-    private Double longitude;
 
 }

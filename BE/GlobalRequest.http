@@ -1,4 +1,5 @@
-@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTI5Mzg3MzAsImV4cCI6MTc1MzAyNTEzMH0.mF8GBr5eAlHVGr2ygvsSh4HHoNCoa22e9V4YpZ6tjFw
+@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTMwODUyNjUsImV4cCI6MTc1MzA4NjE2NX0.jmo8fFbRE5_QNJmU8zWV0Z-tVril6FyjbzecsxdEm8o
+
 
 ### login request to example server
 POST http://localhost:8080/auth/login
@@ -7,7 +8,7 @@ Accept: application/json
 
 {
   "username": "bunderess",
-  "password": "newSecurePass456"
+  "password": "admin1234#"
 }
 
 ### registration request to example server
@@ -23,11 +24,24 @@ Accept: application/json
   "age": 19
 }
 
-### validate token
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTMwMTU1MjcsImV4cCI6MTc1MzAxNjQyN30.lL79wpVOzDExbB9AD7YteTUM1CQMm0sypMMR2RUfZ7M
+eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTMwMTU1MjcsImV4cCI6MTc1MzYyMDMyN30.00JULBmH0zSJagWsMustM_w3nv3uuQ9QWaoumsFUsFY
+### validate token for get role
+POST http://localhost:8080/auth/refresh-token
+Content-Type: application/json
+Accept: application/json
+
+{
+  "refresh_token": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTMwMTU1MjcsImV4cCI6MTc1MzAxNjQyN30.lL79wpVOzDExbB9AD7YteTUM1CQMm0sypMMR2RUfZ7M"
+}
+
+
+### validate token for get role
 GET http://localhost:8080/auth/validate
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
+
 
 ### heeloo request to example server
 GET http://localhost:8080/api/hello
@@ -89,9 +103,9 @@ Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "start_city_id": 3,
+  "start_city_id": 1,
   "end_city_id": 2,
-  "details": "Route of roadd boiii",
+  "details": "Route PP boi dieng dari apii ihh jakarta",
   "base_price": 150000.0,
   "is_active": true
 }
@@ -199,7 +213,7 @@ Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 ### GET CITY BY ID
-GET http://localhost:8080/api/cities/51
+GET http://localhost:8080/api/cities/1
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
@@ -245,26 +259,25 @@ Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "city_name": "Jakarta",
-  "estimated_duration_minute": 30,
-  "extra_cost": 15000.0,
-  "latitude": -6.2088,
-  "longitude": 106.8456
+  "loading_city_id": 2,
+  "unloading_city_id": 1,
+  "estimated_duration_minute": 180,
+  "extra_cost": 50000.0
 }
 
 
+
 ### UPDATE TRANSIT POINT
-PUT http://localhost:8080/api/transit-points/1
+PUT http://localhost:8080/api/transit-points/2
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "city_name": "suroboyooo",
-  "estimated_duration_minute": 30,
-  "extra_cost": 15000.0,
-  "latitude": -6.2088,
-  "longitude": 106.8456
+  "loading_city_id": 1,
+  "unloading_city_id": 2,
+  "estimated_duration_minute": 20,
+  "extra_cost": 700000.0
 }
 
 ### GET TRANSIT POINT by ID

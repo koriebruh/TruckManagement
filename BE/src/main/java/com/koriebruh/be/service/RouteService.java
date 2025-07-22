@@ -7,6 +7,7 @@ import com.koriebruh.be.entity.City;
 import com.koriebruh.be.entity.Route;
 import com.koriebruh.be.repository.CityRepository;
 import com.koriebruh.be.repository.RouteRepository;
+import com.koriebruh.be.utils.GeoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,13 +37,25 @@ public class RouteService {
         City endCity = cityRepository.findById(request.getEndCityId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "cant find end city with id: " + request.getEndCityId()));
 
-        /*NOTE NANTI DISINI ADA LOGIC COUNT DISTANCE DARI START CITY KE END CITY
-         *  SETRTA ESTIMATION DURATION BERDASARKAN JARAK, JADI AUTO GENERATE
-         * */
 
-        Double distanceKM = 1.0;
-        Double estimatedDurationHours = 1.0;
+        Double distanceKM = GeoUtils.calculateDistance(
+                startCity.getLatitude(),
+                startCity.getLongitude(),
+                endCity.getLatitude(),
+                endCity.getLongitude()
+        );
 
+        /* Speed rata-rata truck pengiriman (km/jam)
+         * Tambahan faktor untuk istirahat, loading/unloading, dll
+         */
+        final Double AVERAGE_TRUCK_SPEED = 55.0;
+        final Double TIME_BUFFER_FACTOR = 1.3; // 30% buffer
+        Double estimatedDurationHours = (distanceKM / AVERAGE_TRUCK_SPEED) * TIME_BUFFER_FACTOR;
+
+        // Minimal 1 jam untuk jarak dekat
+        if (estimatedDurationHours < 1.0) {
+            estimatedDurationHours = 1.0;
+        }
 
         Route newRoute = new Route();
         newRoute.setStartCity(startCity);
@@ -100,13 +113,24 @@ public class RouteService {
         City endCity = cityRepository.findById(request.getEndCityId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "cant find end city with id: " + request.getEndCityId()));
 
-        /*NOTE NANTI DISINI ADA LOGIC COUNT DISTANCE DARI START CITY KE END CITY
-         *  SETRTA ESTIMATION DURATION BERDASARKAN JARAK, JADI AUTO GENERATE
-         * */
+        Double distanceKM = GeoUtils.calculateDistance(
+                startCity.getLatitude(),
+                startCity.getLongitude(),
+                endCity.getLatitude(),
+                endCity.getLongitude()
+        );
 
-        Double distanceKM = 1.0;
-        Double estimatedDurationHours = 1.0;
+        /* Speed rata-rata truck pengiriman (km/jam)
+         * Tambahan faktor untuk istirahat, loading/unloading, dll
+         */
+        final Double AVERAGE_TRUCK_SPEED = 55.0;
+        final Double TIME_BUFFER_FACTOR = 1.3; // 30% buffer
+        Double estimatedDurationHours = (distanceKM / AVERAGE_TRUCK_SPEED) * TIME_BUFFER_FACTOR;
 
+        // Minimal 1 jam untuk jarak dekat
+        if (estimatedDurationHours < 1.0) {
+            estimatedDurationHours = 1.0;
+        }
         Route newRoute = new Route();
         newRoute.setStartCity(startCity);
         newRoute.setEndCity(endCity);

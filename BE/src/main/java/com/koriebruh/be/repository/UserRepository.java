@@ -28,4 +28,5 @@ public interface UserRepository extends JpaRepository<User, String> {
     """)
     List<User> findAllActiveDriverUsersNotInOngoingDelivery();
 
+    Optional<User> findByRefreshToken(String refreshToken);
 }

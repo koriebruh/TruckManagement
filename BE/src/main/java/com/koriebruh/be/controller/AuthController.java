@@ -2,10 +2,7 @@ package com.koriebruh.be.controller;
 
 
 import com.koriebruh.be.config.ApiStandardErrors;
-import com.koriebruh.be.dto.LoginRequest;
-import com.koriebruh.be.dto.LoginResponse;
-import com.koriebruh.be.dto.RegisterRequest;
-import com.koriebruh.be.dto.WebResponse;
+import com.koriebruh.be.dto.*;
 import com.koriebruh.be.service.AuthService;
 import com.koriebruh.be.utils.JwtUtil;
 import jakarta.validation.Valid;
@@ -16,9 +13,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/auth/")
-@ApiStandardErrors
+//@ApiStandardErrors
 public class AuthController {
 
     @Autowired
@@ -59,7 +59,7 @@ public class AuthController {
     @GetMapping(value = "/validate",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<WebResponse<String>> validatedToken(@RequestHeader("Authorization") String authHeader) {
+    public ResponseEntity<WebResponse<ValidateResponse>> validatedToken(@RequestHeader("Authorization") String authHeader) {
         /* Check if the Authorization header is present and starts with "Bearer "
          *Authorization: Bearer <token>
          */
@@ -73,10 +73,44 @@ public class AuthController {
         if (!jwtUtil.validateToken(token, username)) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is invalid");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(
-                WebResponse.<String>builder()
+
+        String userRole = authService.getRole(username);
+
+        ValidateResponse validateResponse = new ValidateResponse();
+        validateResponse.setMessage("Token is valid");
+        validateResponse.setRole(userRole);
+
+
+        return ResponseEntity.ok(
+                WebResponse.<ValidateResponse>builder()
                         .status("OK")
-                        .data("Token is valid")
+                        .data(validateResponse)
+                        .build()
+        );
+    }
+
+    @PostMapping(value = "/refresh-token",
+            produces = MediaType.APPLICATION_JSON_VALUE
+    )
+    public ResponseEntity<WebResponse<RefreshTokenResponse>> RefreshTokenGenerateAccessToken(@RequestBody @Valid RefreshTokenRequest request) {
+        /* Check if the Authorization header is present and starts with "Bearer "
+         *Authorization: Bearer <token>
+         */
+        String token = request.getRefreshToken();
+
+        String username = jwtUtil.getUsernameFromToken(token);
+
+        if (!jwtUtil.validateToken(token, username)) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is invalid");
+        }
+
+        RefreshTokenResponse refreshTokenResponse = authService.getAccessToken(request);
+
+
+        return ResponseEntity.ok(
+                WebResponse.<RefreshTokenResponse>builder()
+                        .status("OK")
+                        .data(refreshTokenResponse)
                         .build()
         );
     }
