@@ -1,71 +1,54 @@
-import TruckList from "@/components/TruckList";
-import TruckStats from "@/components/TruckStats";
-import { useAuth } from "@/context/AuthContext";
-import { Ionicons } from "@expo/vector-icons";
-import React from "react";
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  Text,
-  TouchableOpacity,
   View,
+  Text,
+  StatusBar,
+  ScrollView,
+  RefreshControl,
+  TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
+import React from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import DeliveryList from "@/components/DeliveryList";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useDeliveries } from "@/hooks/useDeliveries";
 
-const TruckTracker = () => {
+const Dashboard = () => {
   const insets = useSafeAreaInsets();
-  const { isAuthenticated, user } = useAuth();
-  const {logout} = useAuth();
 
-  const statsData = [
-    {
-      title: "Truk Aktif",
-      value: "24",
-      icon: "car-outline",
-      color: "bg-blue-50 border-blue-200",
-      textColor: "text-blue-600",
-      iconColor: "#3B82F6",
-    },
-    {
-      title: "Pengiriman",
-      value: "18",
-      icon: "checkmark-circle-outline",
-      color: "bg-green-50 border-green-200",
-      textColor: "text-green-600",
-      iconColor: "#10B981",
-    },
-  ];
+  const {
+    data: activeDeliveries,
+    isLoading,
+    isError,
+    refetch,
+    error,
+  } = useDeliveries();
 
-  const trackingData = [
-    {
-      id: 1,
-      status: "Aktif",
-      route: "Jakarta - Bandung",
-      driver: "Budi Santoso",
-      time: "08:30 WIB",
-      statusColor: "bg-blue-500",
-    },
-    {
-      id: 2,
-      status: "Aktif",
-      route: "Surabaya - Malang",
-      driver: "Agus Wijaya",
-      time: "09:15 WIB",
-      statusColor: "bg-blue-500",
-    },
-    {
-      id: 3,
-      status: "Terlambat",
-      route: "Semarang - Solo",
-      driver: "",
-      time: "",
-      statusColor: "bg-red-500",
-    },
-  ];
+  const handleRetry = () => {
+    refetch();
+  };
 
-  console.log("Signed In:", isAuthenticated);
-  console.log("User:", user);
+  const handleSelectDelivery = (deliveryId: string) => {
+    console.log("Selected delivery:", deliveryId);
+    // TODO: Navigate to delivery detail page
+  };
+
+  const renderError = () => (
+    <View className="py-8 items-center px-4">
+      <Text className="text-red-600 font-medium text-center">
+        Gagal memuat data pengiriman.
+      </Text>
+      <Text className="text-gray-500 text-sm text-center mt-1">
+        {error?.message || "Terjadi kesalahan tak terduga."}
+      </Text>
+      <TouchableOpacity
+        className="mt-4 bg-blue-600 px-4 py-2 rounded-lg"
+        onPress={handleRetry}>
+        <Text className="text-white font-semibold">Coba Lagi</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50">
@@ -74,11 +57,15 @@ const TruckTracker = () => {
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
-        showsVerticalScrollIndicator={false}>
-          
-        <TruckStats statsData={statsData} />
-
-
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isLoading}
+            onRefresh={handleRetry}
+            colors={["#1E40AF"]}
+          />
+        }>
+        {/* Map View */}
         <View className="mx-4 mb-4">
           <View className="bg-blue-100 rounded-lg h-64 items-center justify-center border border-blue-200">
             <Ionicons name="map" size={48} color="#3B82F6" />
@@ -89,11 +76,12 @@ const TruckTracker = () => {
           </View>
         </View>
 
+        {/* Tab Navigation */}
         <View className="px-4 mb-4">
           <View className="flex-row">
             <TouchableOpacity className="mr-6">
               <Text className="text-blue-600 font-semibold text-base border-b-2 border-blue-600 pb-1">
-                Pengiriman Aktif
+                Pengiriman Aktif ({activeDeliveries?.length || 0})
               </Text>
             </TouchableOpacity>
             <TouchableOpacity>
@@ -104,10 +92,25 @@ const TruckTracker = () => {
           </View>
         </View>
 
-        <TruckList trackingData={trackingData} />
+        {/* Content */}
+        {isLoading ? (
+          <View className="py-8 items-center">
+            <ActivityIndicator size="large" color="#1E40AF" />
+            <Text className="text-gray-500 mt-2">
+              Memuat data pengiriman...
+            </Text>
+          </View>
+        ) : isError ? (
+          renderError()
+        ) : (
+          <DeliveryList
+            deliveries={activeDeliveries || []}
+            onSelect={handleSelectDelivery}
+          />
+        )}
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default TruckTracker;
+export default Dashboard;

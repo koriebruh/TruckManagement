@@ -110,6 +110,26 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
+        name="city"
+        options={{
+          title: "City",
+          header: () => <CustomHeader />,
+          tabBarIcon: ({ focused, color }) => (
+            <View className="items-center h-full">
+              <Ionicons
+                name={focused ? "map" : "map-outline"}
+                size={24}
+                color={color}
+              />
+              <Text
+                className={`text-xs mt-1 ${focused ? "text-blue-600 font-medium" : "text-gray-500"}`}>
+                City
+              </Text>
+            </View>
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
