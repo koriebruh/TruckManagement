@@ -58,7 +58,7 @@ const TabLayout = () => {
       }}>
       {/* Semua <Tabs.Screen> tetap */}
       <Tabs.Screen
-        name="index"
+        name="admin/index"
         options={{
           title: "Home",
           header: () => <CustomHeader />,
@@ -74,7 +74,7 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="truck"
+        name="admin/truck"
         options={{
           title: "Truck",
           header: () => <CustomHeader />,
@@ -90,7 +90,7 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="route"
+        name="admin/route"
         options={{
           title: "Rute",
           header: () => <CustomHeader />,
@@ -109,26 +109,6 @@ const TabLayout = () => {
           ),
         }}
       />
-      {/* <Tabs.Screen
-        name="city"
-        options={{
-          title: "City",
-          header: () => <CustomHeader />,
-          tabBarIcon: ({ focused, color }) => (
-            <View className="items-center h-full">
-              <Ionicons
-                name={focused ? "map" : "map-outline"}
-                size={24}
-                color={color}
-              />
-              <Text
-                className={`text-xs mt-1 ${focused ? "text-blue-600 font-medium" : "text-gray-500"}`}>
-                City
-              </Text>
-            </View>
-          ),
-        }}
-      /> */}
       <Tabs.Screen
         name="profile"
         options={{
