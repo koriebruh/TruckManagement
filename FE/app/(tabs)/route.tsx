@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Pressable,
+  Alert,
 } from "react-native";
 import React from "react";
 import { useRoutes } from "@/hooks/useRoutes";
@@ -15,7 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 const Route = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { routes, isLoading, isError, error } = useRoutes();
+  const { routes, isLoading, isError, error, deleteRoute } = useRoutes();
 
   if (isLoading) return <ActivityIndicator size="large" className="mt-10" />;
  if (isError)
@@ -25,6 +26,24 @@ const Route = () => {
      </Text>
    );
 
+
+    const handleDelete = (id: string) => {
+      Alert.alert("Hapus Rute", "Apakah Anda yakin ingin menghapus rute ini?", [
+        { text: "Batal", style: "cancel" },
+        {
+          text: "Hapus",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await deleteRoute(id);
+            } catch (e) {
+              console.error("Gagal menghapus rute:", e);
+              alert("Gagal menghapus rute.");
+            }
+          },
+        },
+      ]);
+    };
 
   return (
     <View className="flex-1" style={{ paddingBottom: insets.bottom + 48 }}>
@@ -89,7 +108,7 @@ const Route = () => {
             {/* Status */}
             <View className="mt-2 mb-2">
               <Text
-                className={`px-2 py-1 rounded-full text-xs font-bold w-max ${
+                className={`px-2 py-1 rounded-full text-xs font-bold  ${
                   item.is_active
                     ? "bg-green-100 text-green-700"
                     : "bg-red-100 text-red-700"
@@ -99,13 +118,25 @@ const Route = () => {
             </View>
 
             {/* Tombol Edit */}
-            <TouchableOpacity
-              onPress={() => router.push(`/route/edit/${item.id}`)}
-              className="mt-2 bg-yellow-400 py-2 px-4 rounded-md">
-              <Text className="text-sm text-white font-semibold text-center">
-                Edit
-              </Text>
-            </TouchableOpacity>
+            <View className="flex-row justify-end items-center gap-3 mt-2">
+              {/* Tombol Edit */}
+              <TouchableOpacity
+                onPress={() => router.push(`/route/edit/${item.id}`)}
+                className="bg-yellow-400 py-2 px-4 rounded-md active:bg-yellow-500">
+                <Text className="text-sm text-white font-semibold text-center">
+                  Edit
+                </Text>
+              </TouchableOpacity>
+
+              {/* Tombol Delete */}
+              <TouchableOpacity
+                onPress={() => handleDelete(item.id)}
+                className="bg-red-500 py-2 px-4 rounded-md active:bg-red-600">
+                <Text className="text-sm text-white font-semibold text-center">
+                  Nonaktifkan
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         )}
       />
