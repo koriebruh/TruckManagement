@@ -109,7 +109,7 @@ const TabLayout = () => {
           ),
         }}
       />
-      <Tabs.Screen
+      {/* <Tabs.Screen
         name="city"
         options={{
           title: "City",
@@ -128,7 +128,7 @@ const TabLayout = () => {
             </View>
           ),
         }}
-      />
+      /> */}
       <Tabs.Screen
         name="profile"
         options={{
