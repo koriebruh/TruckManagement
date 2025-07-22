@@ -58,7 +58,7 @@ const TabLayout = () => {
       }}>
       {/* Semua <Tabs.Screen> tetap */}
       <Tabs.Screen
-        name="admin/index"
+        name="index"
         options={{
           title: "Home",
           header: () => <CustomHeader />,
@@ -74,7 +74,7 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="admin/truck"
+        name="truck"
         options={{
           title: "Truck",
           header: () => <CustomHeader />,
@@ -90,7 +90,7 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="admin/route"
+        name="route"
         options={{
           title: "Rute",
           header: () => <CustomHeader />,

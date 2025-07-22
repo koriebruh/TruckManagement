@@ -4,13 +4,16 @@ import {
   FlatList,
   ActivityIndicator,
   TouchableOpacity,
+  Pressable,
 } from "react-native";
 import React from "react";
 import { useRoutes } from "@/hooks/useRoutes";
-import { Feather } from "@expo/vector-icons";
+import { Feather, Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const Route = () => {
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const { routes, isLoading, isError, error } = useRoutes();
 
@@ -24,16 +27,26 @@ const Route = () => {
 
 
   return (
-    <View className="flex-1">
-      {/* Tombol Create */}
-      <View className="p-4">
-        <TouchableOpacity
-          onPress={() => router.push("/route/create")}
-          className="bg-blue-600 py-3 px-4 rounded-xl">
-          <Text className="text-white text-center font-semibold">
-            + Buat Rute
-          </Text>
-        </TouchableOpacity>
+    <View className="flex-1" style={{ paddingBottom: insets.bottom + 48 }}>
+      <View className="bg-white px-6 py-4 border-b border-gray-200 shadow-sm">
+        <View className="flex-row justify-between items-center">
+          <View>
+            <Text className="text-2xl font-bold text-gray-900">
+              Daftar Rute
+            </Text>
+            <Text className="text-sm text-gray-500 mt-1">
+              {routes.length} rute terdaftar
+            </Text>
+          </View>
+          <Pressable
+            className="px-5 py-3 bg-blue-500 rounded-xl shadow-sm active:bg-blue-600"
+            onPress={() => router.push("/route/create")}>
+            <View className="flex-row items-center">
+              <Ionicons name="add" size={20} color="white" />
+              <Text className="text-white font-semibold ml-1">Tambah</Text>
+            </View>
+          </Pressable>
+        </View>
       </View>
 
       {/* List Rute */}
@@ -46,7 +59,7 @@ const Route = () => {
             {/* Rute */}
             <View className="flex-row items-center mb-2">
               <Feather name="map-pin" size={20} color="#4B5563" />
-              <Text className="text-lg font-semibold ml-2 text-gray-800">
+              <Text className="text-lg font-semibold ml-2 text-gray-800 max-w-xs">
                 {item.start_city_name} → {item.end_city_name}
               </Text>
             </View>
