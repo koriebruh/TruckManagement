@@ -22,6 +22,8 @@ export default function RegisterScreen() {
     phone_number: "",
     age: "",
   });
+  const [formError, setFormError] = useState("");
+
 
   const handleInputChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
@@ -44,18 +46,8 @@ export default function RegisterScreen() {
       Alert.alert("Sukses", "Registrasi berhasil! Silakan login.");
       router.push("/sign-in");
     } catch (error) {
-      console.log("Full error object:", JSON.stringify(error, null, 2));
-      if (error.response) {
-        Alert.alert(
-          "Registrasi Gagal",
-          error.response.data.errors?.phone_number || // Ambil pesan spesifik jika ada
-            error.response.data.errors?.username ||
-            error.response.data.errors?.email ||
-            "Data yang Anda masukkan tidak valid."
-        );
-      } else {
-        Alert.alert("Registrasi Gagal", "Terjadi kesalahan jaringan.");
-      }
+      setFormError(error as any);
+      console.log(error.message);
     }
   };
 
@@ -134,7 +126,7 @@ export default function RegisterScreen() {
         </View>
 
         {/* Age Input */}
-        <View className="mb-8">
+        <View className="">
           <Text className="text-sm font-medium text-gray-700 mb-2">Umur</Text>
           <TextInput
             className="h-14 bg-gray-50 border border-gray-200 rounded-xl px-4 text-gray-800 text-base focus:border-blue-500 focus:bg-white"
@@ -145,6 +137,10 @@ export default function RegisterScreen() {
             keyboardType="numeric"
           />
         </View>
+
+        {formError ? (
+          <Text className="text-red-500 text-sm mt-2 mb-8">{formError}</Text>
+        ) : null}
 
         {/* Register Button */}
         <TouchableOpacity

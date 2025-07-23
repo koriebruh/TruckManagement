@@ -177,15 +177,8 @@ const login = async (username: string, password: string) => {
       await api.post("/auth/register", registerPayload);
       console.log("✅ Registration successful");
     } catch (error: any) {
-      console.error("❌ Registration failed:", error);
-
-      let errorMessage = "Registration failed.";
-      if (error.response?.data?.errors) {
-        errorMessage = Object.values(error.response.data.errors).join("\n");
-      } else if (error.message) {
-        errorMessage = error.message;
-      }
-      throw new Error(errorMessage);
+      console.log("❌ Registration failed:", error.response.data.errors);
+      throw error.response?.data?.errors;
     }
   };
 

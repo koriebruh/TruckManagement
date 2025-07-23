@@ -118,7 +118,7 @@ export default function TruckList() {
         refreshControl={
           <RefreshControl refreshing={isLoading} onRefresh={refetch} />
         }>
-        {trucks.length === 0 ? (
+        {trucks?.length === 0 ? (
           <View className="flex-1 justify-center items-center py-20">
             <Ionicons name="car-outline" size={64} color="#9CA3AF" />
             <Text className="mt-4 text-lg font-semibold text-gray-600">
@@ -130,7 +130,7 @@ export default function TruckList() {
           </View>
         ) : (
           <View className="gap-4">
-            {trucks.map((truck: Truck, index: number) => (
+            {trucks?.map((truck: Truck, index: number) => (
               <View
                 key={truck.id || index}
                 className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
