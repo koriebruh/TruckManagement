@@ -1,16 +1,16 @@
-import {jwtDecode} from "jwt-decode";
+import api from "@/services/axios";
+import { AuthContextProps, RegisterPayload, TokenPayload, User } from "@/types/auth.types";
 import * as SecureStore from "expo-secure-store";
+import { jwtDecode } from "jwt-decode";
 import React, {
   createContext,
   ReactNode,
-  
+
   useContext,
-  
+
   useEffect,
   useState,
 } from "react";
-import api from "@/services/axios";
-import {  AuthContextProps, RegisterPayload, TokenPayload, User } from "@/types/auth.types";
 
 // ====== Create Context ======
  const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -142,26 +142,9 @@ const login = async (username: string, password: string) => {
 
     return userData; // Return user data untuk kemudahan testing/chaining
   } catch (error: any) {
-    console.error("❌ Login gagal:", error);
+    console.error("❌ Login gagal:", error.response?.data.errors.password || error.message);
 
-    // Handle different error types
-    let errorMessage = "Login gagal. Silakan coba lagi.";
-
-    if (error.message?.includes("Username dan password")) {
-      errorMessage = error.message;
-    } else if (error.response?.status === 401) {
-      errorMessage = "Username atau password salah.";
-    } else if (error.response?.status === 429) {
-      errorMessage = "Terlalu banyak percobaan login. Coba lagi nanti.";
-    } else if (error.response?.status >= 500) {
-      errorMessage = "Server sedang bermasalah. Coba lagi nanti.";
-    } else if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
-    } else if (!navigator.onLine) {
-      errorMessage = "Tidak ada koneksi internet.";
-    }
-
-    throw new Error(errorMessage);
+      throw error.response?.data?.errors.password
   }
 };
 

@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import {
   View,
   TextInput,
-  Button,
   Text,
-  Alert,
   TouchableOpacity, // Import TouchableOpacity
 } from "react-native";
 import { Link } from "expo-router"; // Import Link untuk navigasi
@@ -14,20 +12,20 @@ export default function LoginScreen() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const { login } = useAuth();
-  const [error, setError] = useState("");
+  const [formError, setFormError] = useState("");
 
   const handleLogin = async () => {
     if (!username || !password) {
-      setError("Username dan password harus diisi.");
+      setFormError("Username dan password harus diisi.");
       return;
     }
     try {
-      setError("");
+      setFormError("");
       await login(username, password);
       // Navigasi ke halaman utama akan ditangani oleh _layout.tsx
-    } catch (e) {
-      setError(e.message);
-      Alert.alert("Login Gagal", e.message);
+    } catch (error ) {
+      console.log(error);
+      setFormError(error);
     }
   };
 
@@ -77,11 +75,12 @@ export default function LoginScreen() {
           </View>
 
           {/* Error Message */}
-          {error ? (
-            <View className="mb-6 bg-red-50 border border-red-200 rounded-lg p-3">
-              <Text className="text-red-600 text-center text-sm">{error}</Text>
-            </View>
-          ) : null}
+           {formError ? (
+                    <View className="mb-6 bg-red-50 border border-red-200 rounded-lg p-3">
+                      <Text className="text-red-600 text-center text-sm">{formError}</Text>
+                    </View>
+                  ) : null}
+          
 
           {/* Login Button */}
           <TouchableOpacity

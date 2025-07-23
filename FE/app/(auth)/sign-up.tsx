@@ -1,16 +1,15 @@
 // app/(auth)/register.tsx
+import { useAuth } from "@/context/AuthContext";
+import { Link, useRouter } from "expo-router";
 import React, { useState } from "react";
 import {
-  View,
-  TextInput,
-  Button,
   Alert,
-  Text,
   ScrollView,
-  TouchableOpacity, // Digunakan untuk link
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
-import { useRouter, Link } from "expo-router";
-import { useAuth } from "@/context/AuthContext";
 
 export default function RegisterScreen() {
   const { register } = useAuth();
@@ -23,7 +22,6 @@ export default function RegisterScreen() {
     age: "",
   });
   const [formError, setFormError] = useState("");
-
 
   const handleInputChange = (name, value) => {
     setFormData({ ...formData, [name]: value });
@@ -139,7 +137,9 @@ export default function RegisterScreen() {
         </View>
 
         {formError ? (
-          <Text className="text-red-500 text-sm mt-2 mb-8">{formError}</Text>
+          <View className="mb-6 bg-red-50 border border-red-200 rounded-lg p-3">
+            <Text className="text-red-600 text-center text-sm">{formError}</Text>
+          </View>
         ) : null}
 
         {/* Register Button */}
