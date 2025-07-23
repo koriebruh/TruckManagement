@@ -23,4 +23,5 @@ public class TransitPointResponse {
 
     private Double extraCost;
 
+    private Boolean isActive;
 }

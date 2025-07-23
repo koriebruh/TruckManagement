@@ -2,11 +2,14 @@ package com.koriebruh.be.seeder;
 
 import com.koriebruh.be.dto.CityRequest;
 import com.koriebruh.be.dto.RouteRequest;
+import com.koriebruh.be.dto.TransitPointRequest;
 import com.koriebruh.be.entity.City;
 import com.koriebruh.be.repository.CityRepository;
 import com.koriebruh.be.repository.RouteRepository;
+import com.koriebruh.be.repository.TransitPointRepository;
 import com.koriebruh.be.service.CityService;
 import com.koriebruh.be.service.RouteService;
+import com.koriebruh.be.service.TransitPointService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +35,12 @@ public class RoutesSeeder implements CommandLineRunner {
     @Autowired
     private CityRepository cityRepository;
 
+    @Autowired
+    private TransitPointRepository transitPointRepository;
+
+    @Autowired
+    private TransitPointService transitPointService;
+
     @Override
     public void run(String... args) throws Exception {
         seederCity();
@@ -42,6 +51,14 @@ public class RoutesSeeder implements CommandLineRunner {
             System.out.println("Route seeding completed!");
         } else {
             System.out.println("Routes already exist, skipping seeder");
+        }
+
+        if (transitPointRepository.count() == 0) {
+            System.out.println("Starting transit seeding...");
+            seederTransit();
+            System.out.println("Transit seeding completed!");
+        } else {
+            System.out.println("Transit already exist, skipping seeder");
         }
 
     }
@@ -146,25 +163,9 @@ public class RoutesSeeder implements CommandLineRunner {
     public void seederRoute() {
         List<RouteRequest> routeRequests = List.of(
                 new RouteRequest(getIdCityByName("Dieng"), getIdCityByName("Jakarta"), "-", 1_010_000.0, true),
-                new RouteRequest(getIdCityByName("Kramatjati"), getIdCityByName("Jakarta"), "PP", 300_000.0, true),
-                new RouteRequest(getIdCityByName("Cikopo"), getIdCityByName("Dieng"), "PP", 300_000.0, true),
-                new RouteRequest(getIdCityByName("Cibitung"), getIdCityByName("Dieng"), "PP", 300_000.0, true),
-                new RouteRequest(getIdCityByName("Tanah Tinggi"), getIdCityByName("Dieng"), "PP", 300_000.0, true),
-                new RouteRequest(getIdCityByName("Kemang Bogor"), getIdCityByName("Dieng"), "PP", 300_000.0, true),
-
                 new RouteRequest(getIdCityByName("Dieng"), getIdCityByName("Surabaya"), "-", 1_010_000.0, true),
-                new RouteRequest(getIdCityByName("Nongko Jajar"), getIdCityByName("Dieng"), "PP", 360_000.0, true),
-                new RouteRequest(getIdCityByName("Mojokerto"), getIdCityByName("Dieng"), "PP", 300_000.0, true),
-                new RouteRequest(getIdCityByName("Mojokerto"), getIdCityByName("Dieng"), "PP", 300_000.0, true), //
-                new RouteRequest(getIdCityByName("Jombang"), getIdCityByName("Dieng"), "PP", 300_000.0, true),
-                new RouteRequest(getIdCityByName("Blitar"), getIdCityByName("Dieng"), "PP", 300_000.0, true),
-
                 new RouteRequest(getIdCityByName("Dieng"), getIdCityByName("Cirebon"), "-", 710_000.0, true),
-                new RouteRequest(getIdCityByName("Cirebon"), getIdCityByName("Dieng"), "PP", 300_000.0, true),
-                new RouteRequest(getIdCityByName("Subang"), getIdCityByName("Dieng"), "PP", 400_000.0, true),
-                new RouteRequest(getIdCityByName("Majalengka"), getIdCityByName("Dieng"), "PP", 400_000.0, true),
-                new RouteRequest(getIdCityByName("Patrol"), getIdCityByName("Dieng"), "PP", 400_000.0, true),
-                new RouteRequest(getIdCityByName("Indramayu"), getIdCityByName("Dieng"), "PP", 400_000.0, true),
+
                 /* MUATAN PUPUK*/
                 new RouteRequest(getIdCityByName("Batang"), getIdCityByName("Dieng"), "-", 510_000.0, true),
                 new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Dieng"), "-", 510_000.0, true),
@@ -184,60 +185,20 @@ public class RoutesSeeder implements CommandLineRunner {
                 new RouteRequest(getIdCityByName("Rembang"), getIdCityByName("Dieng"), "-", 810_000.0, true),
 
                 new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Jakarta"), "-", 810_000.0, true),
-                new RouteRequest(getIdCityByName("Jakarta"), getIdCityByName("Pekalongan"), "PP", 250_000.0, true),
-                new RouteRequest(getIdCityByName("Serang"), getIdCityByName("Pekalongan"), "PP", 350_000.0, true),
-                new RouteRequest(getIdCityByName("Menes"), getIdCityByName("Pekalongan"), "PP", 450_000.0, true),
-                new RouteRequest(getIdCityByName("Ujung Kulon"), getIdCityByName("Pekalongan"), "PP", 550_000.0, true),
-                new RouteRequest(getIdCityByName("Jakarta"), getIdCityByName("Kendal"), "PP", 350_000.0, true),
-                new RouteRequest(getIdCityByName("Jakarta"), getIdCityByName("Semarang"), "PP", 350_000.0, true),
-                new RouteRequest(getIdCityByName("Jakarta"), getIdCityByName("Demak"), "PP", 400_000.0, true),
-                new RouteRequest(getIdCityByName("Jakarta"), getIdCityByName("Kudus"), "PP", 450_000.0, true),
-                new RouteRequest(getIdCityByName("Jakarta"), getIdCityByName("Pati"), "PP", 450_000.0, true),
-                new RouteRequest(getIdCityByName("Jakarta"), getIdCityByName("Temanggung"), "PP", 450_000.0, true),
-                new RouteRequest(getIdCityByName("Jakarta"), getIdCityByName("Solo"), "PP", 450_000.0, true),
-                new RouteRequest(getIdCityByName("Jakarta"), getIdCityByName("Jogja"), "PP", 450_000.0, true),
 
-                new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Surabaya"), "PP", 810_000.0, true),
-                new RouteRequest(getIdCityByName("Surabaya"), getIdCityByName("Pekalongan"), "PP", 250_000.0, true),
-                new RouteRequest(getIdCityByName("Surabaya"), getIdCityByName("Tegal"), "PP", 350_000.0, true),
-                new RouteRequest(getIdCityByName("Surabaya"), getIdCityByName("Brebes"), "PP", 450_000.0, true),
-                new RouteRequest(getIdCityByName("Surabaya"), getIdCityByName("Purwokerto"), "PP", 450_000.0, true),
-                new RouteRequest(getIdCityByName("Surabaya"), getIdCityByName("Purbalingga"), "PP", 450_000.0, true),
-                new RouteRequest(getIdCityByName("Surabaya"), getIdCityByName("Dieng"), "PP", 450_000.0, true),
-                new RouteRequest(getIdCityByName("Surabaya"), getIdCityByName("Cirebon"), "PP", 550_000.0, true),
-                new RouteRequest(getIdCityByName("Pasuruan"), getIdCityByName("Pekalongan"), "PP", 350_000.0, true),
-                new RouteRequest(getIdCityByName("Malang"), getIdCityByName("Pekalongan"), "PP", 450_000.0, true),
-                new RouteRequest(getIdCityByName("Bangkalan"), getIdCityByName("Pekalongan"), "PP", 400_000.0, true),
-                new RouteRequest(getIdCityByName("Sumenep"), getIdCityByName("Pekalongan"), "PP", 550_000.0, true),
-
-                new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Pati"), "PP", 550_000.0, true),
-                new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Solo"), "PP", 550_000.0, true),
-                new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Magelang"), "PP", 550_000.0, true),
-                new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Jogja"), "PP", 550_000.0, true),
-                new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Bantul"), "PP", 550_000.0, true),
-                new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Purbalingga"), "PP", 550_000.0, true),
-                new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Purwokerto"), "PP", 550_000.0, true),
-                new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Banyumas"), "PP", 550_000.0, true),
-                new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Kebumen"), "PP", 550_000.0, true),
-                new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Pekalongan"), "PP", 550_000.0, true),
-                new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Pekalongan"), "PP", 550_000.0, true),
 //                new RouteRequest(getIdCityByName("Semua"), getIdCityByName("Pekalongan"), "PP", 550_000.0, true),
 
                 new RouteRequest(getIdCityByName("Kutosari/Luwung"), getIdCityByName("Pekalongan"), "-", 410_000.0, true),
                 new RouteRequest(getIdCityByName("Kutosari/Ambon"), getIdCityByName("Pekalongan"), "-", 360_000.0, true),
-                new RouteRequest(getIdCityByName("Pielen"), getIdCityByName("Pekalongan"), "PP", 360_000.0, true),
                 new RouteRequest(getIdCityByName("Wonosobo Tambang"), getIdCityByName("Pekalongan"), "-", 560_000.0, true),
                 new RouteRequest(getIdCityByName("Wonosobo Dipo"), getIdCityByName("Pekalongan"), "-", 510_000.0, true),
                 new RouteRequest(getIdCityByName("Muntilan Tambang"), getIdCityByName("Pekalongan"), "-", 635_000.0, true),
                 new RouteRequest(getIdCityByName("Muntilan Dipo"), getIdCityByName("Pekalongan"), "-", 560_000.0, true),
                 new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Denpasar, Bali"), "-", 1_810_000.0, true),
-                new RouteRequest(getIdCityByName("Denpasar, Bali"), getIdCityByName("Pekalongan"), "PP", 500_000.0, true),
                 new RouteRequest(getIdCityByName("Pekalongan"), getIdCityByName("Mataram, NTB"), "-", 2_510_000.0, true),
-                new RouteRequest(getIdCityByName("Mataram, NTB"), getIdCityByName("Pekalongan"), "PP", 650_000.0, true),
-                new RouteRequest(getIdCityByName("Bima, NTB"), getIdCityByName("Pekalongan"), "PP", 950_000.0, true),
-                new RouteRequest(getIdCityByName("Dieng"), getIdCityByName("Mataram, NTB"), "-", 2_610_000.0, true),
-                new RouteRequest(getIdCityByName("Mataram, NTB"), getIdCityByName("Dieng"), "PP", 800_000.0, true),
-                new RouteRequest(getIdCityByName("Bima, NTB"), getIdCityByName("Dieng"), "PP", 1_200_000.0, true)
+
+                new RouteRequest(getIdCityByName("Dieng"), getIdCityByName("Mataram, NTB"), "-", 2_610_000.0, true)
+
         );
 
 
@@ -245,6 +206,77 @@ public class RoutesSeeder implements CommandLineRunner {
             routeService.createRoute(routeRequest);
         }
 
+
+    }
+
+    public void seederTransit() {
+        List<TransitPointRequest> transitPoint = List.of(
+                new TransitPointRequest(getIdCityByName("Kramatjati"), getIdCityByName("Jakarta"), 30L, 300_000.0, true),
+                new TransitPointRequest(getIdCityByName("Cikopo"), getIdCityByName("Dieng"), 30L, 300_000.0, true),
+                new TransitPointRequest(getIdCityByName("Cibitung"), getIdCityByName("Dieng"), 30L, 300_000.0, true),
+                new TransitPointRequest(getIdCityByName("Tanah Tinggi"), getIdCityByName("Dieng"), 30L, 300_000.0, true),
+                new TransitPointRequest(getIdCityByName("Kemang Bogor"), getIdCityByName("Dieng"), 30L, 300_000.0, true),
+                new TransitPointRequest(getIdCityByName("Nongko Jajar"), getIdCityByName("Dieng"), 30L, 360_000.0, true),
+                new TransitPointRequest(getIdCityByName("Mojokerto"), getIdCityByName("Dieng"), 30L, 300_000.0, true),
+                new TransitPointRequest(getIdCityByName("Mojokerto"), getIdCityByName("Dieng"), 30L, 300_000.0, true), //
+                new TransitPointRequest(getIdCityByName("Jombang"), getIdCityByName("Dieng"), 30L, 300_000.0, true),
+                new TransitPointRequest(getIdCityByName("Blitar"), getIdCityByName("Dieng"), 30L, 300_000.0, true),
+
+                new TransitPointRequest(getIdCityByName("Cirebon"), getIdCityByName("Dieng"), 30L, 300_000.0, true),
+                new TransitPointRequest(getIdCityByName("Subang"), getIdCityByName("Dieng"), 30L, 400_000.0, true),
+                new TransitPointRequest(getIdCityByName("Majalengka"), getIdCityByName("Dieng"), 30L, 400_000.0, true),
+                new TransitPointRequest(getIdCityByName("Patrol"), getIdCityByName("Dieng"), 30L, 400_000.0, true),
+                new TransitPointRequest(getIdCityByName("Indramayu"), getIdCityByName("Dieng"), 30L, 400_000.0, true),
+
+                new TransitPointRequest(getIdCityByName("Jakarta"), getIdCityByName("Pekalongan"), 30L, 250_000.0, true),
+                new TransitPointRequest(getIdCityByName("Serang"), getIdCityByName("Pekalongan"), 30L, 350_000.0, true),
+                new TransitPointRequest(getIdCityByName("Menes"), getIdCityByName("Pekalongan"), 30L, 450_000.0, true),
+                new TransitPointRequest(getIdCityByName("Ujung Kulon"), getIdCityByName("Pekalongan"), 30L, 550_000.0, true),
+                new TransitPointRequest(getIdCityByName("Jakarta"), getIdCityByName("Kendal"), 30L, 350_000.0, true),
+                new TransitPointRequest(getIdCityByName("Jakarta"), getIdCityByName("Semarang"), 30L, 350_000.0, true),
+                new TransitPointRequest(getIdCityByName("Jakarta"), getIdCityByName("Demak"), 30L, 400_000.0, true),
+                new TransitPointRequest(getIdCityByName("Jakarta"), getIdCityByName("Kudus"), 30L, 450_000.0, true),
+                new TransitPointRequest(getIdCityByName("Jakarta"), getIdCityByName("Pati"), 30L, 450_000.0, true),
+                new TransitPointRequest(getIdCityByName("Jakarta"), getIdCityByName("Temanggung"), 30L, 450_000.0, true),
+                new TransitPointRequest(getIdCityByName("Jakarta"), getIdCityByName("Solo"), 30L, 450_000.0, true),
+                new TransitPointRequest(getIdCityByName("Jakarta"), getIdCityByName("Jogja"), 30L, 450_000.0, true),
+
+                new TransitPointRequest(getIdCityByName("Pekalongan"), getIdCityByName("Surabaya"), 30L, 810_000.0, true),
+                new TransitPointRequest(getIdCityByName("Surabaya"), getIdCityByName("Pekalongan"), 30L, 250_000.0, true),
+                new TransitPointRequest(getIdCityByName("Surabaya"), getIdCityByName("Tegal"), 30L, 350_000.0, true),
+                new TransitPointRequest(getIdCityByName("Surabaya"), getIdCityByName("Brebes"), 30L, 450_000.0, true),
+                new TransitPointRequest(getIdCityByName("Surabaya"), getIdCityByName("Purwokerto"), 30L, 450_000.0, true),
+                new TransitPointRequest(getIdCityByName("Surabaya"), getIdCityByName("Purbalingga"), 30L, 450_000.0, true),
+                new TransitPointRequest(getIdCityByName("Surabaya"), getIdCityByName("Dieng"), 30L, 450_000.0, true),
+                new TransitPointRequest(getIdCityByName("Surabaya"), getIdCityByName("Cirebon"), 30L, 550_000.0, true),
+                new TransitPointRequest(getIdCityByName("Pasuruan"), getIdCityByName("Pekalongan"), 30L, 350_000.0, true),
+                new TransitPointRequest(getIdCityByName("Malang"), getIdCityByName("Pekalongan"), 30L, 450_000.0, true),
+                new TransitPointRequest(getIdCityByName("Bangkalan"), getIdCityByName("Pekalongan"), 30L, 400_000.0, true),
+                new TransitPointRequest(getIdCityByName("Sumenep"), getIdCityByName("Pekalongan"), 30L, 550_000.0, true),
+
+                new TransitPointRequest(getIdCityByName("Pekalongan"), getIdCityByName("Pati"), 30L, 550_000.0, true),
+                new TransitPointRequest(getIdCityByName("Pekalongan"), getIdCityByName("Solo"), 30L, 550_000.0, true),
+                new TransitPointRequest(getIdCityByName("Pekalongan"), getIdCityByName("Magelang"), 30L, 550_000.0, true),
+                new TransitPointRequest(getIdCityByName("Pekalongan"), getIdCityByName("Jogja"), 30L, 550_000.0, true),
+                new TransitPointRequest(getIdCityByName("Pekalongan"), getIdCityByName("Bantul"), 30L, 550_000.0, true),
+                new TransitPointRequest(getIdCityByName("Pekalongan"), getIdCityByName("Purbalingga"), 30L, 550_000.0, true),
+                new TransitPointRequest(getIdCityByName("Pekalongan"), getIdCityByName("Purwokerto"), 30L, 550_000.0, true),
+                new TransitPointRequest(getIdCityByName("Pekalongan"), getIdCityByName("Banyumas"), 30L, 550_000.0, true),
+                new TransitPointRequest(getIdCityByName("Pekalongan"), getIdCityByName("Kebumen"), 30L, 550_000.0, true),
+                new TransitPointRequest(getIdCityByName("Pekalongan"), getIdCityByName("Pekalongan"), 30L, 550_000.0, true),
+                new TransitPointRequest(getIdCityByName("Pekalongan"), getIdCityByName("Pekalongan"), 30L, 550_000.0, true),
+
+                new TransitPointRequest(getIdCityByName("Pielen"), getIdCityByName("Pekalongan"), 30L, 360_000.0, true),
+                new TransitPointRequest(getIdCityByName("Denpasar, Bali"), getIdCityByName("Pekalongan"), 30L, 500_000.0, true),
+                new TransitPointRequest(getIdCityByName("Mataram, NTB"), getIdCityByName("Pekalongan"), 30L, 650_000.0, true),
+                new TransitPointRequest(getIdCityByName("Bima, NTB"), getIdCityByName("Pekalongan"), 30L, 950_000.0, true),
+                new TransitPointRequest(getIdCityByName("Mataram, NTB"), getIdCityByName("Dieng"), 30L, 800_000.0, true),
+                new TransitPointRequest(getIdCityByName("Bima, NTB"), getIdCityByName("Dieng"), 30L, 1_200_000.0, true)
+        );
+
+        for (TransitPointRequest pointRequest : transitPoint) {
+            transitPointService.createTransitPoint(pointRequest);
+        }
 
     }
 

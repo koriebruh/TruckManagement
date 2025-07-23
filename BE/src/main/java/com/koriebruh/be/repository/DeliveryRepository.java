@@ -17,4 +17,6 @@ public interface DeliveryRepository extends JpaRepository<Delivery, String> {
     Boolean existsByWorkerIdAndFinishedAtIsNull(String workerId);
 
     Optional<Delivery> findByWorkerUsernameAndFinishedAtIsNull(String workerUsername);
+
+    Optional<Delivery> findByIdAndFinishedAtIsNull(String id);
 }

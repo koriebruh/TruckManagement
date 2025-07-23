@@ -1,0 +1,79 @@
+@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcGVyYXRvcjEiLCJpYXQiOjE3NTMyODQ2OTQsImV4cCI6MTc1MzI4NTU5NH0.QJnW4OExQ7CIfMxC2ou1Er51j4cSmzxToaVhVcmtCeQ
+
+### login request to example server
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "operator1",
+  "password": "operator1"
+}
+
+### registration request to example server
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "operator1",
+  "password": "operator1",
+  "email": "operator14@gmail.com",
+  "phone_number": "32131399",
+  "age": 19
+}
+
+### get all workers
+
+### get all routes
+GET http://localhost:8080/api/routes
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+### GET Truck Avaliable to make delivery
+GET http://localhost:8080/api/trucks/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+### CREATE DELIVERY
+POST http://localhost:8080/api/delivery
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+{
+  "truck_id": "190d80ed-0af1-4747-aeb0-802d710246b1",
+  "route_id": "eda50758-6dae-493d-b284-3273c1e8f58b",
+  "worker_id": "4add3bdc-5bd1-491e-85de-cf6845836245",
+  "latitude": -6.200000,
+  "longitude": 106.816666
+}
+
+### get all delivery ACTIVE
+GET http://localhost:8080/api/delivery/active
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+### ACC TRANSIT
+
+
+
+
+### DELETE DELIVERY
+DELETE http://localhost:8080/api/delivery/f0ce657b-d1a7-4b73-96ea-095fd7f269c6
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+
+
+### FINISHED CURENNT DELIVERY
+PATCH http://localhost:8080/api/delivery/{}/finish
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+

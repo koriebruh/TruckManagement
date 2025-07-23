@@ -24,9 +24,9 @@ public class DeliveryMonitoringController {
     )
     public ResponseEntity<WebResponse<String>> createDelivery(@RequestBody @Valid DeliveryRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        String operator = authentication.getName();
 
-        String msg = deliveryMonitoringService.createDelivery(request, username);
+        String msg = deliveryMonitoringService.createDelivery(request, operator);
         return ResponseEntity.ok(
                 WebResponse.<String>builder()
                         .status("CREATED")
@@ -35,15 +35,13 @@ public class DeliveryMonitoringController {
         );
     }
 
-    @PatchMapping(value = "/finish",
+    @PatchMapping(value = "/finish/{deliveryId}",
             produces = "application/json",
             consumes = "application/json"
     )
-    public ResponseEntity<WebResponse<String>> finishDelivery() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+    public ResponseEntity<WebResponse<String>> finishDelivery(@PathVariable String deliveryId) {
 
-        String msg = deliveryMonitoringService.finishDelivery(username);
+        String msg = deliveryMonitoringService.finishDelivery(deliveryId);
         return ResponseEntity.ok(
                 WebResponse.<String>builder()
                         .status("FINISHED")
@@ -153,6 +151,38 @@ public class DeliveryMonitoringController {
                 WebResponse.<DeliveryDetailResponse>builder()
                         .status("OK")
                         .data(detail)
+                        .build()
+        );
+    }
+
+
+    @DeleteMapping(
+            value = "/{deliveryId}",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<String>> deleteDelivery(@PathVariable String deliveryId) {
+        deliveryMonitoringService.deleteDelivery(deliveryId);
+        return ResponseEntity.ok(
+                WebResponse.<String>builder()
+                        .status("DELETED")
+                        .data("Delivery with ID " + deliveryId + " has been deleted.")
+                        .build()
+        );
+    }
+
+    @PatchMapping(value = "/transit/accept-or-reject",
+            produces = "application/json",
+            consumes = "application/json"
+    )
+    public ResponseEntity<WebResponse<String>> acceptOrRejectTransit(@RequestBody @Valid AccOrRejectTransitRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String operator = authentication.getName();
+
+        String msg = deliveryMonitoringService.ApproveTransit(operator, request);
+        return ResponseEntity.ok(
+                WebResponse.<String>builder()
+                        .status("UPDATED")
+                        .data(msg)
                         .build()
         );
     }
