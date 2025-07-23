@@ -50,7 +50,7 @@ public class TransitPointService {
         transitPoint.setEstimatedDurationMinute(request.getEstimatedDurationMinute());
         transitPoint.setExtraCost(request.getExtraCost());
         transitPoint.setCreatedAt(Instant.now().toEpochMilli());
-        transitPoint.setDeletedAt(null); // Assuming null means not deleted
+        transitPoint.setIsActive(request.getIsActive()); // Assuming null means not deleted
         transitPointRepository.save(transitPoint);
 
         return "Transit Point created successfully ";
@@ -73,32 +73,34 @@ public class TransitPointService {
         existingTransitPoint.setUnloadingCity(unloadingCity);
         existingTransitPoint.setEstimatedDurationMinute(request.getEstimatedDurationMinute());
         existingTransitPoint.setExtraCost(request.getExtraCost());
+        existingTransitPoint.setIsActive(request.getIsActive() != null ? request.getIsActive() : true); // Default to true if null
         transitPointRepository.save(existingTransitPoint);
 
         return "Transit Point updated successfully";
     }
 
+    // ARCIVE
     public String deleteTransitPoint(Long id) {
         TransitPoint existingTransitPoint = transitPointRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Transit Point not found with id: " + id));
 
-        // Soft delete by setting deletedAt timestamp
-        existingTransitPoint.setDeletedAt(Instant.now().toEpochMilli());
+        existingTransitPoint.setIsActive(false);
         transitPointRepository.save(existingTransitPoint);
 
         return "Transit Point deleted successfully";
     }
 
     public List<TransitPointResponse> getAllTransitPoints() {
-        List<TransitPoint> transitPoints = transitPointRepository.findAllByDeletedAtNull();
+        List<TransitPoint> transitPoints = transitPointRepository.findAll();
         return transitPoints.stream()
                 .map(tp -> new TransitPointResponse(
                         tp.getId(),
                         tp.getLoadingCity().getId(),
                         tp.getUnloadingCity().getId(),
                         tp.getEstimatedDurationMinute(),
-                        tp.getExtraCost()
-                ))
+                        tp.getExtraCost(),
+                        tp.getIsActive()
+                        ))
                 .toList();
     }
 

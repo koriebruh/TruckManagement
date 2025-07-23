@@ -1,0 +1,217 @@
+
+@TOKEN_ADMIN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTMyODQyMzMsImV4cCI6MTc1MzI4NTEzM30.K7uGtFgLp76UBb74FJ1aFsyrX6p4yNgBeFh8Y_QciQE
+
+### login for admin
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "jamalgantenk",
+  "password": "jamal123"
+}
+
+
+### ============== ============== ============== CRUD FOR ROUTE ============== ============== ============== ###
+### create route
+POST http://localhost:8080/api/routes
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+{
+  "start_city_id": 1,
+  "end_city_id": 2,
+  "details": "Route PP boi dieng dari apii ihh jakarta",
+  "base_price": 150000.0,
+  "is_active": true
+}
+
+### update route by uuid route
+PUT http://localhost:8080/api/routes/9e53c0c0-8dd1-4d4d-b9eb-2db980e71cfa
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+{
+  "start_city_id": 3,
+  "end_city_id": 2,
+  "details": "Route of roadd boiii",
+  "base_price": 150000.0,
+  "is_active": true
+}
+
+### Achive this ROUTE by uuid
+DELETE http://localhost:8080/api/routes/f1af09d2-7c22-4146-abee-be9e6a889252
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### get all routes
+GET http://localhost:8080/api/routes
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### get route by uuid
+GET http://localhost:8080/api/routes/f1af09d2-7c22-4146-abee-be9e6a889252
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+
+### ============== ============== ============== CRUD FOR TRUCK ============== ============== ============== ###
+### CREATE TRUCK
+POST http://localhost:8080/api/trucks
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+{
+  "license_plate": "B12BI28",
+  "model": "Toyota Hilux",
+  "cargo_type": "furniture",
+  "capacity_kg": 9000.0,
+  "is_available": true
+}
+
+### UPDATE TRUCK
+PUT http://localhost:8080/api/trucks/77271071-84d0-4702-9bda-2cb85c6ec7e4
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+{
+  "license_plate": "B1XXXX",
+  "model": "Hino Dutro",
+  "cargo_type": "Barang Elektronik",
+  "capacity_kg": 5000.0,
+  "is_available": false
+}
+
+### DELETE soft TRUCK
+DELETE http://localhost:8080/api/trucks/aaf6253c-661b-4a8f-8d80-cc417988d3d1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### GET Truck Avaliable to make delivery
+GET http://localhost:8080/api/trucks/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### GET ALL TRUCK not soft deleted
+GET http://localhost:8080/api/trucks
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### GET TRUCK BY ID
+GET http://localhost:8080/api/trucks/aaf6253c-661b-4a8f-8d80-cc417988d3d1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### update to make truck x maintance
+PUT http://localhost:8080/api/trucks/maintenance/aaf6253c-661b-4a8f-8d80-cc417988d3d1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+
+### ============== ============== ============== CRUD FOR CITIES ============== ============== ============== ###
+
+### GET ALL CITIES
+GET http://localhost:8080/api/cities
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### GET CITY BY ID
+GET http://localhost:8080/api/cities/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### CREATE
+POST http://localhost:8080/api/cities
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+{
+  "name": "GunungKidul",
+  "latitude": -6.203,
+  "longitude": 106.841,
+  "country": "Indonesia"
+}
+
+
+### UPDATE
+PUT http://localhost:8080/api/cities/515
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+{
+  "name": "JakartacSS",
+  "latitude": -6.2088,
+  "longitude": 106.8456,
+  "country": "Indonesia"
+}
+
+### DELETE
+DELETE http://localhost:8080/api/cities/516
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+
+### ============== ============== ============== CRUD FOR TRANSIT POINT ============== ============== ============== ###
+
+### CREATE TRANSIT POINT
+POST http://localhost:8080/api/transit-points
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+{
+  "loading_city_id": 2,
+  "unloading_city_id": 1,
+  "estimated_duration_minute": 180,
+  "extra_cost": 50000.0,
+  "is_active": true
+}
+
+### UPDATE TRANSIT POINT
+PUT http://localhost:8080/api/transit-points/2
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+{
+  "loading_city_id": 1,
+  "unloading_city_id": 2,
+  "estimated_duration_minute": 20,
+  "extra_cost": 700000.0,
+  "is_active": false
+}
+
+### GET TRANSIT POINT by ID
+GET http://localhost:8080/api/transit-points/1
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### GET ALL TRANSIT POINT
+GET http://localhost:8080/api/transit-points
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### DELETE TRANSIT POINT
+DELETE http://localhost:8080/api/transit-points/57
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}

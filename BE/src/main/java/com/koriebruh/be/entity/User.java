@@ -1,5 +1,6 @@
 package com.koriebruh.be.entity;
 
+import com.koriebruh.be.entity.Enum.RoleType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
@@ -35,7 +36,8 @@ public class User {
     private String email;
 
     @Column(nullable = false)
-    private String role;
+    @Enumerated(EnumType.STRING)
+    private RoleType role;
 
     @Column(nullable = false)
     private String phoneNumber;

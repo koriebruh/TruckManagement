@@ -1,5 +1,6 @@
 package com.koriebruh.be.repository;
 
+import com.koriebruh.be.entity.Enum.RoleType;
 import com.koriebruh.be.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +30,6 @@ public interface UserRepository extends JpaRepository<User, String> {
     List<User> findAllActiveDriverUsersNotInOngoingDelivery();
 
     Optional<User> findByRefreshToken(String refreshToken);
+
+    List<User> findAllByRoleAndDeletedAtIsNull(RoleType role);
 }

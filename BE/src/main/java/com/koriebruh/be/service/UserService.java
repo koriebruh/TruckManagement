@@ -2,6 +2,7 @@ package com.koriebruh.be.service;
 
 
 import com.koriebruh.be.dto.*;
+import com.koriebruh.be.entity.Enum.RoleType;
 import com.koriebruh.be.entity.User;
 import com.koriebruh.be.repository.UserRepository;
 import com.koriebruh.be.utils.Encrypt;
@@ -40,7 +41,7 @@ public class UserService {
                 .username(user.getUsername())
                 .refreshToken(user.getRefreshToken())
                 .email(user.getEmail())
-                .role(user.getRole())
+                .role(user.getRole().name())
                 .age(user.getAge())
                 .phoneNumber(user.getPhoneNumber())
                 .build();
@@ -139,7 +140,43 @@ public class UserService {
                 .email(user.getEmail())
                 .phoneNumber(user.getPhoneNumber())
                 .age(user.getAge())
-                .role(user.getRole())
+                .role(user.getRole().name())
                 .build();
+    }
+
+    // DELETE USER
+    public String deleteUser(String username) {
+        User user = userRepository.findByUsernameAndDeletedAtIsNull(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        user.setDeletedAt(Instant.now().getEpochSecond());
+        userRepository.save(user);
+
+        return "User deleted successfully";
+    }
+
+    // GET ALL USERS
+    public List<UserResponse> getAllUsers(String queryRole) {
+        validationService.validate(queryRole);
+
+        if (!queryRole.equalsIgnoreCase("OPERATOR") && !queryRole.equalsIgnoreCase("DRIVER")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid role type. Only USER or DRIVER are allowed.");
+        }
+        List<User> users = userRepository.findAllByRoleAndDeletedAtIsNull(RoleType.valueOf(queryRole.toUpperCase()));
+
+        if (users.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "make sure role Type is correct and user exists");
+        }
+
+        return users.stream()
+                .map(user -> UserResponse.builder()
+                        .id(user.getId())
+                        .username(user.getUsername())
+                        .email(user.getEmail())
+                        .phoneNumber(user.getPhoneNumber())
+                        .age(user.getAge())
+                        .role(user.getRole().name())
+                        .build())
+                .toList();
     }
 }

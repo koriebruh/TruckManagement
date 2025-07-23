@@ -34,6 +34,6 @@ public class TransitPoint {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Long createdAt;
 
-    @Column(name = "deleted_at")
-    private Long deletedAt;
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
 }

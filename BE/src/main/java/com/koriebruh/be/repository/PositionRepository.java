@@ -19,4 +19,6 @@ public interface PositionRepository extends JpaRepository<Position, Long> {
     Position findTopByDeliveryIdOrderByRecordedAtDesc(String deliveryId);
 
     Position findTopByDeliveryIdAndRecordedAtLessThanEqualOrderByRecordedAtDesc(String deliveryId, Long timestamp);
+
+    void deleteAllByDeliveryId(String deliveryId);
 }

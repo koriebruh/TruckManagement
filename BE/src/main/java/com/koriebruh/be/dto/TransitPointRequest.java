@@ -30,4 +30,6 @@ public class TransitPointRequest {
     @PositiveOrZero(message = "Extra cost must be zero or positive")
     private Double extraCost;
 
+    @NotNull(message = "Availability status is required")
+    private Boolean isActive;
 }

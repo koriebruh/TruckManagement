@@ -1,0 +1,60 @@
+
+@TOKEN_DRIVER=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTMyODM5NzAsImV4cCI6MTc1MzI4NDg3MH0.-gSraMILTxTXMFYVliNvfSF-7EhMmGqxyfF9m7nuvXg
+
+### login request to example server
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "bunderess",
+  "password": "admin1234#"
+}
+
+### registration request to example server
+POST http://localhost:8080/auth/register
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "bunderess",
+  "password": "admin1234#",
+  "email": "bunderess4@gmail.com",
+  "phone_number": "32131399",
+  "age": 19
+}
+
+### Truck Avaliable to make delivery
+GET http://localhost:8080/api/trucks/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+### user send delivery position
+POST http://localhost:8080/api/delivery/position
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+{
+  "latitude": -6.2088,
+  "longitude": 106.8456,
+  "recorded_at": 1752938999
+}
+
+### user current get last positon
+GET http://localhost:8080/api/delivery/positions/latest
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+###  request make transit
+POST http://localhost:8080/api/delivery/transit
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+{
+  "delivery_id": "376424eb-0027-4678-9ded-1d6f9030dfca",
+  "transit_point_id": 2
+}

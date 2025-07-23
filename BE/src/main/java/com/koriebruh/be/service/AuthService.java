@@ -1,6 +1,7 @@
 package com.koriebruh.be.service;
 
 import com.koriebruh.be.dto.*;
+import com.koriebruh.be.entity.Enum.RoleType;
 import com.koriebruh.be.entity.User;
 import com.koriebruh.be.repository.UserRepository;
 import com.koriebruh.be.utils.Encrypt;
@@ -50,7 +51,7 @@ public class AuthService {
         newUser.setCreatedAt(Instant.now().getEpochSecond());
         newUser.setPhoneNumber(request.getPhoneNumber());
         newUser.setAge(request.getAge());
-        newUser.setRole("driver"); // Default role, can be changed later
+        newUser.setRole(RoleType.DRIVER); // Default role, can be changed later
 
         userRepository.save(newUser);
         return "User registered successfully";
@@ -105,11 +106,9 @@ public class AuthService {
     }
 
     public String getRole(String username) {
-        Optional<User> userOps = userRepository.findByUsernameAndDeletedAtIsNull(username);
-        if (userOps.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found");
-        }
-        return userOps.get().getRole();
+        User userOps = userRepository.findByUsernameAndDeletedAtIsNull(username)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        return userOps.getRole().name();
     }
 
     public RefreshTokenResponse getAccessToken(RefreshTokenRequest request) {
