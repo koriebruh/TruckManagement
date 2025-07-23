@@ -7,13 +7,12 @@ const TruckStats = ({ statsData} : any) => {
     const router = useRouter();
   return (
     <View className="px-4 py-4">
-      <View className="flex-row">
+      {/* <View className="flex-row">
         {statsData.map((stat, index) => (
           <Pressable
             key={index}
             onPress={() => {
-              console.log("Go to:", `/truck/${stat.value}`);
-              router.push(`/truck/${stat.value}`);
+              router.push(`/truck`);
             }}
             android_ripple={{ color: "#ccc" }}
             className={`flex-1 p-4 rounded-lg border ${stat.color} ${index !== 0 ? "ml-4" : ""}`}>
@@ -28,7 +27,7 @@ const TruckStats = ({ statsData} : any) => {
             </Text>
           </Pressable>
         ))}
-      </View>
+      </View> */}
     </View>
   );
 }

@@ -15,9 +15,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PositionRequest {
 
-    @NotNull(message = "Delivery ID must not be null")
-    private String deliveryId;
-
     @NotNull(message = "Latitude must not be null")
     @DecimalMin(value = "-90.0", inclusive = true, message = "Latitude must be at least -90.0")
     @DecimalMax(value = "90.0", inclusive = true, message = "Latitude must be at most 90.0")

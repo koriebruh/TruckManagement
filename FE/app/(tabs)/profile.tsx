@@ -1,11 +1,47 @@
-import { useAuth } from "@/context/AuthContext";
-import React from "react";
-import { View, Text, ScrollView, TouchableOpacity } from "react-native";
+import React, { useEffect } from "react";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useAuth } from "@/context/AuthContext";
+import { useUsers } from "@/hooks/useUser";
+import { useFocusEffect, useRouter } from "expo-router";
 
 const Profile = () => {
   const insets = useSafeAreaInsets();
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
+  const { profile, isLoading, isError, error, refetchProfile } = useUsers();
+  const router = useRouter();
+  console.log({profile});
+
+  useFocusEffect(
+    React.useCallback(() => {
+      refetchProfile(); 
+    }, [])
+  );
+
+  if (isLoading) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color="#2563eb" />
+        <Text className="mt-4 text-gray-600">Memuat profil...</Text>
+      </View>
+    );
+  }
+
+  if (isError) {
+    return (
+      <View className="flex-1 justify-center items-center px-6">
+        <Text className="text-red-500 text-center">
+          {(error as Error)?.message || "Terjadi kesalahan saat memuat profil"}
+        </Text>
+      </View>
+    );
+  }
 
   return (
     <ScrollView
@@ -29,76 +65,46 @@ const Profile = () => {
 
       {/* Profile Card */}
       <View className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-md mb-6">
-        {/* Profile Avatar Placeholder */}
+        {/* Avatar */}
         <View className="items-center mb-6">
-          <View className="w-24 h-24 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full items-center justify-center mb-4 shadow-md">
+          <View className="w-24 h-24 rounded-full bg-blue-600 items-center justify-center mb-4 shadow-md">
             <Text className="text-white text-3xl font-bold">
-              {user?.username?.charAt(0)?.toUpperCase() || "U"}
+              {profile?.username?.charAt(0)?.toUpperCase() || "U"}
             </Text>
           </View>
-
-          {/* User Name */}
           <Text className="text-2xl font-semibold text-gray-800 mb-1">
-            {user?.username || "Unnamed User"}
+            {profile?.username || "Pengguna"}
           </Text>
-
-          {/* User Email if available */}
-          {user?.email && (
-            <Text className="text-sm text-gray-500 mb-4">{user.email}</Text>
-          )}
         </View>
 
-        {/* User Info Section */}
+        {/* Info Section */}
         <View className="mb-6">
           <Text className="text-lg font-medium text-gray-700 mb-4">
             Informasi Akun
           </Text>
-
           <View className="space-y-3">
-            <View className="flex-row justify-between items-center py-3 border-b border-gray-100">
-              <Text className="text-gray-600">Username</Text>
-              <Text className="text-gray-800 font-medium">
-                {user?.username || "-"}
-              </Text>
-            </View>
-
-            {user?.email && (
-              <View className="flex-row justify-between items-center py-3 border-b border-gray-100">
-                <Text className="text-gray-600">Email</Text>
-                <Text className="text-gray-800 font-medium">{user.email}</Text>
-              </View>
-            )}
-
-            {user?.phone_number && (
-              <View className="flex-row justify-between items-center py-3 border-b border-gray-100">
-                <Text className="text-gray-600">Telepon</Text>
-                <Text className="text-gray-800 font-medium">
-                  {user.phone_number}
-                </Text>
-              </View>
-            )}
-
-            {user?.age && (
-              <View className="flex-row justify-between items-center py-3">
-                <Text className="text-gray-600">Umur</Text>
-                <Text className="text-gray-800 font-medium">
-                  {user.age} tahun
-                </Text>
-              </View>
-            )}
+            <InfoRow  label="Username" value={profile?.username} />
+            <InfoRow label="Email" value={profile?.email} />
+            <InfoRow label="Telepon" value={profile?.phone_number} />
+            <InfoRow
+              label="Umur"
+              value={profile?.age ? `${profile.age} tahun` : "-"}
+            />
           </View>
         </View>
 
-        {/* Action Buttons */}
+        {/* Actions */}
         <View className="gap-4">
-          {/* Edit Profile Button */}
-          <TouchableOpacity className="bg-blue-600 h-12 rounded-xl justify-center items-center shadow-sm active:bg-blue-700">
+          <TouchableOpacity
+            className="bg-blue-600 h-12 rounded-xl justify-center items-center shadow-sm active:bg-blue-700"
+            onPress={() => {
+              router.push(`/profile/edit/${profile?.id}`);
+            }}>
             <Text className="text-white font-semibold text-base">
               Edit Profil
             </Text>
           </TouchableOpacity>
 
-          {/* Logout Button */}
           <TouchableOpacity
             onPress={logout}
             className="bg-red-500 h-12 rounded-xl justify-center items-center shadow-sm active:bg-red-600">
@@ -106,37 +112,15 @@ const Profile = () => {
           </TouchableOpacity>
         </View>
       </View>
-
-      {/* Additional Options */}
-      <View className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
-        <Text className="text-lg font-medium text-gray-700 mb-4">
-          Pengaturan
-        </Text>
-
-        <View className="space-y-3">
-          <TouchableOpacity className="flex-row justify-between items-center py-3 border-b border-gray-100">
-            <Text className="text-gray-600">Notifikasi</Text>
-            <Text className="text-blue-600 font-medium">›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity className="flex-row justify-between items-center py-3 border-b border-gray-100">
-            <Text className="text-gray-600">Keamanan</Text>
-            <Text className="text-blue-600 font-medium">›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity className="flex-row justify-between items-center py-3 border-b border-gray-100">
-            <Text className="text-gray-600">Privasi</Text>
-            <Text className="text-blue-600 font-medium">›</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity className="flex-row justify-between items-center py-3">
-            <Text className="text-gray-600">Bantuan</Text>
-            <Text className="text-blue-600 font-medium">›</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
     </ScrollView>
   );
 };
+
+const InfoRow = ({ label, value }: { label: string; value?: string }) => (
+  <View className="flex-row justify-between items-center py-3 border-b border-gray-100">
+    <Text className="text-gray-600">{label}</Text>
+    <Text className="text-gray-800 font-medium">{value || "-"}</Text>
+  </View>
+);
 
 export default Profile;

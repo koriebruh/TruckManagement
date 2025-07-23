@@ -1,5 +1,5 @@
 package com.koriebruh.be.dto;
-
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -30,7 +30,7 @@ public class TruckRequest {
 
     @NotNull(message = "Capacity is required")
     @Positive(message = "Capacity must be greater than 0")
-    private Double capacityKG;
+    private Double capacityKg;
 
     @NotNull(message = "Availability status is required")
     private Boolean isAvailable;

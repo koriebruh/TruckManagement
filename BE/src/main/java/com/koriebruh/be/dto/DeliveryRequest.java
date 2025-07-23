@@ -18,8 +18,4 @@ public class DeliveryRequest {
 
     @NotNull(message = "Route ID must not be null")
     private String routeId;
-
-    @NotNull(message = "Worker ID must not be null")
-    private String workerId;
-
 }
