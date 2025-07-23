@@ -122,7 +122,6 @@ const EditProfileUser = () => {
             <TextInput
               className="h-14 bg-gray-100 border border-gray-200 rounded-xl px-4 text-gray-500 text-base"
               value={form.username}
-              editable={false}
               placeholder="Masukkan username"
               placeholderTextColor="#9CA3AF"
             />

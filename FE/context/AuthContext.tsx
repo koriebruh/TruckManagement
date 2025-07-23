@@ -64,43 +64,101 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   // ====== Login ======
 const login = async (username: string, password: string) => {
   try {
-    const response = await api.post("/auth/login", { username, password });
-    const data = response.data?.data;
-
-    const { access_token: accessToken, token_type: tokenType } = data;
-
-    if (!accessToken || typeof accessToken !== "string") {
-      throw new Error("Access token is invalid.");
+    // Validasi input
+    if (!username?.trim() || !password?.trim()) {
+      throw new Error("Username dan password tidak boleh kosong.");
     }
 
-    const decoded: TokenPayload = jwtDecode(accessToken);
+    const response = await api.post("/auth/login", {
+      username: username.trim(),
+      password,
+    });
+
+    // Validasi response structure
+    if (!response.data) {
+      throw new Error("Response data tidak ditemukan.");
+    }
+
+    // Coba berbagai struktur response yang mungkin
+    let data;
+    if (response.data.data) {
+      data = response.data.data;
+    } else if (response.data.access_token) {
+      data = response.data;
+    } else {
+      throw new Error("Struktur response tidak valid.");
+    }
+
+    // Server menggunakan snake_case, bukan camelCase
+    const {
+      access_token: accessToken,
+      refresh_token: refreshToken,
+      token_type: tokenType = "Bearer",
+    } = data;
+
+    // Validasi tokens
+    if (!accessToken || typeof accessToken !== "string") {
+      throw new Error("Access token tidak valid.");
+    }
+
+    if (!refreshToken || typeof refreshToken !== "string") {
+      throw new Error("Refresh token tidak valid.");
+    }
+
+    // Decode dan validasi JWT
+    let decoded: TokenPayload;
+    try {
+      decoded = jwtDecode(accessToken);
+    } catch (jwtError) {
+      throw new Error("Token tidak dapat didecode.");
+    }
+
+    // Validasi payload
+    if (!decoded.sub) {
+      throw new Error("Token payload tidak valid.");
+    }
 
     const userData: User = {
-     
       username: decoded.sub,
-    
     };
 
-    await SecureStore.setItemAsync("token", accessToken);
-    await SecureStore.setItemAsync("user", JSON.stringify(userData));
+    // Simpan tokens dan user data secara parallel
+    await Promise.all([
+      SecureStore.setItemAsync("token", accessToken),
+      SecureStore.setItemAsync("refreshToken", refreshToken),
+      SecureStore.setItemAsync("user", JSON.stringify(userData)),
+    ]);
 
+    // Set authorization header
     api.defaults.headers.common["Authorization"] =
       `${tokenType} ${accessToken}`;
+
+    // Update state
     setToken(accessToken);
     setUser(userData);
 
-
-    console.log("✅ Login successful");
+    console.log("✅ Login berhasil");
     console.log("👤 User:", userData);
-    
-  } catch (error: any) {
-    console.error("❌ Login failed:", error);
 
-    let errorMessage = "Login failed.";
-    if (error.response?.data?.message) {
+    return userData; // Return user data untuk kemudahan testing/chaining
+  } catch (error: any) {
+    console.error("❌ Login gagal:", error);
+
+    // Handle different error types
+    let errorMessage = "Login gagal. Silakan coba lagi.";
+
+    if (error.message?.includes("Username dan password")) {
+      errorMessage = error.message;
+    } else if (error.response?.status === 401) {
       errorMessage = "Username atau password salah.";
-    } else if (error.message) {
-      errorMessage = "Username atau password salah.";
+    } else if (error.response?.status === 429) {
+      errorMessage = "Terlalu banyak percobaan login. Coba lagi nanti.";
+    } else if (error.response?.status >= 500) {
+      errorMessage = "Server sedang bermasalah. Coba lagi nanti.";
+    } else if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (!navigator.onLine) {
+      errorMessage = "Tidak ada koneksi internet.";
     }
 
     throw new Error(errorMessage);
@@ -132,14 +190,18 @@ const login = async (username: string, password: string) => {
   };
 
   // ====== Logout ======
-  const logout = async () => {
-    setUser(null);
-    setToken(null);
-    api.defaults.headers.common["Authorization"] = "";
-    await SecureStore.deleteItemAsync("token");
-    await SecureStore.deleteItemAsync("user");
-    console.log("👋 Logged out");
-  };
+ const logout = async () => {
+   setUser(null);
+   setToken(null);
+   api.defaults.headers.common["Authorization"] = "";
+
+   await SecureStore.deleteItemAsync("token");
+   await SecureStore.deleteItemAsync("refreshToken"); // tambahkan ini
+   await SecureStore.deleteItemAsync("user");
+
+   console.log("👋 Logged out");
+ };
+
 
   return (
     <AuthContext.Provider
