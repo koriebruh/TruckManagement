@@ -131,15 +131,14 @@ public class RouteService {
         if (estimatedDurationHours < 1.0) {
             estimatedDurationHours = 1.0;
         }
-        Route newRoute = new Route();
-        newRoute.setStartCity(startCity);
-        newRoute.setEndCity(endCity);
-        newRoute.setDetails(request.getDetails());
-        newRoute.setBasePrice(request.getBasePrice());
-        newRoute.setDistanceKM(distanceKM);
-        newRoute.setEstimatedDurationHours(estimatedDurationHours);
-        newRoute.setIsActive(request.getIsActive());
-        newRoute.setCreatedAt(System.currentTimeMillis());
+
+        route.setStartCity(startCity);
+        route.setEndCity(endCity);
+        route.setDetails(request.getDetails());
+        route.setBasePrice(request.getBasePrice());
+        route.setDistanceKM(distanceKM);
+        route.setEstimatedDurationHours(estimatedDurationHours);
+        route.setIsActive(request.getIsActive());
 
         routeRepository.save(route);
         return "Route updated successfully";
