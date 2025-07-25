@@ -1,5 +1,5 @@
 
-@TOKEN_ADMIN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTMyODQyMzMsImV4cCI6MTc1MzI4NTEzM30.K7uGtFgLp76UBb74FJ1aFsyrX6p4yNgBeFh8Y_QciQE
+@TOKEN_ADMIN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTM0MzUzMTcsImV4cCI6MTc1MzQzNjIxN30.Oap8sf9t8m_czoxgPMESQ-r5W0Np_58OQllczyQKebA
 
 ### login for admin
 POST http://localhost:8080/auth/login
@@ -22,27 +22,27 @@ Authorization: Bearer {{TOKEN_ADMIN}}
 {
   "start_city_id": 1,
   "end_city_id": 2,
-  "details": "Route PP boi dieng dari apii ihh jakarta",
+  "details": "Route PP lama nih",
   "base_price": 150000.0,
   "is_active": true
 }
 
 ### update route by uuid route
-PUT http://localhost:8080/api/routes/9e53c0c0-8dd1-4d4d-b9eb-2db980e71cfa
+PUT http://localhost:8080/api/routes/06d7fbd5-f199-4fd8-9562-752ea9c23b6d
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN_ADMIN}}
 
 {
   "start_city_id": 3,
-  "end_city_id": 2,
-  "details": "Route of roadd boiii",
-  "base_price": 150000.0,
+  "end_city_id": 6,
+  "details": "Route pp baruuwww",
+  "base_price": 90000.0,
   "is_active": true
 }
 
 ### Achive this ROUTE by uuid
-DELETE http://localhost:8080/api/routes/f1af09d2-7c22-4146-abee-be9e6a889252
+DELETE http://localhost:8080/api/routes/06d7fbd5-f199-4fd8-9562-752ea9c23b6d
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN_ADMIN}}
@@ -54,7 +54,7 @@ Accept: application/json
 Authorization: Bearer {{TOKEN_ADMIN}}
 
 ### get route by uuid
-GET http://localhost:8080/api/routes/f1af09d2-7c22-4146-abee-be9e6a889252
+GET http://localhost:8080/api/routes/06d7fbd5-f199-4fd8-9562-752ea9c23b6d
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN_ADMIN}}
