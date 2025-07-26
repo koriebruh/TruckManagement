@@ -1,5 +1,5 @@
 
-@TOKEN_ADMIN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTM0MzUzMTcsImV4cCI6MTc1MzQzNjIxN30.Oap8sf9t8m_czoxgPMESQ-r5W0Np_58OQllczyQKebA
+@TOKEN_ADMIN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTM1MDQ3MzcsImV4cCI6MTc1MzUwNTYzN30.SweZ2ZbPHt4gMzS-jt5HsMM7y1RFecO0O_CRnCm216Y
 
 ### login for admin
 POST http://localhost:8080/auth/login
@@ -11,6 +11,11 @@ Accept: application/json
   "password": "jamal123"
 }
 
+###
+GET http://localhost:8080/api/users/drivers/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
 
 ### ============== ============== ============== CRUD FOR ROUTE ============== ============== ============== ###
 ### create route

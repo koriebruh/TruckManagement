@@ -70,7 +70,7 @@ public class UserController {
         );
     }
 
-    @GetMapping(value = "/available",
+    @GetMapping(value = "drivers/available",
             produces = "application/json"
     )
     public ResponseEntity<WebResponse<List<UserAvailableResponse>>> getAvailableUsers() {

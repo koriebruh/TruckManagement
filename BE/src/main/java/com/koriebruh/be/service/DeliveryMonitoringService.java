@@ -16,6 +16,7 @@ package com.koriebruh.be.service;
 import com.koriebruh.be.dto.*;
 import com.koriebruh.be.entity.*;
 import com.koriebruh.be.entity.Enum.DeliverAlertType;
+import com.koriebruh.be.entity.Enum.RoleType;
 import com.koriebruh.be.repository.*;
 import com.koriebruh.be.utils.GeoUtils;
 import lombok.RequiredArgsConstructor;
@@ -160,11 +161,15 @@ public class DeliveryMonitoringService {
         }
 
         if (!truck.getIsAvailable()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Route is not active");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Truck is not active");
         }
 
         if (!route.getIsActive()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Route is not active");
+        }
+
+        if (worker.getRole() != RoleType.DRIVER) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "this is not a driver, can't create delivery");
         }
 
         Delivery delivery = new Delivery();
@@ -382,7 +387,6 @@ public class DeliveryMonitoringService {
 
         return "Transit request " + (request.getIsAccepted() ? "accepted" : "rejected") + " successfully.";
     }
-
 
 
 }
