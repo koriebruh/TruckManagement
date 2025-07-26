@@ -18,15 +18,9 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByIdAndDeletedAtIsNull(String id);
 
-    @Query("""
-        SELECT u FROM User u
-        WHERE u.deletedAt IS NULL
-        AND u.role = 'driver'
-        AND u.id NOT IN (
-            SELECT d.worker.id FROM Delivery d
-            WHERE d.finishedAt IS NULL
-        )
-    """)
+    @Query("SELECT u FROM User u WHERE u.deletedAt IS NULL " +
+            "AND u.role = 'DRIVER' " +
+            "AND NOT EXISTS (SELECT d FROM Delivery d WHERE d.worker.id = u.id AND d.finishedAt IS NULL)")
     List<User> findAllActiveDriverUsersNotInOngoingDelivery();
 
     Optional<User> findByRefreshToken(String refreshToken);
