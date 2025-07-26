@@ -168,8 +168,8 @@ public class DeliveryMonitoringService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Route is not active");
         }
 
-        if (worker.getRole() != RoleType.DRIVER) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "this is not a driver, can't create delivery");
+        if (worker.getRole() == RoleType.DRIVER) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Worker is not a driver");
         }
 
         Delivery delivery = new Delivery();
