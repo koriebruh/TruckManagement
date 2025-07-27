@@ -1,8 +1,6 @@
 package com.koriebruh.be.dto;
 
 
-import com.koriebruh.be.entity.DeliverAlert;
-import com.koriebruh.be.entity.DeliveryTransit;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,11 +22,14 @@ public class DeliveryDetailResponse {
 
     private String routeId;
 
+    private String addByOperatorId;
+
     private Long startedAt;
 
     private Long finishedAt;
 
-    private List<DeliverAlert> alerts;
+    private List<DeliveryTransitDTO> transits;
 
-    private List<DeliveryTransit> transits;
+    private List<DeliveryAlertDTO> alerts;
+
 }

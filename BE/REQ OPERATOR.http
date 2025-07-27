@@ -1,4 +1,4 @@
-@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJvcGVyYXRvcjEiLCJpYXQiOjE3NTMyODQ2OTQsImV4cCI6MTc1MzI4NTU5NH0.QJnW4OExQ7CIfMxC2ou1Er51j4cSmzxToaVhVcmtCeQ
+@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2RlcmF0b3JidWRpIiwiaWF0IjoxNzUzNTk3ODgwLCJleHAiOjE3NTM1OTg3ODB9.IwnQHw3E2T-cK_oPIOX0Ki5IhOU1buCBhUQoX_jdaR8
 
 ### login request to example server
 POST http://localhost:8080/auth/login
@@ -6,24 +6,17 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "operator1",
-  "password": "operator1"
+  "username": "moderatorbudi",
+  "password": "budi4567"
 }
 
-### registration request to example server
-POST http://localhost:8080/auth/register
-Content-Type: application/json
-Accept: application/json
-
-{
-  "username": "operator1",
-  "password": "operator1",
-  "email": "operator14@gmail.com",
-  "phone_number": "32131399",
-  "age": 19
-}
 
 ### get all workers
+###
+GET http://localhost:8080/api/users/drivers/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
 
 ### get all routes
 GET http://localhost:8080/api/routes
@@ -44,15 +37,22 @@ Accept: application/json
 Authorization: Bearer {{TOKEN_OPERATOR}}
 
 {
-  "truck_id": "190d80ed-0af1-4747-aeb0-802d710246b1",
-  "route_id": "eda50758-6dae-493d-b284-3273c1e8f58b",
-  "worker_id": "4add3bdc-5bd1-491e-85de-cf6845836245",
+  "truck_id": "b8677164-0e63-45a6-b86d-b7facf784632",
+  "route_id": "f6210933-83e4-4f9d-a498-5b1c95ae3643",
+  "worker_id": "816c3d51-e2a1-4c8d-a2b6-6ac124e021c8",
   "latitude": -6.200000,
   "longitude": 106.816666
 }
 
 ### get all delivery ACTIVE
 GET http://localhost:8080/api/delivery/active
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+
+### get all delivery ACTIVE
+GET http://localhost:8080/api/delivery/detail/984f6f89-2f0f-462e-8b79-0e79f77ce14d
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN_OPERATOR}}

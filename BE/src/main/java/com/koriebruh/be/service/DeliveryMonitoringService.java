@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -149,9 +150,9 @@ public class DeliveryMonitoringService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found"));
 
         User operatorUser = workerRepo.findByUsernameAndDeletedAtIsNull(operator)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "This is user can`t create delivery"));
 
-        User worker = workerRepo.findByUsernameAndDeletedAtIsNull(operator)
+        User worker = workerRepo.findByIdAndDeletedAtIsNull(request.getWorkerId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
 
         // CEK STATUS DELIVERY SEBELUMNYA UDAH KELAR BELUM
@@ -168,7 +169,7 @@ public class DeliveryMonitoringService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Route is not active");
         }
 
-        if (worker.getRole() == RoleType.DRIVER) {
+        if (worker.getRole() != RoleType.DRIVER) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Worker is not a driver");
         }
 
@@ -185,6 +186,7 @@ public class DeliveryMonitoringService {
         initialPosition.setLatitude(request.getLatitude());
         initialPosition.setLongitude(request.getLongitude());
         initialPosition.setRecordedAt(Instant.now().getEpochSecond());
+        positionRepo.save(initialPosition);
 
         return "Delivery created successfully with ID: " + delivery.getId();
     }
@@ -227,6 +229,51 @@ public class DeliveryMonitoringService {
         Delivery delivery = deliveryRepo.findByWorkerUsernameAndFinishedAtIsNull(username)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "right now you don't have any active delivery"));
 
+        // Mapping alerts
+        List<DeliveryAlertDTO> deliveryAlertDTOs = new ArrayList<>();
+        if (delivery.getAlerts() != null) {
+            for (DeliverAlert alert : delivery.getAlerts()) {
+                DeliveryAlertDTO deliveryAlertDTO = new DeliveryAlertDTO();
+                deliveryAlertDTO.setId(alert.getId());
+                deliveryAlertDTO.setType(alert.getType().toString());
+                deliveryAlertDTO.setMessage(alert.getMessage());
+                deliveryAlertDTO.setCreatedAt(alert.getCreatedAt());
+                deliveryAlertDTOs.add(deliveryAlertDTO);
+            }
+        }
+
+        // Mapping transits
+        List<DeliveryTransitDTO> deliveryTransitDTOs = new ArrayList<>();
+        if (delivery.getTransits() != null) {
+            for (DeliveryTransit transit : delivery.getTransits()) {
+                DeliveryTransitDTO deliveryTransitDTO = new DeliveryTransitDTO();
+                deliveryTransitDTO.setId(transit.getId());
+
+                // Mapping TransitPoint entity ke TransitPointResponse DTO
+                if (transit.getTransitPoint() != null) {
+                    TransitPoint tp = transit.getTransitPoint();
+                    TransitPointResponse transitPointResponse = TransitPointResponse.builder()
+                            .id(tp.getId())
+                            .loadingCityId(tp.getLoadingCity() != null ? tp.getLoadingCity().getId() : null)
+                            .unloadingCityId(tp.getUnloadingCity() != null ? tp.getUnloadingCity().getId() : null)
+                            .estimatedDurationMinute(tp.getEstimatedDurationMinute())
+                            .extraCost(tp.getExtraCost())
+                            .isActive(tp.getIsActive())
+                            .build();
+                    deliveryTransitDTO.setTransitPoint(transitPointResponse);
+                }
+
+                deliveryTransitDTO.setReason(transit.getReason());
+                deliveryTransitDTO.setArrivedAt(transit.getArrivedAt());
+                deliveryTransitDTO.setActionedAt(transit.getActionedAt());
+                deliveryTransitDTO.setIsAccepted(transit.getIsAccepted());
+                // Cuma ambil ID operator
+                deliveryTransitDTO.setActionByOperatorId(transit.getActionByOperatorId() != null ?
+                        transit.getActionByOperatorId().getId() : null);
+                deliveryTransitDTOs.add(deliveryTransitDTO);
+            }
+        }
+
         //FINAL RESPONSE
         return DeliveryDetailResponse.builder()
                 .id(delivery.getId())
@@ -235,8 +282,9 @@ public class DeliveryMonitoringService {
                 .routeId(delivery.getRoute().getId())
                 .startedAt(delivery.getStartedAt())
                 .finishedAt(delivery.getFinishedAt())
-                .alerts(delivery.getAlerts())
-                .transits(delivery.getTransits())
+                .addByOperatorId(delivery.getAddByOperatorId().getId())
+                .alerts(deliveryAlertDTOs) // ✅ Pakai DTO
+                .transits(deliveryTransitDTOs) // ✅ Pakai DTO
                 .build();
     }
 
@@ -258,6 +306,7 @@ public class DeliveryMonitoringService {
                             .truckId(delivery.getTrucks().getId())
                             .routeId(delivery.getRoute().getId())
                             .startedAt(delivery.getStartedAt())
+                            .addByOperatorId(delivery.getAddByOperatorId().getId())
                             .build();
                 })
                 .toList();
@@ -325,6 +374,52 @@ public class DeliveryMonitoringService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "right now you don't have any active delivery"));
 
         //FINAL RESPONSE
+        // Mapping alerts
+        List<DeliveryAlertDTO> deliveryAlertDTOs = new ArrayList<>();
+        if (delivery.getAlerts() != null) {
+            for (DeliverAlert alert : delivery.getAlerts()) {
+                DeliveryAlertDTO deliveryAlertDTO = new DeliveryAlertDTO();
+                deliveryAlertDTO.setId(alert.getId());
+                deliveryAlertDTO.setType(alert.getType().toString());
+                deliveryAlertDTO.setMessage(alert.getMessage());
+                deliveryAlertDTO.setCreatedAt(alert.getCreatedAt());
+                deliveryAlertDTOs.add(deliveryAlertDTO);
+            }
+        }
+
+        // Mapping transits
+        List<DeliveryTransitDTO> deliveryTransitDTOs = new ArrayList<>();
+        if (delivery.getTransits() != null) {
+            for (DeliveryTransit transit : delivery.getTransits()) {
+                DeliveryTransitDTO deliveryTransitDTO = new DeliveryTransitDTO();
+                deliveryTransitDTO.setId(transit.getId());
+
+                // Mapping TransitPoint entity ke TransitPointResponse DTO
+                if (transit.getTransitPoint() != null) {
+                    TransitPoint tp = transit.getTransitPoint();
+                    TransitPointResponse transitPointResponse = TransitPointResponse.builder()
+                            .id(tp.getId())
+                            .loadingCityId(tp.getLoadingCity() != null ? tp.getLoadingCity().getId() : null)
+                            .unloadingCityId(tp.getUnloadingCity() != null ? tp.getUnloadingCity().getId() : null)
+                            .estimatedDurationMinute(tp.getEstimatedDurationMinute())
+                            .extraCost(tp.getExtraCost())
+                            .isActive(tp.getIsActive())
+                            .build();
+                    deliveryTransitDTO.setTransitPoint(transitPointResponse);
+                }
+
+                deliveryTransitDTO.setReason(transit.getReason());
+                deliveryTransitDTO.setArrivedAt(transit.getArrivedAt());
+                deliveryTransitDTO.setActionedAt(transit.getActionedAt());
+                deliveryTransitDTO.setIsAccepted(transit.getIsAccepted());
+                // Cuma ambil ID operator
+                deliveryTransitDTO.setActionByOperatorId(transit.getActionByOperatorId() != null ?
+                        transit.getActionByOperatorId().getId() : null);
+                deliveryTransitDTOs.add(deliveryTransitDTO);
+            }
+        }
+
+        //FINAL RESPONSE
         return DeliveryDetailResponse.builder()
                 .id(delivery.getId())
                 .workerId(delivery.getWorker().getId())
@@ -332,8 +427,9 @@ public class DeliveryMonitoringService {
                 .routeId(delivery.getRoute().getId())
                 .startedAt(delivery.getStartedAt())
                 .finishedAt(delivery.getFinishedAt())
-                .alerts(delivery.getAlerts())
-                .transits(delivery.getTransits())
+                .addByOperatorId(delivery.getAddByOperatorId().getId())
+                .alerts(deliveryAlertDTOs)
+                .transits(deliveryTransitDTOs)
                 .build();
     }
 
