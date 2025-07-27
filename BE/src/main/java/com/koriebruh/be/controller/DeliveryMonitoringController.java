@@ -187,4 +187,43 @@ public class DeliveryMonitoringController {
         );
     }
 
+    @GetMapping(value = "/transit/pending",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<List<TransitPendingResponse>>> getPendingTransits() {
+        List<TransitPendingResponse> pendingTransits = deliveryMonitoringService.getPendingTransitRequest();
+        return ResponseEntity.ok(
+                WebResponse.<List<TransitPendingResponse>>builder()
+                        .status("OK")
+                        .data(pendingTransits)
+                        .build()
+        );
+    }
+
+    @GetMapping(value = "/transit/{transitId}",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<TransitPendingDetail>> getTransitDetail(@PathVariable String transitId) {
+        TransitPendingDetail transitDetail = deliveryMonitoringService.getTransitPendingDetailById(transitId);
+        return ResponseEntity.ok(
+                WebResponse.<TransitPendingDetail>builder()
+                        .status("OK")
+                        .data(transitDetail)
+                        .build()
+        );
+    }
+
+    @GetMapping(value = "/transit",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<List<TransitPendingDetail>>> getAllTransits() {
+        List<TransitPendingDetail> allTransits = deliveryMonitoringService.getAllTransitPendingDetail();
+        return ResponseEntity.ok(
+                WebResponse.<List<TransitPendingDetail>>builder()
+                        .status("OK")
+                        .data(allTransits)
+                        .build()
+        );
+    }
+
 }
