@@ -15,14 +15,11 @@ package com.koriebruh.be.service;
 
 import com.koriebruh.be.dto.*;
 import com.koriebruh.be.entity.*;
-import com.koriebruh.be.entity.Enum.DeliverAlertType;
 import com.koriebruh.be.entity.Enum.RoleType;
 import com.koriebruh.be.repository.*;
-import com.koriebruh.be.utils.GeoUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
@@ -484,5 +481,61 @@ public class DeliveryMonitoringService {
         return "Transit request " + (request.getIsAccepted() ? "accepted" : "rejected") + " successfully.";
     }
 
+    /// get pending transit request
+    public List<TransitPendingResponse> getPendingTransitRequest() {
+        List<DeliveryTransit> deliveryTransit = deliveryTransitRepo.findAllByIsAcceptedNullAndActionByOperatorIdNull();
 
+        if (deliveryTransit.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Right now you don't have any pending transit request");
+        }
+
+        return deliveryTransit.stream().map(
+                dt -> TransitPendingResponse.builder()
+                        .id(dt.getId())
+                        .deliveryId(dt.getDelivery().getId())
+                        .transitPointId(dt.getTransitPoint().getId())
+                        .arrivedAt(dt.getArrivedAt())
+                        .build()).toList();
+    }
+
+    /// get by id
+    public TransitPendingDetail getTransitPendingDetailById(String transitId) {
+        DeliveryTransit deliveryTransit = deliveryTransitRepo.findById(transitId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Transit request not found"));
+
+        TransitPendingDetail detail = TransitPendingDetail.builder()
+                .id(deliveryTransit.getId())
+                .deliveryId(deliveryTransit.getDelivery().getId())
+                .transitPointId(deliveryTransit.getTransitPoint().getId())
+                .arrivedAt(deliveryTransit.getArrivedAt())
+                .ActionByOperatorId(deliveryTransit.getActionByOperatorId() != null ? deliveryTransit.getActionByOperatorId().getId() : null)
+                .isAccepted(deliveryTransit.getIsAccepted())
+                .actionedAt(deliveryTransit.getActionedAt())
+                .reason(deliveryTransit.getReason())
+                .build();
+
+        return detail;
+    }
+
+
+    /// get all no fillter apapun
+    public List<TransitPendingDetail> getAllTransitPendingDetail() {
+        List<DeliveryTransit> deliveryTransits = deliveryTransitRepo.findAll();
+
+        if (deliveryTransits.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No transit requests found");
+        }
+
+        return deliveryTransits.stream().map(
+                dt -> TransitPendingDetail.builder()
+                        .id(dt.getId())
+                        .deliveryId(dt.getDelivery().getId())
+                        .transitPointId(dt.getTransitPoint().getId())
+                        .arrivedAt(dt.getArrivedAt())
+                        .ActionByOperatorId(dt.getActionByOperatorId() != null ? dt.getActionByOperatorId().getId() : null)
+                        .isAccepted(dt.getIsAccepted())
+                        .actionedAt(dt.getActionedAt())
+                        .reason(dt.getReason())
+                        .build()).toList();
+    }
 }

@@ -34,12 +34,12 @@ public class DeliveryTransit {
 
     @ManyToOne(optional = true)
     @JoinColumn(name = "action_by_operator_id", nullable = true)
-    private User ActionByOperatorId;
+    private User actionByOperatorId;
 
     @Column(name = "is_accepted", nullable = true)
     private Boolean isAccepted;
 
-    @Column(name = "actioned_at", nullable = true, updatable = false)
+    @Column(name = "actioned_at", nullable = true, updatable = true)
     private Long actionedAt;
 
     @Column(name = "reason", nullable = true)
