@@ -1,5 +1,5 @@
 import CustomHeader from "@/components/Header";
-import { useAuth } from "@/context/AuthContext";
+import { useAuthStatus } from "@/hooks/useAuth";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
 import React from "react";
@@ -11,20 +11,33 @@ import {
 
 const TabLayout = () => {
  const insets = useSafeAreaInsets();
- const { isAuthenticated, loading } = useAuth();
+//  const { isAuthenticated, loading } = useAuth();
 
- if (loading) {
-   return (
-     <View className="flex-1 justify-center items-center">
-       <ActivityIndicator size="large" />
-     </View>
-   );
- }
+//  if (loading) {
+//    return (
+//      <View className="flex-1 justify-center items-center">
+//        <ActivityIndicator size="large" />
+//      </View>
+//    );
+//  }
 
- if (!isAuthenticated) {
-   return <Redirect href="/(auth)/sign-in" />;
- }
+//  if (!isAuthenticated) {
+//    return <Redirect href="/(auth)/sign-in" />;
+//  }
 
+const { isAuthenticated, isLoading } = useAuthStatus();
+console.log(isAuthenticated);
+
+if (isLoading) {
+  return (
+    <View className="flex-1 justify-center items-center">
+      <ActivityIndicator size="large" />
+    </View>)
+}
+
+if (!isAuthenticated) {
+  return <Redirect href="/login" />;
+}
 
   return (
     <Tabs
@@ -74,36 +87,16 @@ const TabLayout = () => {
         }}
       />
       <Tabs.Screen
-        name="truck"
+        name="delivery"
         options={{
-          title: "Truck",
           header: () => <CustomHeader />,
+          tabBarLabel: "Deliveries",
           tabBarIcon: ({ focused, color }) => (
             <View className="items-center h-full">
               <Feather name="truck" size={24} color={color} />
               <Text
-                className={`text-xs mt-1 ${focused ? "text-blue-600 font-medium" : "text-gray-500"}`}>
-                Truck
-              </Text>
-            </View>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="route"
-        options={{
-          title: "Rute",
-          header: () => <CustomHeader />,
-          tabBarIcon: ({ focused, color }) => (
-            <View className="items-center h-full">
-              <Ionicons
-                name={focused ? "map" : "map-outline"}
-                size={24}
-                color={color}
-              />
-              <Text
-                className={`text-xs mt-1 ${focused ? "text-blue-600 font-medium" : "text-gray-500"}`}>
-                Rute
+                className={`w-full text-xs mt-1 ${focused ? "text-blue-600 font-medium" : "text-gray-500"}`}>
+                Deliveries
               </Text>
             </View>
           ),
@@ -113,6 +106,7 @@ const TabLayout = () => {
         name="profile"
         options={{
           title: "Profile",
+          tabBarLabel: "Profile",
           header: () => <CustomHeader />,
           tabBarIcon: ({ focused, color }) => (
             <View className="items-center h-full">

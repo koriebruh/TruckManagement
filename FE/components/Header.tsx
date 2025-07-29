@@ -3,12 +3,12 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { useAuth } from "../context/AuthContext";
+// import { useAuth } from "../context/AuthContext";
 
 export default function CustomHeader() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { user } = useAuth(); 
+  // const { user } = useAuth(); 
 
   return (
     <View className="bg-blue-700" style={{ paddingTop: insets.top }}>
@@ -32,7 +32,7 @@ export default function CustomHeader() {
           {/* Tampilkan nama pengguna */}
           <TouchableOpacity onPress={() => router.push("/profile")}>
             <Text className="text-white font-semibold text-sm">
-              {user?.username || "Guest"}
+              {/* {user?.username || "Guest"} */}
             </Text>
           </TouchableOpacity>
         </View>
