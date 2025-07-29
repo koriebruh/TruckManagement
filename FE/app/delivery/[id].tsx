@@ -172,16 +172,7 @@ const DeliveryDetail = () => {
             </Text>
           </View>
 
-          {/* Company Info */}
-          <View className="px-6 py-4 border-b border-gray-200">
-            <Text className="text-gray-800 font-bold text-lg">
-              Delivery Management System
-            </Text>
-            <Text className="text-gray-600 text-sm mt-1">
-              Jl. Transport No. 123, Jakarta
-            </Text>
-            <Text className="text-gray-600 text-sm">Telp: (021) 1234-5678</Text>
-          </View>
+         
 
           {/* Delivery Info */}
           <View className="px-6 py-4">
@@ -304,7 +295,7 @@ const DeliveryDetail = () => {
           </View>
         </View>
 
-        {/* Footer */}
+        {/* Footer
         <View className="bg-white mx-6 rounded-b-2xl border-l border-r border-b border-gray-200 mb-6">
           <View className="px-6 py-4 border-t border-dashed border-gray-300">
             <Text className="text-center text-gray-500 text-sm">
@@ -314,7 +305,7 @@ const DeliveryDetail = () => {
               Dokumen ini dicetak otomatis oleh sistem
             </Text>
           </View>
-        </View>
+        </View> */}
       </ScrollView>
     </View>
   );

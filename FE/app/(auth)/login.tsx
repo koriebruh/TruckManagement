@@ -41,7 +41,6 @@ export default function LoginScreen() {
     try {
       clearError();
       await handleLogin(data);
-      Alert.alert("Sukses", "Login berhasil!");
       router.replace("/(tabs)"); // Navigate to main app
     } catch (error) {
       // Error is already handled by useLogin hook
