@@ -12,6 +12,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useRegister } from "@/hooks/useAuth";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 // Zod validation schema
 const registerSchema = z.object({
@@ -50,6 +51,8 @@ type RegisterFormData = z.infer<typeof registerSchema>;
 export default function RegisterScreen() {
   const router = useRouter();
   const { handleRegister, isLoading, error, clearError } = useRegister();
+
+  const insets = useSafeAreaInsets();
 
   const {
     control,
@@ -124,7 +127,7 @@ export default function RegisterScreen() {
   );
 
   return (
-    <View className="flex-1 bg-gradient-to-br from-slate-50 to-gray-100">
+    <View style={{ paddingTop: insets.top }} className="flex-1 bg-gradient-to-br from-slate-50 to-gray-100">
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="flex-1 justify-center px-8 py-12">
           <View className="mb-8">

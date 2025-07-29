@@ -42,6 +42,7 @@ if (!isAuthenticated) {
   return (
     <Tabs
       screenOptions={{
+        
         tabBarShowLabel: false,
         tabBarActiveTintColor: "#007bff",
         tabBarInactiveTintColor: "#999",

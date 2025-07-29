@@ -107,6 +107,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       //   // Add other user fields from token if available
       // };
 
+      // console.log("Saving AccessToken:", typeof newAccessToken, newAccessToken);
+      // console.log(
+      //   "Saving RefreshToken:",
+      //   typeof newRefreshToken,
+      //   newRefreshToken
+      // );
+
+
       // Store tokens and user data
       await Promise.all([
         SecureStore.setItemAsync(ACCESS_TOKEN_KEY, newAccessToken),
@@ -223,7 +231,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const contextValue: AuthContextType = {
     user,
-    access_token : accessToken,
+    access_token: accessToken,
     refresh_token: refreshToken,
     loading,
     isAuthenticated: !!accessToken,

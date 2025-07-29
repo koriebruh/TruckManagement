@@ -105,28 +105,28 @@ export const useLogout = () => {
   };
 };
 
-// export const useTokenRefresh = () => {
-//   const {  } = useAuth();
-//   const [isRefreshing, setIsRefreshing] = useState(false);
+export const useTokenRefresh = () => {
+  const { refreshaccess_token } = useAuth();
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-//   const handleRefreshToken = useCallback(async () => {
-//     try {
-//       setIsRefreshing(true);
-//       const newToken = await refreshAccessToken();
-//       return newToken;
-//     } catch (error) {
-//       console.error("Token refresh error:", error);
-//       return null;
-//     } finally {
-//       setIsRefreshing(false);
-//     }
-//   }, [refreshAccessToken]);
+  const handleRefreshToken = useCallback(async () => {
+    try {
+      setIsRefreshing(true);
+      const newToken = await refreshaccess_token();
+      return newToken;
+    } catch (error) {
+      console.error("Token refresh error:", error);
+      return null;
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [refreshaccess_token]);
 
-//   return {
-//     handleRefreshToken,
-//     isRefreshing,
-//   };
-// };
+  return {
+    handleRefreshToken,
+    isRefreshing,
+  };
+};
 
 export const useAuthStatus = () => {
   const { isAuthenticated, loading, user, access_token } = useAuth();

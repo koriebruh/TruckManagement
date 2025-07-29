@@ -236,7 +236,7 @@ const Profile = () => {
   }
 
   return (
-    <View style={{ flex: 1, paddingTop: insets.top }} className="bg-gray-50">
+    <View style={{ flex: 1, paddingTop: insets.top, marginBottom: insets.bottom }} className="bg-gray-50">
       <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
 
       {/* Header

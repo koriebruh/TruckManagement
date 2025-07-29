@@ -78,6 +78,7 @@ const Dashboard = () => {
 
   return (
     <SafeAreaView style={{ marginBottom: insets.bottom }} className="flex-1 bg-gray-50">
+
       <StatusBar barStyle="light-content" backgroundColor="#1E40AF" />
       {/* Stats Cards */}
       <View className="px-6 py-4">
