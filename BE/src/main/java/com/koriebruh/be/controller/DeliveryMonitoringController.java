@@ -226,4 +226,33 @@ public class DeliveryMonitoringController {
         );
     }
 
+
+    @GetMapping(value = "/history",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<List<DeliveryHistoryResponse>>> getDeliveryHistory() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        List<DeliveryHistoryResponse> deliveryHistory = deliveryMonitoringService.getAllDeliveryHistory();
+        return ResponseEntity.ok(
+                WebResponse.<List<DeliveryHistoryResponse>>builder()
+                        .status("OK")
+                        .data(deliveryHistory)
+                        .build()
+        );
+    }
+
+    @GetMapping(value = "/history/{workerId}",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<List<DeliveryHistoryResponse>>> getDeliveryHistoryByWorkerId(@PathVariable String workerId) {
+        List<DeliveryHistoryResponse> deliveryHistory = deliveryMonitoringService.getDeliveryHistoryByWorkerId(workerId);
+        return ResponseEntity.ok(
+                WebResponse.<List<DeliveryHistoryResponse>>builder()
+                        .status("OK")
+                        .data(deliveryHistory)
+                        .build()
+        );
+    }
 }

@@ -1,4 +1,4 @@
-@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2RlcmF0b3JidWRpIiwiaWF0IjoxNzUzNjA0NzMyLCJleHAiOjE3NTM2MDU2MzJ9.uiFNQ7e-9YrJQLrIfoP1pFq3Zsske9U25LLdP_oz0bE
+@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2RlcmF0b3JidWRpIiwiaWF0IjoxNzUzNzA0OTY5LCJleHAiOjE3NTM3MDU4Njl9.zpSwU--A1BLZfj8mQyoLlGBF0tUjHnXt5Dh6Abpt3ZA
 
 ### login request to example server
 POST http://localhost:8080/auth/login
@@ -14,6 +14,12 @@ Accept: application/json
 ### get all workers
 ###
 GET http://localhost:8080/api/users/drivers/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+###
+GET http://localhost:8080/api/users/drivers
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN_OPERATOR}}
@@ -101,6 +107,26 @@ Authorization: Bearer {{TOKEN_OPERATOR}}
 
 ### get all delivery ACTIVE
 GET http://localhost:8080/api/delivery/detail/984f6f89-2f0f-462e-8b79-0e79f77ce14d
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+
+### get all history delivery
+PATCH http://localhost:8080/api/delivery/finish/984f6f89-2f0f-462e-8b79-0e79f77ce14d
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+
+### get all history delivery
+GET http://localhost:8080/api/delivery/history
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+### get all history delivery
+GET http://localhost:8080/api/delivery/history/816c3d51-e2a1-4c8d-a2b6-6ac124e021c8
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN_OPERATOR}}

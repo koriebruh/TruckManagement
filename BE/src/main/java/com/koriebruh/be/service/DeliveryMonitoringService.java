@@ -538,4 +538,50 @@ public class DeliveryMonitoringService {
                         .reason(dt.getReason())
                         .build()).toList();
     }
+
+    // get all history of delivery
+    public List<DeliveryHistoryResponse> getAllDeliveryHistory() {
+        List<Delivery> deliveries = deliveryRepo.findAllByFinishedAtIsNotNull();
+
+        if (deliveries.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No delivery history found");
+        }
+
+        return deliveries.stream().map(delivery -> {
+            return DeliveryHistoryResponse.builder()
+                    .id(delivery.getId())
+                    .workerId(delivery.getWorker().getId())
+                    .truckId(delivery.getTrucks().getId())
+                    .routeId(delivery.getRoute().getId())
+                    .startedAt(delivery.getStartedAt())
+                    .finishedAt(delivery.getFinishedAt())
+                    .addByOperatorId(delivery.getAddByOperatorId().getId())
+                    .build();
+        }).toList();
+    }
+
+    // get delivery history by worker id
+    public List<DeliveryHistoryResponse> getDeliveryHistoryByWorkerId(String workerId) {
+        User worker = workerRepo.findByIdAndDeletedAtIsNull(workerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
+
+        List<Delivery> deliveries = deliveryRepo.findAllByWorkerIdAndFinishedAtIsNotNull(worker.getId());
+
+        if (deliveries.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No delivery history found for this worker");
+        }
+
+        return deliveries.stream().map(delivery -> {
+            return DeliveryHistoryResponse.builder()
+                    .id(delivery.getId())
+                    .workerId(delivery.getWorker().getId())
+                    .truckId(delivery.getTrucks().getId())
+                    .routeId(delivery.getRoute().getId())
+                    .startedAt(delivery.getStartedAt())
+                    .finishedAt(delivery.getFinishedAt())
+                    .addByOperatorId(delivery.getAddByOperatorId().getId())
+                    .build();
+        }).toList();
+    }
+
 }
