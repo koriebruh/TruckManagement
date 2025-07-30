@@ -85,7 +85,7 @@ export default function RegisterScreen() {
           onPress: () => router.replace("/login"),
         },
       ]);
-    } catch (error) {
+    } catch (error:any) {
       // Error is already handled by useRegister hook
       console.log("Register error handled by hook:", error.message);
     }
