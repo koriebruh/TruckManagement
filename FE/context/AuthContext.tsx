@@ -16,8 +16,7 @@ import api, {
   REFRESH_TOKEN_KEY,
   refreshAccessToken,
 } from "@/services/axios";
-import { useRouter } from 'expo-router';
-import { useProfile } from '@/hooks/useProfile';
+import { useQueryClient } from '@tanstack/react-query';
 
 // Create context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,9 +27,9 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
 
-  const router = useRouter();
 
 
   // Initialize auth state on app start
@@ -104,7 +103,8 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
         credentials
       );
       console.log("Login response:", response.data);
-      const { access_token: newAccessToken, refresh_token: newRefreshToken } = response.data.data;
+      const { access_token: newAccessToken, refresh_token: newRefreshToken } =
+        response.data.data;
 
       // Decode token to get user info
       // const decoded: TokenPayload = jwtDecode(newAccessToken);
@@ -120,7 +120,6 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
       //   newRefreshToken
       // );
 
-
       // Store tokens and user data
       await Promise.all([
         SecureStore.setItemAsync(ACCESS_TOKEN_KEY, newAccessToken),
@@ -132,9 +131,11 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
       // setUser(userData);
       setAccessToken(newAccessToken);
       setRefreshToken(newRefreshToken);
+      // Invalidate profile and role queries to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ["user_profile"] });
+      queryClient.invalidateQueries({ queryKey: ["validate_role"] });
 
-
-      console.log('✅ Login successful');
+      console.log("✅ Login successful");
       // console.log('👤 User:', userData);
     } catch (error: any) {
       console.error('❌ Login failed:', error.response.data.errors || error.response);
@@ -190,32 +191,35 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
   };
 
   // Logout function
-  const logout = async (): Promise<void> => {
-    try {
-      setLoading(true);
+const logout = async (): Promise<void> => {
+  try {
+    setLoading(true);
 
-      // Optional: Call logout endpoint if your backend has one
-      // await api.post('/auth/logout');
+    // Optional: Call API logout jika ada
+    // await api.post('/auth/logout');
 
-      // Clear tokens and user data
-      await clearTokens();
-      
-      // Clear state
-      setUser(null);
-      setAccessToken(null);
-      setRefreshToken(null);
+    // ✅ Bersihkan cache react-query
+    queryClient.clear();
 
-      console.log('👋 Logout successful');
-    } catch (error) {
-      console.error('❌ Logout error:', error);
-      // Still clear state even if API call fails
-      setUser(null);
-      setAccessToken(null);
-      setRefreshToken(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+    // ✅ Hapus semua token & user info
+    await clearTokens();
+
+    console.log("👋 Logout successful");
+
+    // ✅ Reset state auth
+    setUser(null);
+    setAccessToken(null);
+    setRefreshToken(null);
+  } catch (error) {
+    console.error("❌ Logout error:", error);
+    setUser(null);
+    setAccessToken(null);
+    setRefreshToken(null);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   // Manual refresh token function (exposed for external use)
   const refreshAccessTokenManual = async (): Promise<string | null> => {

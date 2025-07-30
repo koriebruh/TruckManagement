@@ -34,6 +34,7 @@ interface UpdateProfileResponse {
 // API functions
 const fetchProfile = async (): Promise<ProfileResponse> => {
   const response = await api.get("/api/users/profile");
+  console.log("Profile API response:", response.data); // Debug log
 
   if (response.status !== 200) {
     throw new Error("Failed to fetch user profile");
@@ -70,6 +71,7 @@ export const useProfile = () => {
     queryFn: fetchProfile,
     enabled: isAuthenticated, // Only fetch if user is authenticated
     retry: 2,
+    staleTime: 0,
   });
 };
 

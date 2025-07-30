@@ -88,24 +88,28 @@ export const useRegister = () => {
 
 export const useLogout = () => {
   const { logout } = useAuth();
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = useCallback(async () => {
     try {
       setIsLoading(true);
       await logout();
+      console.log("✅ Logout pressed");
+      router.replace("/login");
     } catch (error) {
       console.error("Logout error:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [logout]);
+  }, [logout, router]);
 
   return {
     handleLogout,
     isLoading,
   };
 };
+
 
 export const useTokenRefresh = () => {
   const { refreshaccess_token } = useAuth();

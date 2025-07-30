@@ -26,6 +26,7 @@ const Layout = () => {
     error: profileError,
   } = useProfile();
 
+
   useEffect(() => {
     // ✅ Wait for both auth and profile to be ready
     if (!authLoading && !profileLoading) {
