@@ -1,14 +1,15 @@
-import { useState, useCallback } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { LoginRequest, RegisterRequest } from "@/types/auth.types";
-import { refreshAccessToken } from "@/services/axios";
-import {  useRouter } from "expo-router";
+import { useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+import { useProfile } from "./useProfile";
 
 export const useLogin = () => {
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const { data: profile } = useProfile();
   const router = useRouter();
 
   const handleLogin = useCallback(
@@ -20,11 +21,12 @@ export const useLogin = () => {
           username: credentials.username,
           password: credentials.password,
         };
+
         await login(payload);
-        router.push("/(tabs)"); 
-      } catch (err: any) {
-        setError(err.message || "Login failed");
-        throw err;
+      } catch (err: Error | any) {
+        console.log("Login error:", err);
+        setError(err[0] || "Login failed");
+        throw err[0];
       } finally {
         setIsLoading(false);
       }

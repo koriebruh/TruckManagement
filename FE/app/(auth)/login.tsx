@@ -1,13 +1,12 @@
-
-import React from "react";
-import { View, TextInput, Text, TouchableOpacity, Alert } from "react-native";
-import { Link, useRouter } from "expo-router";
-import { useForm, Controller } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import { useLogin } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Link, useRouter } from "expo-router";
+import React, { useEffect, useState } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
+import { z } from "zod";
 
-// Zod validation schema
 const loginSchema = z.object({
   username: z
     .string()
@@ -24,6 +23,8 @@ type LoginFormData = z.infer<typeof loginSchema>;
 export default function LoginScreen() {
   const router = useRouter();
   const { handleLogin, isLoading, error, clearError } = useLogin();
+  const { data: profile, isLoading: isProfileLoading } = useProfile();
+  const [loginSuccess, setLoginSuccess] = useState(false);
 
   const {
     control,
@@ -41,12 +42,25 @@ export default function LoginScreen() {
     try {
       clearError();
       await handleLogin(data);
-      router.replace("/(tabs)"); // Navigate to main app
+      setLoginSuccess(true); // Mark login as successful
     } catch (error) {
-      // Error is already handled by useLogin hook
-      console.log("Login error handled by hook" + error.message);
+      console.log("Login error handled by hook:", error);
     }
   };
+
+  // Route based on profile role after login
+  useEffect(() => {
+    if (loginSuccess && !isProfileLoading && profile?.data) {
+      console.log("Profile role:", profile.data.role);
+      if (profile.data.role === "OWNER") {
+        router.replace("/(tabs)/owner");
+      } else if (profile.data.role === "DRIVER") {
+        router.replace("/(tabs)/driver");
+      } else {
+        router.replace("/(auth)/login");
+      }
+    }
+  }, [loginSuccess, isProfileLoading, profile, router]);
 
   const renderInput = (
     name: keyof LoginFormData,
@@ -104,7 +118,6 @@ export default function LoginScreen() {
             secureTextEntry: true,
           })}
 
-          {/* Error Message from Hook */}
           {error && (
             <View className="mb-6 bg-red-50 border border-red-200 rounded-lg p-3">
               <Text className="text-red-600 text-center text-sm">{error}</Text>

@@ -65,6 +65,5 @@ export const useDeliveryDetail = (delivery_id: string) => {
     queryKey: ["delivery_detail", delivery_id],
     queryFn: () => fetchDeliveryDetail(delivery_id),
     enabled: !!delivery_id,
-    staleTime: 2 * 60 * 1000, // 2 minutes
   });
 };

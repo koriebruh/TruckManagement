@@ -1,7 +1,7 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const transit = () => {
+const TransitDriver = () => {
   return (
     <View>
       <Text>transit</Text>
@@ -9,4 +9,4 @@ const transit = () => {
   )
 }
 
-export default transit
+export default TransitDriver;

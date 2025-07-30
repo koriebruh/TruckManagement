@@ -16,16 +16,22 @@ import api, {
   REFRESH_TOKEN_KEY,
   refreshAccessToken,
 } from "@/services/axios";
+import { useRouter } from 'expo-router';
+import { useProfile } from '@/hooks/useProfile';
 
 // Create context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 // Auth Provider
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+export const AuthProvider = ({ children }: { children: ReactNode}) => {
   const [user, setUser] = useState<User | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+
+
+  const router = useRouter();
+
 
   // Initialize auth state on app start
   useEffect(() => {
@@ -127,21 +133,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setAccessToken(newAccessToken);
       setRefreshToken(newRefreshToken);
 
-      
 
       console.log('✅ Login successful');
       // console.log('👤 User:', userData);
     } catch (error: any) {
-      console.error('❌ Login failed:', error.response || error.message);
+      console.error('❌ Login failed:', error.response.data.errors || error.response);
       
       let errorMessage = 'Login gagal';
       
-      if (error?.response?.data?.message) {
-        errorMessage = error.response.data.message;
-      } else if (error?.response?.data?.error) {
-        errorMessage = error.response.data.error;
-      } else if (error?.message) {
-        errorMessage = error.message;
+      if (error.response.data.errors) {
+        errorMessage = error.response.data.errors.password;
+      } else if (error?.response?.data?.error.password) {
+        errorMessage = error.response.data.error.password;
+      } else if (error?.response?.data?.error.username) {
+        errorMessage = error?.response?.data?.error.username;
       }
       
       throw new Error(errorMessage);

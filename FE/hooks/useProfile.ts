@@ -54,6 +54,14 @@ const updateProfile = async (
   return response.data;
 };
 
+const validateRole = async () => {
+    const response = await api.get("/auth/validate");
+    if (response.status !== 200) {
+        throw new Error("Failed to validate user role");
+    }
+    return response.data;
+}
+
 // Custom hooks
 export const useProfile = () => {
   const { isAuthenticated } = useAuth();
@@ -61,8 +69,16 @@ export const useProfile = () => {
     queryKey: ["user_profile"],
     queryFn: fetchProfile,
     enabled: isAuthenticated, // Only fetch if user is authenticated
-    staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 2,
+  });
+};
+
+export const useValidateRole = () => {
+  return useQuery({
+    queryKey: ["validate_role"],
+    queryFn: validateRole,
+    retry: 2,
+    refetchOnWindowFocus: false, // Avoid refetching on window focus
   });
 };
 
@@ -81,4 +97,6 @@ export const useUpdateProfile = () => {
       console.error("Update profile error:", error);
     },
   });
+
+  
 };
