@@ -20,7 +20,7 @@ const DeliveryCard: React.FC<DeliveryCardProps> = ({ delivery, onPress }) => {
   const { worker, truck, route, isLoading } = useDeliveryWithDetails(delivery);
 
   const formatDate = (timestamp: number) => {
-    const date = new Date(timestamp);
+    const date = new Date(timestamp * 1000); 
     return date.toLocaleDateString("id-ID", {
       day: "2-digit",
       month: "short",

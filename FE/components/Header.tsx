@@ -21,13 +21,13 @@ export default function CustomHeader() {
         </View>
 
         <View className="flex-row items-center">
-          {/* Notifikasi */}
+          {/* Notifikasi
           <View className="relative mr-4">
             <Ionicons name="notifications" size={24} color="white" />
             <View className="absolute -top-1 -right-1 bg-red-500 rounded-full w-4 h-4 flex items-center justify-center">
               <Text className="text-white text-xs font-bold">3</Text>
             </View>
-          </View>
+          </View> */}
 
           {/* Tampilkan nama pengguna */}
           <TouchableOpacity onPress={() => router.push("/profile")}>

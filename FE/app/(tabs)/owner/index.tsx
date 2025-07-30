@@ -77,7 +77,7 @@ const Dashboard = () => {
   const deliveries = deliveriesData?.data || [];
 
   return (
-    <SafeAreaView style={{ marginBottom: insets.bottom }} className="flex-1 bg-gray-50">
+    <View style={{ marginBottom: insets.bottom }} className="flex-1 bg-gray-50">
 
       <StatusBar barStyle="light-content" backgroundColor="#1E40AF" />
       {/* Stats Cards */}
@@ -86,7 +86,7 @@ const Dashboard = () => {
           <View className="bg-white rounded-2xl p-4 flex-1 mr-2 shadow-sm">
             <View className="flex-row items-center justify-between">
               <View>
-                <Text className="text-gray-500 text-sm">Total Aktif</Text>
+                <Text className="text-gray-499 text-sm">Total Aktif</Text>
                 <Text className="text-2xl font-bold text-gray-800 mt-1">
                   {deliveries.length}
                 </Text>
@@ -104,7 +104,7 @@ const Dashboard = () => {
                 <Text className="text-2xl font-bold text-gray-800 mt-1">
                   {deliveries.filter(d => {
                     const today = new Date().toDateString();
-                    const deliveryDate = new Date(d.startedAt).toDateString();
+                    const deliveryDate = new Date(d.started_at * 1000).toDateString();
                     return today === deliveryDate;
                   }).length}
                 </Text>
@@ -135,11 +135,13 @@ const Dashboard = () => {
           <Text className="text-xl font-bold text-gray-800">
             Delivery Aktif
           </Text>
-          {deliveries.length > 0 && (
+
+
+          {/* {deliveries.length > 0 && (
             <TouchableOpacity>
               <Text className="text-blue-600 font-medium">Lihat Semua</Text>
             </TouchableOpacity>
-          )}
+          )} */}
         </View>
 
         {/* Delivery List */}
@@ -163,7 +165,7 @@ const Dashboard = () => {
           ))
         )}
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 

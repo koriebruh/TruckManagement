@@ -1,4 +1,5 @@
 // hooks/useProfile.ts
+import { useAuth } from "@/context/AuthContext";
 import api from "@/services/axios";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -55,9 +56,11 @@ const updateProfile = async (
 
 // Custom hooks
 export const useProfile = () => {
+  const { isAuthenticated } = useAuth();
   return useQuery({
     queryKey: ["user_profile"],
     queryFn: fetchProfile,
+    enabled: isAuthenticated, // Only fetch if user is authenticated
     staleTime: 5 * 60 * 1000, // 5 minutes
     retry: 2,
   });

@@ -503,3 +503,55 @@ export const useDeliveryWithDetails = (delivery: Delivery) => {
 };
 
 
+// Types based on snake_case payload
+export interface DeliveryHistoryItem {
+  id: string;
+  worker_id: string;
+  truck_id: string;
+  route_id: string;
+  started_at: number; // timestamp
+  finished_at: number; // timestamp
+  add_by_operator_id: string;
+}
+
+export interface DeliveryHistoryResponse {
+  status: string;
+  data: DeliveryHistoryItem[];
+}
+
+// Query key factory
+export const deliveryHistoryKeys = {
+  all: ["delivery-history"] as const,
+  lists: () => [...deliveryHistoryKeys.all, "list"] as const,
+  list: (filters: Record<string, any>) =>
+    [...deliveryHistoryKeys.lists(), { filters }] as const,
+};
+
+// Fetch function
+const fetchDeliveryHistory = async (): Promise<DeliveryHistoryResponse> => {
+  const response = await api.get("api/delivery/history");
+  return response.data;
+};
+
+// Hook
+export const useDeliveryHistory = () => {
+  return useQuery({
+    queryKey: deliveryHistoryKeys.lists(),
+    queryFn: fetchDeliveryHistory,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes (previously cacheTime)
+  });
+};
+
+// Hook with filters (optional - for future use)
+export const useDeliveryHistoryWithFilters = (
+  filters: Record<string, any> = {}
+) => {
+  return useQuery({
+    queryKey: deliveryHistoryKeys.list(filters),
+    queryFn: () => fetchDeliveryHistory(),
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    enabled: true,
+  });
+};

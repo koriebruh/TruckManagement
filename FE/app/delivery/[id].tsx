@@ -37,7 +37,7 @@ const DeliveryDetail = () => {
   const route = route_data?.data;
 
   const formatDate = (timestamp: number) => {
-    return new Date(timestamp).toLocaleDateString("id-ID", {
+    return new Date(timestamp * 1000).toLocaleDateString("id-ID", {
       day: "2-digit",
       month: "long",
       year: "numeric",
