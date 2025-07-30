@@ -1,14 +1,10 @@
 import CustomHeader from "@/components/Header";
 import { useAuthStatus } from "@/hooks/useAuth";
-import { useProfile } from "@/hooks/useProfile";
 import { Feather, Ionicons } from "@expo/vector-icons";
 import { Redirect, Tabs } from "expo-router";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { ActivityIndicator, Text, View } from "react-native";
-import {
-  SafeAreaProvider,
-  useSafeAreaInsets,
-} from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const TabLayoutOwner = () => {
   const insets = useSafeAreaInsets();
@@ -59,7 +55,7 @@ const TabLayoutOwner = () => {
         },
       }}>
       <Tabs.Screen
-        name="owner"
+        name="homeOwner"
         options={{
           title: "Home",
           header: () => <CustomHeader />,

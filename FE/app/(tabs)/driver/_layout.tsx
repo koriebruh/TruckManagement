@@ -55,7 +55,7 @@ const TabLayoutDriver = () => {
         },
       }}>
       <Tabs.Screen
-        name="driver"
+        name="homeDriver"
         options={{
           title: "Home",
           header: () => <CustomHeader />,
