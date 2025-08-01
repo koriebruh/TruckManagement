@@ -12,6 +12,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useDeliveryDetail } from "@/hooks/useDeliveryDetail";
 import { useWorker, useTruck, useRoute } from "@/hooks/useDelivery";
+import { useCities, useCityById, useTransitPointDetails, useTransitPoints } from "@/hooks/useTransit";
 
 const DeliveryDetail = () => {
   const insets = useSafeAreaInsets();
@@ -31,6 +32,7 @@ const DeliveryDetail = () => {
   const { data: worker_data } = useWorker(delivery?.worker_id || "");
   const { data: truck_data } = useTruck(delivery?.truck_id || "");
   const { data: route_data } = useRoute(delivery?.route_id || "");
+
 
   const worker = worker_data?.data;
   const truck = truck_data?.data;
@@ -67,6 +69,33 @@ const DeliveryDetail = () => {
     return total;
   };
 
+  const getCityName = () => {
+    let start_city_id = 0;
+    let end_city_id = 0;
+
+     delivery?.transits.forEach((transit) => {
+       if (transit.is_accepted) {
+         start_city_id = transit.transit_point.loading_city_id;
+         end_city_id = transit.transit_point.unloading_city_id;
+       }
+     });
+
+     return {
+       start: start_city_id,
+       end: end_city_id
+     }
+  }
+
+  const start = getCityName();
+  const start_city_id = start.start;
+  const end_city_id = start.end;
+
+  const {data: start_city_name} = useCityById(start_city_id);
+  const {data: end_city_name} = useCityById(end_city_id);
+
+
+  
+
   const getDeliveryStatus = () => {
     if (!delivery) return { status: "Unknown", color: "gray" };
 
@@ -78,6 +107,8 @@ const DeliveryDetail = () => {
       return { status: "Menunggu", color: "orange" };
     }
   };
+
+  console.log("transit:"+ " " + delivery);
 
   if (delivery_loading) {
     return (
@@ -171,8 +202,6 @@ const DeliveryDetail = () => {
               #{delivery.id.slice(-8).toUpperCase()}
             </Text>
           </View>
-
-         
 
           {/* Delivery Info */}
           <View className="px-6 py-4">
@@ -269,9 +298,9 @@ const DeliveryDetail = () => {
                     transit.is_accepted && (
                       <View
                         key={transit.id}
-                        className="flex-row justify-between">
+                        className="flex-row justify-between mt-2">
                         <Text className="text-gray-600">
-                          Transit Point {index + 1}
+                          {start_city_name?.data.name} → {end_city_name?.data.name}
                         </Text>
                         <Text className="text-gray-800 font-medium">
                           {formatCurrency(transit.transit_point.extra_cost)}

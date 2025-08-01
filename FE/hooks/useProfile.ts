@@ -26,10 +26,15 @@ interface UpdateProfileData {
   age?: number;
 }
 
+
+interface UpdateProfile {
+  refresh_token: string;
+}
 interface UpdateProfileResponse {
   status: string;
-  data: UserProfile;
+  data: UpdateProfile;
 }
+
 
 // API functions
 const fetchProfile = async (): Promise<ProfileResponse> => {
@@ -46,7 +51,8 @@ const fetchProfile = async (): Promise<ProfileResponse> => {
 const updateProfile = async (
   data: UpdateProfileData
 ): Promise<UpdateProfileResponse> => {
-  const response = await api.put("/api/users/profile", data);
+  const response = await api.post("/api/users/profile", data);
+  
 
   if (response.status !== 200) {
     throw new Error("Failed to update profile");

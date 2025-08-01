@@ -248,7 +248,6 @@ const logout = async (): Promise<void> => {
     register,
     logout,
     refreshaccess_token: refreshAccessTokenManual,
-    // refreshAccessToken: refreshAccessTokenManual,
   };
 
   return (

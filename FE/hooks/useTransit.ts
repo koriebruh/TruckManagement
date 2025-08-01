@@ -27,6 +27,35 @@ export interface TransitPointsResponse {
   data: TransitPoint[];
 }
 
+export interface TransitPointDetails {
+  id: number;
+  loadingCity: {
+    id: number;
+    name: string;
+    latitude: number;
+    longitude: number;
+    country: string;
+    createdAt: number;
+  };
+  unloadingCity: {
+    id: number;
+    name: string;
+    latitude: number;
+    longitude: number;
+    country: string;
+    createdAt: number;
+  };
+  estimatedDurationMinute: number;
+  extraCost: number;
+  createdAt: number;
+  isActive: true;
+}
+
+export interface TransitPointDetailsResponse {
+  status: string;
+  data: TransitPointDetails[];
+}
+
 export interface DeliveryForTransit {
   id: string;
   route_id: string;
@@ -46,6 +75,14 @@ export interface ActiveDeliveriesResponse {
 export interface City {
   id: number;
   name: string;
+  latitude: number;
+  longitude: number;
+  country: string;
+}
+
+export interface CitiesResponse {
+  status: string;
+  data: City[];
 }
 
 // Fetch available transit points
@@ -54,11 +91,21 @@ const fetchTransitPoints = async (): Promise<TransitPointsResponse> => {
   return response.data;
 };
 
+const fetchTransitPointDetails = async (transitId: string): Promise<TransitPointDetailsResponse> => {
+  const response = await api.get(`/api/transit-points/${transitId}`);
+  return response.data;
+}
+
 // Fetch cities for mapping
 const fetchCities = async (): Promise<{ status: string; data: City[] }> => {
   const response = await api.get("api/cities");
   return response.data;
 };
+
+const fetchCityById = async (cityId: number): Promise<{ status: string; data: City }> => {
+  const response = await api.get(`api/cities/${cityId}`);
+  return response.data;
+}
 
 // Submit transit
 const submitTransit = async (
@@ -83,6 +130,13 @@ export const useTransitPoints = () => {
   });
 };
 
+export const useTransitPointDetails = (transitId: string) => {
+  return useQuery({
+    queryKey: ["transit-point-details", transitId],
+    queryFn: () => fetchTransitPointDetails(transitId),
+  });
+};
+
 // Hook for cities (for mapping city IDs to names)
 export const useCities = () => {
   return useQuery({
@@ -91,6 +145,14 @@ export const useCities = () => {
     staleTime: 30 * 60 * 1000, // 30 minutes - cities don't change often
   });
 };
+
+export const useCityById = (cityId: number) => {
+  return useQuery({
+    queryKey: ["city", cityId],
+    queryFn: () => fetchCityById(cityId),
+    staleTime: 30 * 60 * 1000, // 30 minutes - cities don't change often
+  });
+}
 
 // Hook for submitting transit
 export const useSubmitTransit = () => {
