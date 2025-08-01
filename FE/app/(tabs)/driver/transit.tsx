@@ -203,16 +203,16 @@ const truckId = deliveriesData?.data.truck_id;
         {/* List Delivery atau Input */}
         {!useCustomId ? (
           deliveriesError ? (
-            <Text className="text-red-500 text-center">
-              Gagal memuat delivery aktif
-            </Text>
-          ) : deliveries.length === 0 ? (
             <View className="py-8 items-center">
               <Ionicons name="cube-outline" size={48} color="#9CA3AF" />
               <Text className="text-gray-500 mt-2">
                 Tidak ada delivery aktif
               </Text>
             </View>
+          ) : deliveries.length === 0 ? (
+            <Text className="text-red-500 text-center">
+              Tidak ada delivery aktif
+            </Text>
           ) : (
             deliveries.map((delivery) => (
               <TouchableOpacity
@@ -268,6 +268,26 @@ const truckId = deliveriesData?.data.truck_id;
       </View>
 
       {/* === PILIH TITIK TRANSIT === */}
+      <View className="flex-row items-center justify-between mb-4">
+        <Text className="text-gray-800 text-lg font-semibold">
+          Pilih Titik Transit
+        </Text>
+        <TouchableOpacity
+          onPress={handleSubmitTransit}
+          disabled={isSubmitting}
+          className={`flex-row items-center px-3 py-2 rounded-lg ${
+            isSubmitting ? "bg-blue-400" : "bg-blue-600"
+          }`}>
+          {isSubmitting ? (
+            <ActivityIndicator size="small" color="white" />
+          ) : (
+            <Feather name="map-pin" size={18} color="white" />
+          )}
+          <Text className="text-white font-medium text-sm ml-2">
+            {isSubmitting ? "Memproses..." : "Catat"}
+          </Text>
+        </TouchableOpacity>
+      </View>
       <ScrollView
         className="flex-1"
         contentContainerStyle={{ paddingBottom: insets.bottom }}
@@ -281,27 +301,6 @@ const truckId = deliveriesData?.data.truck_id;
           />
         }>
         <View className="bg-white rounded-2xl p-5 shadow-sm mb-6">
-          <View className="flex-row items-center justify-between mb-4">
-            <Text className="text-gray-800 text-lg font-semibold">
-              Pilih Titik Transit
-            </Text>
-            <TouchableOpacity
-              onPress={handleSubmitTransit}
-              disabled={isSubmitting}
-              className={`flex-row items-center px-3 py-2 rounded-lg ${
-                isSubmitting ? "bg-blue-400" : "bg-blue-600"
-              }`}>
-              {isSubmitting ? (
-                <ActivityIndicator size="small" color="white" />
-              ) : (
-                <Feather name="map-pin" size={18} color="white" />
-              )}
-              <Text className="text-white font-medium text-sm ml-2">
-                {isSubmitting ? "Memproses..." : "Catat"}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
           {transitPointsError ? (
             <Text className="text-red-500 text-center">
               Gagal memuat titik transit
@@ -325,7 +324,7 @@ const truckId = deliveriesData?.data.truck_id;
                 }`}>
                 <View className="flex-row justify-between">
                   <View className="flex-1">
-                    <Text className="font-semibold text-gray-800">
+                    <Text className="font-semibold text-gray-800 " style={{lineHeight: 20}}>
                       {getCityName(point.loading_city_id, cities)} →{" "}
                       {getCityName(point.unloading_city_id, cities)}
                     </Text>

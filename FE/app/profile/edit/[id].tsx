@@ -85,11 +85,9 @@ const EditProfile = () => {
 
       const response = await updateProfileMutation.mutateAsync(updateData);
 
-      // ✅ Jika BE mengirim refresh token baru
       if (response?.data?.refresh_token) {
         await SecureStore.setItemAsync("refresh_token", response.data.refresh_token);
 
-        // Panggil manual refresh token untuk dapatkan access token baru
         const newToken = await handleRefreshToken();
         console.log("🔄 Access token diperbarui:", newToken);
       }
@@ -154,15 +152,6 @@ const EditProfile = () => {
       <View style={{ flex: 1, paddingTop: insets.top }} className="bg-gray-50">
         <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
 
-        {/* Header */}
-        <View className="bg-white px-6 py-4 border-b border-gray-200">
-          <View className="flex-row items-center">
-            <TouchableOpacity onPress={() => router.back()} className="mr-4">
-              <Ionicons name="arrow-back" size={24} color="#374151" />
-            </TouchableOpacity>
-            <Text className="text-xl font-bold text-gray-800">Edit Profil</Text>
-          </View>
-        </View>
 
         <View className="flex-1 justify-center items-center">
           <Text className="text-gray-500">Memuat data profil...</Text>
@@ -175,17 +164,7 @@ const EditProfile = () => {
     <View style={{ flex: 1, paddingTop: insets.top }} className="bg-gray-50">
       <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
 
-      {/* Header
-      <View className="bg-white px-6 py-4 border-b border-gray-200">
-        <View className="flex-row items-center justify-between">
-          <View className="flex-row items-center">
-            <TouchableOpacity onPress={() => router.back()} className="mr-4">
-              <Ionicons name="arrow-back" size={24} color="#374151" />
-            </TouchableOpacity>
-            <Text className="text-xl font-bold text-gray-800">Edit Profil</Text>
-          </View>
-        </View>
-      </View> */}
+     
 
       <ScrollView
         className="flex-1"

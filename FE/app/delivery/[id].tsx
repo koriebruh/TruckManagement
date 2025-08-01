@@ -115,18 +115,6 @@ const DeliveryDetail = () => {
       <View style={{ flex: 1, paddingTop: insets.top }} className="bg-gray-50">
         <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
 
-        {/* Header */}
-        <View className="bg-white px-6 py-4 border-b border-gray-200">
-          <View className="flex-row items-center">
-            <TouchableOpacity onPress={() => router.back()} className="mr-4">
-              <Ionicons name="arrow-back" size={24} color="#374151" />
-            </TouchableOpacity>
-            <Text className="text-xl font-bold text-gray-800">
-              Detail Delivery
-            </Text>
-          </View>
-        </View>
-
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#2563EB" />
           <Text className="text-gray-500 mt-4">Memuat detail delivery...</Text>
@@ -139,18 +127,6 @@ const DeliveryDetail = () => {
     return (
       <View style={{ flex: 1, paddingTop: insets.top }} className="bg-gray-50">
         <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
-
-        {/* Header */}
-        <View className="bg-white px-6 py-4 border-b border-gray-200">
-          <View className="flex-row items-center">
-            <TouchableOpacity onPress={() => router.back()} className="mr-4">
-              <Ionicons name="arrow-back" size={24} color="#374151" />
-            </TouchableOpacity>
-            <Text className="text-xl font-bold text-gray-800">
-              Detail Delivery
-            </Text>
-          </View>
-        </View>
 
         <View className="flex-1 justify-center items-center px-6">
           <Ionicons name="alert-circle" size={64} color="#EF4444" />

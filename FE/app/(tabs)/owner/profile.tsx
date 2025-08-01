@@ -72,10 +72,7 @@ const Profile = () => {
       <View style={{ flex: 1, paddingTop: insets.top }} className="bg-gray-50">
         <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
 
-        {/* Header */}
-        <View className="bg-white px-6 py-4 border-b border-gray-200">
-          <Text className="text-xl font-bold text-gray-800">Profil Saya</Text>
-        </View>
+     
 
         <View className="flex-1 justify-center items-center">
           <ActivityIndicator size="large" color="#2563EB" />
@@ -89,11 +86,6 @@ const Profile = () => {
     return (
       <View style={{ flex: 1, paddingTop: insets.top }} className="bg-gray-50">
         <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
-
-        {/* Header */}
-        <View className="bg-white px-6 py-4 border-b border-gray-200">
-          <Text className="text-xl font-bold text-gray-800">Profil Saya</Text>
-        </View>
 
         <View className="flex-1 justify-center items-center px-6">
           <Ionicons name="alert-circle" size={64} color="#EF4444" />

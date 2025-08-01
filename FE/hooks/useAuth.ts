@@ -18,8 +18,8 @@ export const useLogin = () => {
         setIsLoading(true);
         setError(null);
         const payload = {
-          username: credentials.username,
-          password: credentials.password,
+          username: credentials.username.trim(),
+          password: credentials.password.trim(),
         };
 
         await login(payload);
@@ -57,10 +57,10 @@ export const useRegister = () => {
         setIsLoading(true);
         setError(null);
         const payload = {
-          username: userData.username,
+          username: userData.username.trim(),
           password: userData.password,
-          email: userData.email,
-          phone_number: userData.phone_number,
+          email: userData.email.trim(),
+          phone_number: userData.phone_number.trim(),
           age: userData.age,
         };
         await register(payload);
