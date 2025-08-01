@@ -77,7 +77,7 @@ const TabLayoutDriver = () => {
           tabBarLabel: "Transit",
           tabBarIcon: ({ focused, color }) => (
             <View className="items-center h-full">
-              <Feather name="aperture" size={24} color={color} />
+              <Feather name="truck" size={24} color={color} />
               <Text
                 className={`w-full text-xs mt-1 ${focused ? "text-blue-600 font-medium" : "text-gray-500"}`}>
                 Transit
