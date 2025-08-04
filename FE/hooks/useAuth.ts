@@ -2,15 +2,12 @@ import { useAuth } from "@/context/AuthContext";
 import { LoginRequest, RegisterRequest } from "@/types/auth.types";
 import { useRouter } from "expo-router";
 import { useCallback, useState } from "react";
-import { useProfile } from "./useProfile";
 
 export const useLogin = () => {
   const { login } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const { data: profile } = useProfile();
-  const router = useRouter();
 
   const handleLogin = useCallback(
     async (credentials: LoginRequest) => {

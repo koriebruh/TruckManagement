@@ -71,7 +71,7 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
                 console.log('✅ Auth state restored with refreshed token');
               }
             } catch (error: unknown) {
-              console.log('❌ Token refresh failed during initialization');
+              console.log('❌ Token refresh failed during initialization', error);
               await clearTokens();
             }
           }

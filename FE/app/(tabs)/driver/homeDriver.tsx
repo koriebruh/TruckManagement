@@ -15,7 +15,7 @@ import {
   View,
 } from "react-native";
 import { useRouter } from "expo-router";
-import { useActiveDeliveries, useDeliveryByWorker } from "@/hooks/useDelivery";
+import {  useDeliveryByWorker } from "@/hooks/useDelivery";
 
 const DashboardDriver = () => {
   const insets = useSafeAreaInsets();
