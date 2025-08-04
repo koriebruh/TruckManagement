@@ -25,8 +25,8 @@ export const useLogin = () => {
         await login(payload);
       } catch (err: Error | any) {
         console.log("Login error:", err);
-        setError(err[0] || "Login failed");
-        throw err[0];
+        setError(err || "Login failed");
+        throw err.response.data.errors;
       } finally {
         setIsLoading(false);
       }

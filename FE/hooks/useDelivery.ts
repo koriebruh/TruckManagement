@@ -57,7 +57,7 @@ interface DeliveryDetail {
 
 interface DeliveryDetailResponse {
   status: string;
-  data: DeliveryDetail;
+  data: DeliveryDetail[];
 }
 
 interface Worker {
@@ -109,6 +109,17 @@ interface RouteResponse {
 // API functions
 const fetchActiveDeliveries = async (): Promise<DeliveryResponse> => {
   const response = await api.get("/api/delivery/active");
+  console.log(response.data);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to fetch active deliveries");
+  }
+
+  return response.data;
+};
+
+const fetchActiveDeliveriesWorker = async (worker_id: string): Promise<DeliveryResponse> => {
+  const response = await api.get(`/api/delivery/active/${worker_id}`);
 
   if (response.status !== 200) {
     throw new Error("Failed to fetch active deliveries");
@@ -127,13 +138,23 @@ const fetchDeliveryDetail = async (delivery_id: string): Promise<DeliveryDetailR
   return response.data;
 };
 const fetchDeliveryByWorker = async (): Promise<DeliveryDetailResponse> => {
-  const response = await api.get(`/api/delivery/detail`);
+  // const response = await api.get("/api/delivery/detail");
 
-  if (response.status !== 200) {
-    throw new Error(`Failed to fetch delivery detail `);
+  // if (response.status !== 200) {
+  //   throw new Error(`Failed to fetch delivery detail `);
+  // }
+
+  try {
+    const response = await api.get("/api/delivery/detail");
+    console.log("FULL RESPONSE:", response);
+
+    return response.data;
+  } catch (error: any) {
+    console.log("FETCH ERROR:", error.message);
+    throw error;
   }
 
-  return response.data;
+
 };
 
 const fetchWorker = async (worker_id: string): Promise<WorkerResponse> => {
@@ -171,7 +192,15 @@ export const useActiveDeliveries = () => {
   return useQuery({
     queryKey: ["active_deliveries"],
     queryFn: fetchActiveDeliveries,
-    refetchInterval: 30000, // Refetch every 30 seconds
+    // refetchInterval: 30000, // Refetch every 30 seconds
+    staleTime: 20000, // Consider data stale after 20 seconds
+  });
+};
+export const useActiveDeliveriesWorker = (worker_id: string) => {
+  return useQuery({
+    queryKey: ["active_deliveries", worker_id],
+    queryFn: () => fetchActiveDeliveriesWorker(worker_id),
+    // refetchInterval: 30000, // Refetch every 30 seconds
     staleTime: 20000, // Consider data stale after 20 seconds
   });
 };

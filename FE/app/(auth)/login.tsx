@@ -28,6 +28,7 @@ import { useQueryClient } from "@tanstack/react-query";
     const [loginSuccess, setLoginSuccess] = useState(false);
     const queryClient = useQueryClient();
 
+
     const {
       control,
       handleSubmit,
@@ -47,7 +48,7 @@ import { useQueryClient } from "@tanstack/react-query";
         await queryClient.invalidateQueries({ queryKey: ["user_profile"] });
         setLoginSuccess(true); // Mark login as successful
       } catch (error) {
-        console.log("Login error handled by hook:", error);
+        console.log("Login error handled by hook:", error.response.data.errors);
       }
     };
 

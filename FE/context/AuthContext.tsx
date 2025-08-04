@@ -139,18 +139,7 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
       // console.log('👤 User:', userData);
     } catch (error: any) {
       console.error('❌ Login failed:', error.response.data.errors || error.response);
-      
-      let errorMessage = 'Login gagal';
-      
-      if (error.response.data.errors) {
-        errorMessage = error.response.data.errors.password;
-      } else if (error?.response?.data?.error.password) {
-        errorMessage = error.response.data.error.password;
-      } else if (error?.response?.data?.error.username) {
-        errorMessage = error?.response?.data?.error.username;
-      }
-      
-      throw new Error(errorMessage);
+      throw error.response.data.errors;
     } finally {
       setLoading(false);
     }

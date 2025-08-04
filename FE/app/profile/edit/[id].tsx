@@ -88,8 +88,7 @@ const EditProfile = () => {
       if (response?.data?.refresh_token) {
         await SecureStore.setItemAsync("refresh_token", response.data.refresh_token);
 
-        const newToken = await handleRefreshToken();
-        console.log("🔄 Access token diperbarui:", newToken);
+        await handleRefreshToken();
       }
 
       Alert.alert("Sukses", "Profil berhasil diperbarui!", [
