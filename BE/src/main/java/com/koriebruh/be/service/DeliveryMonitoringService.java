@@ -309,6 +309,22 @@ public class DeliveryMonitoringService {
                 .toList();
     }
 
+    // get all active deliveries, nanti mungkin hanya owner yg bisa cek
+    // get /delivery/active/userId
+    public AllDeliveryActiveResponse getActiveDeliveriesByUserId(String workerId) {
+        Delivery activeDeliveries = deliveryRepo.findByWorkerIdAndFinishedAtIsNull(workerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No active delivery found for this worker"));
+
+        return AllDeliveryActiveResponse.builder()
+                .id(activeDeliveries.getId())
+                .workerId(activeDeliveries.getWorker().getId())
+                .truckId(activeDeliveries.getTrucks().getId())
+                .routeId(activeDeliveries.getRoute().getId())
+                .startedAt(activeDeliveries.getStartedAt())
+                .addByOperatorId(activeDeliveries.getAddByOperatorId().getId())
+                .build();
+    }
+
 
     // get all position of a
     // get /delivery/position

@@ -97,6 +97,20 @@ public class DeliveryMonitoringController {
         );
     }
 
+    @GetMapping(value = "/active/{workerId}",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<AllDeliveryActiveResponse>> getActiveDeliveriesByWorkerId(@PathVariable String workerId) {
+
+        AllDeliveryActiveResponse activeDelivery = deliveryMonitoringService.getActiveDeliveriesByUserId(workerId);
+        return ResponseEntity.ok(
+                WebResponse.<AllDeliveryActiveResponse>builder()
+                        .status("OK")
+                        .data(activeDelivery)
+                        .build()
+        );
+    }
+
     @GetMapping(value = "/positions/{deliveryId}",
             produces = "application/json"
     )
