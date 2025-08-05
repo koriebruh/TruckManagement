@@ -16,6 +16,10 @@ interface DeliveryResponse {
   status: string;
   data: Delivery[];
 }
+interface DeliveryWorkerResponse {
+  status: string;
+  data: Delivery;
+}
 
 interface TransitPoint {
   id: number;
@@ -118,7 +122,9 @@ const fetchActiveDeliveries = async (): Promise<DeliveryResponse> => {
   return response.data;
 };
 
-const fetchActiveDeliveriesWorker = async (worker_id: string): Promise<DeliveryResponse> => {
+const fetchActiveDeliveriesWorker = async (
+  worker_id: string
+): Promise<DeliveryWorkerResponse> => {
   const response = await api.get(`/api/delivery/active/${worker_id}`);
 
   if (response.status !== 200) {
@@ -138,23 +144,13 @@ const fetchDeliveryDetail = async (delivery_id: string): Promise<DeliveryDetailR
   return response.data;
 };
 const fetchDeliveryByWorker = async (): Promise<DeliveryDetailResponse> => {
-  // const response = await api.get("/api/delivery/detail");
+  const response = await api.get("/api/delivery/detail");
 
-  // if (response.status !== 200) {
-  //   throw new Error(`Failed to fetch delivery detail `);
-  // }
-
-  try {
-    const response = await api.get("/api/delivery/detail");
-    console.log("FULL RESPONSE:", response);
-
-    return response.data;
-  } catch (error: any) {
-    console.log("FETCH ERROR:", error.message);
-    throw error;
+  if (response.status !== 200) {
+    throw new Error(`Failed to fetch delivery detail `);
   }
 
-
+  return response.data;
 };
 
 const fetchWorker = async (worker_id: string): Promise<WorkerResponse> => {
@@ -204,11 +200,19 @@ export const useActiveDeliveriesWorker = (worker_id: string) => {
     staleTime: 20000, // Consider data stale after 20 seconds
   });
 };
-export const useDeliveryByWorker = () => {
+export const useDeliveryByWorker = (worker_id: string) => {
   return useQuery({
-    queryKey: ["worker_deliveries"],
+    queryKey: ["worker_deliveries", worker_id],
+    queryFn: () => fetchActiveDeliveriesWorker(worker_id),
+    // refetchInterval: 30000, // Refetch every 30 seconds
+    staleTime: 20000, // Consider data stale after 20 seconds
+  });
+};
+export const useDeliveryDetailsByWorker = () => {
+  return useQuery({
+    queryKey: ["worker_deliveries" ],
     queryFn: fetchDeliveryByWorker,
-    refetchInterval: 30000, // Refetch every 30 seconds
+    // refetchInterval: 30000, // Refetch every 30 seconds
     staleTime: 20000, // Consider data stale after 20 seconds
   });
 };

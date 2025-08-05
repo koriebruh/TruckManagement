@@ -76,7 +76,7 @@ const TabLayoutOwner = () => {
         name="delivery"
         options={{
           header: () => <CustomHeader />,
-          tabBarLabel: "Deliveries",
+          tabBarLabel: "History Delivery",
           tabBarIcon: ({ focused, color }) => (
             <View className="items-center h-full">
               <Feather name="truck" size={24} color={color} />
@@ -84,7 +84,7 @@ const TabLayoutOwner = () => {
                 className={`w-full text-xs mt-1 ${
                   focused ? "text-blue-600 font-medium" : "text-gray-500"
                 }`}>
-                Deliveries
+                History Delivery
               </Text>
             </View>
           ),

@@ -16,9 +16,12 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import {  useDeliveryByWorker } from "@/hooks/useDelivery";
+import { useProfile } from "@/hooks/useProfile";
 
 const DashboardDriver = () => {
   const insets = useSafeAreaInsets();
+  const {data: user} = useProfile();
+  const worker_id = user?.data.id || '';
 
   const {
     data: deliveriesData,
@@ -26,9 +29,10 @@ const DashboardDriver = () => {
     error,
     refetch,
     isRefetching,
-  } = useDeliveryByWorker();
+  } = useDeliveryByWorker(worker_id);
 
-  console.log(deliveriesData);
+  console.log("Deliveries data:", deliveriesData?.data);
+
 
 
   const router = useRouter();
@@ -83,13 +87,14 @@ const DashboardDriver = () => {
     );
   }
 
-  const deliveries = deliveriesData?.data || [];
+  const deliveries = deliveriesData?.data || null;
+  
 
   return (
     <View style={{ marginBottom: insets.bottom }} className="flex-1 bg-gray-50">
       <StatusBar barStyle="light-content" backgroundColor="#1E40AF" />
       {/* Stats Cards */}
-      <View className="px-6 py-4">
+      {/* <View className="px-6 py-4">
         <View className="flex-row justify-between">
           <View className="bg-white rounded-2xl p-4 flex-1 mr-2 shadow-sm">
             <View className="flex-row items-center justify-between">
@@ -127,7 +132,7 @@ const DashboardDriver = () => {
             </View>
           </View>
         </View>
-      </View>
+      </View> */}
 
       <ScrollView
         className="flex-1 px-6"
@@ -142,7 +147,9 @@ const DashboardDriver = () => {
           />
         }>
         {/* Section Header */}
-        <View className="flex-row justify-between items-center mb-4">
+        <View
+          style={{ marginTop: insets.top }}
+          className="flex-row justify-between items-center mb-4">
           <Text className="text-xl font-bold text-gray-800">
             Delivery Aktif
           </Text>
@@ -155,7 +162,7 @@ const DashboardDriver = () => {
         </View>
 
         {/* Delivery List */}
-        {deliveries.length === 0 ? (
+        {deliveries === null ? (
           <View className="bg-white rounded-2xl p-8 items-center shadow-sm">
             <Ionicons name="cube-outline" size={48} color="#9CA3AF" />
             <Text className="text-gray-500 text-lg font-medium mt-4">
@@ -166,13 +173,11 @@ const DashboardDriver = () => {
             </Text>
           </View>
         ) : (
-          deliveries.map((delivery) => (
-            <DeliveryCard
-              key={delivery.id}
-              delivery={delivery}
-              onPress={() => handleDeliveryPress(delivery.id)}
-            />
-          ))
+          <DeliveryCard
+            key={deliveries!.id}
+            delivery={deliveries!}
+            onPress={() => handleDeliveryPress(deliveries!.id)}
+          />
         )}
       </ScrollView>
     </View>

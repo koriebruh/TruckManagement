@@ -1,4 +1,4 @@
-import { useDeliveryByWorker, useRoute, useTruck, useWorker } from "@/hooks/useDelivery";
+import { useDeliveryByWorker, useDeliveryDetailsByWorker, useRoute, useTruck, useWorker } from "@/hooks/useDelivery";
 import {
   TransitRequest,
   getCityName,
@@ -39,7 +39,7 @@ const TransitDriver = () => {
     error: deliveriesError,
     refetch: refetchDeliveries,
     isRefetching: deliveriesRefetching,
-  } = useDeliveryByWorker();
+  } = useDeliveryDetailsByWorker();
 
   const {
     data: transitPointsData,

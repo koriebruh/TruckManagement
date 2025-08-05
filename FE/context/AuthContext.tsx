@@ -106,20 +106,6 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
       const { access_token: newAccessToken, refresh_token: newRefreshToken } =
         response.data.data;
 
-      // Decode token to get user info
-      // const decoded: TokenPayload = jwtDecode(newAccessToken);
-      // const userData: User = {
-      //   username: decoded.sub,
-      //   // Add other user fields from token if available
-      // };
-
-      // console.log("Saving AccessToken:", typeof newAccessToken, newAccessToken);
-      // console.log(
-      //   "Saving RefreshToken:",
-      //   typeof newRefreshToken,
-      //   newRefreshToken
-      // );
-
       // Store tokens and user data
       await Promise.all([
         SecureStore.setItemAsync(ACCESS_TOKEN_KEY, newAccessToken),

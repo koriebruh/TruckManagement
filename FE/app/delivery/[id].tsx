@@ -278,7 +278,7 @@ const DeliveryDetail = () => {
                         <Text className="text-gray-600">
                           {start_city_name?.data.name} → {end_city_name?.data.name}
                         </Text>
-                        <Text className="text-gray-800 font-medium">
+                        <Text style={{  lineHeight: 20}} className="text-gray-800 font-medium">
                           {formatCurrency(transit.transit_point.extra_cost)}
                         </Text>
                       </View>
