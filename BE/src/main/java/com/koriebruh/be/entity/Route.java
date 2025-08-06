@@ -29,7 +29,7 @@ public class Route {
 
     private String details;
 
-    private String CargoType;
+    private String cargoType;
 
     private Double basePrice;
 
