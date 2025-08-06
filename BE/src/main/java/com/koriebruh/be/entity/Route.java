@@ -29,6 +29,8 @@ public class Route {
 
     private String details;
 
+    private String CargoType;
+
     private Double basePrice;
 
     private Double distanceKM;

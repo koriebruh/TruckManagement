@@ -1,5 +1,5 @@
 
-@TOKEN_ADMIN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTM1OTc5NjYsImV4cCI6MTc1MzU5ODg2Nn0.hggWnXfwLICjen6RqTH_zM6nYc1dTGE-MtxUm7DYrWU
+@TOKEN_ADMIN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTQ0ODMwMzIsImV4cCI6MTc1NDQ4MzkzMn0.GIhXjbABgyf9_Lqy1_pcv7O_dNf-3xSe0l75nZkeiaQ
 
 ### login for admin
 POST http://localhost:8080/auth/login
@@ -73,7 +73,7 @@ Accept: application/json
 Authorization: Bearer {{TOKEN_ADMIN}}
 
 {
-  "license_plate": "B12BI28",
+  "license_plate": "B12BI287",
   "model": "Toyota Hilux",
   "cargo_type": "furniture",
   "capacity_kg": 9000.0,
@@ -106,6 +106,14 @@ Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN_ADMIN}}
 
+### GET Truck Avaliable to make delivery
+GET http://localhost:8080/api/trucks/toggle-availability/bd90455b-4be8-4cea-bab9-1c0486efa329
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+
+
 ### GET ALL TRUCK not soft deleted
 GET http://localhost:8080/api/trucks
 Content-Type: application/json
@@ -113,7 +121,7 @@ Accept: application/json
 Authorization: Bearer {{TOKEN_ADMIN}}
 
 ### GET TRUCK BY ID
-GET http://localhost:8080/api/trucks/aaf6253c-661b-4a8f-8d80-cc417988d3d1
+GET http://localhost:8080/api/trucks/bd90455b-4be8-4cea-bab9-1c0486efa329
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN_ADMIN}}

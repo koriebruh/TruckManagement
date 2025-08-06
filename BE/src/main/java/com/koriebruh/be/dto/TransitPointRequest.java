@@ -26,6 +26,9 @@ public class TransitPointRequest {
     @Min(value = 1, message = "Estimated duration must be at least 1 minute")
     private Long estimatedDurationMinute;
 
+    @NotNull(message = "Cargo type must not be null")
+    private String typeCargo;
+
     @NotNull(message = "Extra cost must not be null")
     @PositiveOrZero(message = "Extra cost must be zero or positive")
     private Double extraCost;

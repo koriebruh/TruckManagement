@@ -114,4 +114,16 @@ public class TruckController {
         );
     }
 
+    @GetMapping(value = "/toggle-availability/{truckId}",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<String>> toggleAvailable(@PathVariable String truckId) {
+        String msg = truckService.toggleToAvailable(truckId);
+        return ResponseEntity.ok(
+                WebResponse.<String>builder()
+                        .status("OK")
+                        .data(msg)
+                        .build()
+        );
+    }
 }

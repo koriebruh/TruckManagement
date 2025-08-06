@@ -254,6 +254,7 @@ public class DeliveryMonitoringService {
                             .loadingCityId(tp.getLoadingCity() != null ? tp.getLoadingCity().getId() : null)
                             .unloadingCityId(tp.getUnloadingCity() != null ? tp.getUnloadingCity().getId() : null)
                             .estimatedDurationMinute(tp.getEstimatedDurationMinute())
+                            .typeCargo(tp.getTypeCargo())
                             .extraCost(tp.getExtraCost())
                             .isActive(tp.getIsActive())
                             .build();
@@ -415,6 +416,7 @@ public class DeliveryMonitoringService {
                             .loadingCityId(tp.getLoadingCity() != null ? tp.getLoadingCity().getId() : null)
                             .unloadingCityId(tp.getUnloadingCity() != null ? tp.getUnloadingCity().getId() : null)
                             .estimatedDurationMinute(tp.getEstimatedDurationMinute())
+                            .typeCargo(tp.getTypeCargo())
                             .extraCost(tp.getExtraCost())
                             .isActive(tp.getIsActive())
                             .build();

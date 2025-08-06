@@ -63,6 +63,7 @@ public class RouteService {
         newRoute.setDetails(request.getDetails());
         newRoute.setBasePrice(request.getBasePrice());
         newRoute.setDistanceKM(distanceKM);
+        newRoute.setCargoType(request.getCargoType());
         newRoute.setEstimatedDurationHours(estimatedDurationHours);
         newRoute.setIsActive(request.getIsActive());
         newRoute.setCreatedAt(System.currentTimeMillis());
@@ -83,6 +84,7 @@ public class RouteService {
         response.setDetails(route.getDetails());
         response.setBasePrice(route.getBasePrice());
         response.setDistanceKM(route.getDistanceKM());
+        response.setCargoType(route.getCargoType());
         response.setEstimatedDurationHours(route.getEstimatedDurationHours());
         response.setIsActive(route.getIsActive());
         response.setCreatedAt(route.getCreatedAt());
@@ -137,6 +139,7 @@ public class RouteService {
         route.setDetails(request.getDetails());
         route.setBasePrice(request.getBasePrice());
         route.setDistanceKM(distanceKM);
+        route.setCargoType(request.getCargoType());
         route.setEstimatedDurationHours(estimatedDurationHours);
         route.setIsActive(request.getIsActive());
 
@@ -151,6 +154,7 @@ public class RouteService {
                 .startCityName(route.getStartCity().getName())
                 .endCityName(route.getEndCity().getName())
                 .details(route.getDetails())
+                .cargoType(route.getCargoType())
                 .basePrice(route.getBasePrice())
                 .distanceKM(route.getDistanceKM())
                 .estimatedDurationHours(route.getEstimatedDurationHours())
