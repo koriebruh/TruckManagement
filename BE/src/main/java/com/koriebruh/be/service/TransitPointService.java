@@ -48,6 +48,7 @@ public class TransitPointService {
         transitPoint.setLoadingCity(loadingCity);
         transitPoint.setUnloadingCity(unloadingCity);
         transitPoint.setEstimatedDurationMinute(request.getEstimatedDurationMinute());
+        transitPoint.setTypeCargo(request.getTypeCargo());
         transitPoint.setExtraCost(request.getExtraCost());
         transitPoint.setCreatedAt(Instant.now().toEpochMilli());
         transitPoint.setIsActive(request.getIsActive()); // Assuming null means not deleted
@@ -73,6 +74,7 @@ public class TransitPointService {
         existingTransitPoint.setUnloadingCity(unloadingCity);
         existingTransitPoint.setEstimatedDurationMinute(request.getEstimatedDurationMinute());
         existingTransitPoint.setExtraCost(request.getExtraCost());
+        existingTransitPoint.setTypeCargo(request.getTypeCargo());
         existingTransitPoint.setIsActive(request.getIsActive() != null ? request.getIsActive() : true); // Default to true if null
         transitPointRepository.save(existingTransitPoint);
 
@@ -98,9 +100,10 @@ public class TransitPointService {
                         tp.getLoadingCity().getId(),
                         tp.getUnloadingCity().getId(),
                         tp.getEstimatedDurationMinute(),
+                        tp.getTypeCargo(),
                         tp.getExtraCost(),
                         tp.getIsActive()
-                        ))
+                ))
                 .toList();
     }
 

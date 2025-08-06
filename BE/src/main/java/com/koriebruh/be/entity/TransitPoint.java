@@ -29,6 +29,8 @@ public class TransitPoint {
     // estimation duration IN this location
     private Long estimatedDurationMinute;
 
+    private String typeCargo;
+
     private Double extraCost;
 
     @Column(name = "created_at", nullable = false, updatable = false)

@@ -21,6 +21,8 @@ public class RouteResponse {
 
     private String details;
 
+    private String cargoType;
+
     private Double basePrice;
 
     private Double distanceKM;

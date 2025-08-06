@@ -254,6 +254,7 @@ public class DeliveryMonitoringService {
                             .loadingCityId(tp.getLoadingCity() != null ? tp.getLoadingCity().getId() : null)
                             .unloadingCityId(tp.getUnloadingCity() != null ? tp.getUnloadingCity().getId() : null)
                             .estimatedDurationMinute(tp.getEstimatedDurationMinute())
+                            .typeCargo(tp.getTypeCargo())
                             .extraCost(tp.getExtraCost())
                             .isActive(tp.getIsActive())
                             .build();
@@ -291,9 +292,9 @@ public class DeliveryMonitoringService {
     public List<AllDeliveryActiveResponse> getAllActiveDeliveries() {
         List<Delivery> activeDeliveries = deliveryRepo.findAllByFinishedAtIsNull();
 
-        if (activeDeliveries.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No active deliveries found");
-        }
+//        if (activeDeliveries.isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No active deliveries found");
+//        }
 
         return activeDeliveries.stream()
                 .map(delivery -> {
@@ -415,6 +416,7 @@ public class DeliveryMonitoringService {
                             .loadingCityId(tp.getLoadingCity() != null ? tp.getLoadingCity().getId() : null)
                             .unloadingCityId(tp.getUnloadingCity() != null ? tp.getUnloadingCity().getId() : null)
                             .estimatedDurationMinute(tp.getEstimatedDurationMinute())
+                            .typeCargo(tp.getTypeCargo())
                             .extraCost(tp.getExtraCost())
                             .isActive(tp.getIsActive())
                             .build();
@@ -501,9 +503,9 @@ public class DeliveryMonitoringService {
     public List<TransitPendingResponse> getPendingTransitRequest() {
         List<DeliveryTransit> deliveryTransit = deliveryTransitRepo.findAllByIsAcceptedNullAndActionByOperatorIdNull();
 
-        if (deliveryTransit.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Right now you don't have any pending transit request");
-        }
+//        if (deliveryTransit.isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Right now you don't have any pending transit request");
+//        }
 
         return deliveryTransit.stream().map(
                 dt -> TransitPendingResponse.builder()
@@ -538,9 +540,9 @@ public class DeliveryMonitoringService {
     public List<TransitPendingDetail> getAllTransitPendingDetail() {
         List<DeliveryTransit> deliveryTransits = deliveryTransitRepo.findAll();
 
-        if (deliveryTransits.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No transit requests found");
-        }
+//        if (deliveryTransits.isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No transit requests found");
+//        }
 
         return deliveryTransits.stream().map(
                 dt -> TransitPendingDetail.builder()
@@ -559,9 +561,9 @@ public class DeliveryMonitoringService {
     public List<DeliveryHistoryResponse> getAllDeliveryHistory() {
         List<Delivery> deliveries = deliveryRepo.findAllByFinishedAtIsNotNull();
 
-        if (deliveries.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No delivery history found");
-        }
+//        if (deliveries.isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No delivery history found");
+//        }
 
         return deliveries.stream().map(delivery -> {
             return DeliveryHistoryResponse.builder()
@@ -583,9 +585,9 @@ public class DeliveryMonitoringService {
 
         List<Delivery> deliveries = deliveryRepo.findAllByWorkerIdAndFinishedAtIsNotNull(worker.getId());
 
-        if (deliveries.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No delivery history found for this worker");
-        }
+//        if (deliveries.isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No delivery history found for this worker");
+//        }
 
         return deliveries.stream().map(delivery -> {
             return DeliveryHistoryResponse.builder()
