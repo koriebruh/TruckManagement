@@ -113,9 +113,9 @@ public class UserService {
     public List<UserAvailableResponse> getAvailableDrivers() {
 
         List<User> users = userRepository.findAllActiveDriverUsersNotInOngoingDelivery();
-        if (users.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No available drivers found, all drivers are in active delivery");
-        }
+//        if (users.isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No available drivers found, all drivers are in active delivery");
+//        }
 
         return users.stream()
                 .map(user -> UserAvailableResponse.builder()

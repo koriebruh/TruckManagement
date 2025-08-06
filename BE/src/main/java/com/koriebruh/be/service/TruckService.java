@@ -83,9 +83,9 @@ public class TruckService {
      * */
     public List<TruckResponse> getAllAvailableTrucks() {
         List<Truck> activeDelivery = truckRepository.findAvailableTrucksNotInActiveDelivery();
-        if (activeDelivery.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No available trucks found all trucks are in active delivery");
-        }
+//        if (activeDelivery.isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No available trucks found all trucks are in active delivery");
+//        }
 
         return activeDelivery.stream()
                 .map(truck -> TruckResponse.builder()
