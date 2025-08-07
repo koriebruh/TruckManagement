@@ -1,5 +1,6 @@
 import api from "@/services/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useDeliveryByWorker, useRoute } from "./useDelivery";
 
 // Types with snake_case
 export interface TransitRequest {
@@ -171,4 +172,34 @@ export const useSubmitTransit = () => {
 // Helper function to get city name by ID
 export const getCityName = (cityId: number, cities: City[] = []) => {
   return cities.find((city) => city.id === cityId)?.name || `City ${cityId}`;
+};
+
+export const useTransitPointDriver = (worker_id: string) => {
+  const { data: deliveriesDriver } = useDeliveryByWorker(worker_id);
+  const { data: routeDriver } = useRoute(
+    deliveriesDriver?.data?.route_id || ""
+  );
+  const { data: citiesData } = useCities();
+
+  // Pastikan semua data sudah siap
+  const isReady =
+    !!routeDriver?.data?.end_city_name &&
+    !!citiesData?.data &&
+    Array.isArray(citiesData.data);
+
+  return useQuery({
+    queryKey: ["transit-point-driver", worker_id],
+    queryFn: fetchTransitPoints,
+    staleTime: 10 * 60 * 1000,
+    enabled: isReady,
+    select: (data) => ({
+      ...data,
+      data: data.data.filter(
+        (point) =>
+          point.is_active &&
+          getCityName(point.loading_city_id, citiesData!.data) ===
+            routeDriver!.data.end_city_name
+      ),
+    }),
+  });
 };

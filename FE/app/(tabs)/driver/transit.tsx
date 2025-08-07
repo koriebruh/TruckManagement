@@ -1,11 +1,7 @@
-import { useDeliveryByWorker, useDeliveryDetailsByWorker, useRoute, useTruck, useWorker } from "@/hooks/useDelivery";
-import {
-  TransitRequest,
-  getCityName,
-  useCities,
-  useSubmitTransit,
-  useTransitPoints,
-} from "@/hooks/useTransit";
+import {  useDeliveryDetailsByWorker, useRoute, useTruck, useWorker } from "@/hooks/useDelivery";
+import { useProfile } from "@/hooks/useProfile";
+import { getCityName, TransitRequest, useCities, useSubmitTransit, useTransitPointDriver, useTransitPoints } from "@/hooks/useTransit";
+
 import { Feather, Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
@@ -41,16 +37,19 @@ const TransitDriver = () => {
     isRefetching: deliveriesRefetching,
   } = useDeliveryDetailsByWorker();
 
+  const {data: userData} = useProfile();
+  const worker_id = userData?.data.id;
+
   const {
     data: transitPointsData,
     isLoading: transitPointsLoading,
     error: transitPointsError,
-  } = useTransitPoints();
+  } = useTransitPointDriver(worker_id!);
+
 
   const {
     data: citiesData,
     isLoading: citiesLoading,
-    error: citiesError,
   } = useCities();
 
   const { mutate: submitTransit, isPending: isSubmitting } = useSubmitTransit();

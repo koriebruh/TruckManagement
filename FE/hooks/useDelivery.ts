@@ -61,7 +61,7 @@ interface DeliveryDetail {
 
 interface DeliveryDetailResponse {
   status: string;
-  data: DeliveryDetail[];
+  data: DeliveryDetail;
 }
 
 interface Worker {
