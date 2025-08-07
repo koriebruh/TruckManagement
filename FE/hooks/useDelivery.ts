@@ -100,6 +100,7 @@ interface Route {
   details: string;
   base_price: number;
   distance_km: number;
+  cargo_type: string;
   estimated_duration_hours: number;
   is_active: boolean;
   created_at: number;

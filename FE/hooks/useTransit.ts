@@ -19,6 +19,7 @@ export interface TransitPoint {
   loading_city_id: number;
   unloading_city_id: number;
   estimated_duration_minute: number;
+  type_cargo: string;
   extra_cost: number;
   is_active: boolean;
 }
@@ -48,6 +49,7 @@ export interface TransitPointDetails {
   };
   estimatedDurationMinute: number;
   extraCost: number;
+  type_cargo: string;
   createdAt: number;
   isActive: true;
 }

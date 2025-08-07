@@ -235,7 +235,7 @@ const truckId = deliveriesData?.data.truck_id;
                     </View>
                     <Text className="text-gray-500 text-sm mt-1">
                       Rute: {routeData?.data.start_city_name} →{" "}
-                      {routeData?.data.end_city_name}
+                      {routeData?.data.end_city_name} ({routeData?.data.cargo_type})
                     </Text>
                     <Text className="text-gray-500 text-sm">
                       Driver: {workerData?.data.username}
@@ -325,7 +325,7 @@ const truckId = deliveriesData?.data.truck_id;
                   <View className="flex-1">
                     <Text className="font-semibold text-gray-800 " style={{lineHeight: 20}}>
                       {getCityName(point.loading_city_id, cities)} →{" "}
-                      {getCityName(point.unloading_city_id, cities)}
+                      {getCityName(point.unloading_city_id, cities)} ({point.type_cargo})
                     </Text>
                     <Text className="text-gray-500 text-sm mt-1">
                       ⏱ Estimasi:{" "}

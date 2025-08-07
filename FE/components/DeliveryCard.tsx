@@ -152,7 +152,7 @@ const DeliveryCard: React.FC<DeliveryCardProps> = ({ delivery, onPress }) => {
             <View>
               <Text className="text-sm font-medium text-gray-800">
                 {route
-                  ? `${route.start_city_name} → ${route.end_city_name}`
+                  ? `${route.start_city_name} → ${route.end_city_name} (${route.cargo_type})`
                   : delivery.route_id}
               </Text>
               {route?.distance_km && (
