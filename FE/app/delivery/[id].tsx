@@ -12,7 +12,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useDeliveryDetail } from "@/hooks/useDeliveryDetail";
 import { useWorker, useTruck, useRoute } from "@/hooks/useDelivery";
-import { useCityById  } from "@/hooks/useTransit";
+import { getCityName, useCities, useCityById  } from "@/hooks/useTransit";
 
 const DeliveryDetail = () => {
   const insets = useSafeAreaInsets();
@@ -28,10 +28,15 @@ const DeliveryDetail = () => {
   } = useDeliveryDetail(delivery_id);
 
   const delivery = delivery_data?.data;
+  delivery?.transits.forEach((transit) => {
+    console.log({transit});
+  });
 
   const { data: worker_data } = useWorker(delivery?.worker_id || "");
   const { data: truck_data } = useTruck(delivery?.truck_id || "");
   const { data: route_data } = useRoute(delivery?.route_id || "");
+
+    const { data: citiesData } = useCities();
 
 
   const worker = worker_data?.data;
@@ -68,32 +73,6 @@ const DeliveryDetail = () => {
 
     return total;
   };
-
-  const getCityName = () => {
-    let start_city_id = 0;
-    let end_city_id = 0;
-
-     delivery?.transits.forEach((transit) => {
-       if (transit.is_accepted) {
-         start_city_id = transit.transit_point.loading_city_id;
-         end_city_id = transit.transit_point.unloading_city_id;
-       }
-     });
-
-     return {
-       start: start_city_id,
-       end: end_city_id
-     }
-  }
-
-  const start = getCityName();
-  const start_city_id = start.start;
-  const end_city_id = start.end;
-
-  const {data: start_city_name} = useCityById(start_city_id);
-  const {data: end_city_name} = useCityById(end_city_id);
-
-
   
 
   const getDeliveryStatus = () => {
@@ -108,7 +87,6 @@ const DeliveryDetail = () => {
     }
   };
 
-  console.log("transit:"+ " " + delivery);
 
   if (delivery_loading) {
     return (
@@ -282,8 +260,8 @@ const DeliveryDetail = () => {
                         key={transit.id}
                         className="flex-row justify-between mt-2">
                         <Text className="text-gray-600">
-                          {start_city_name?.data.name} →{" "}
-                          {end_city_name?.data.name} (
+                          {getCityName(transit.transit_point.loading_city_id, citiesData?.data)} →{" "}
+                          {getCityName(transit.transit_point.unloading_city_id, citiesData?.data)} (
                           {transit.transit_point.type_cargo})
                         </Text>
                         <Text

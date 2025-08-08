@@ -1,8 +1,8 @@
 import api from "@/services/axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDeliveryByWorker, useRoute } from "./useDelivery";
+import { useDeliveryDetail } from "./useDeliveryDetail";
 
-// Types with snake_case
 export interface TransitRequest {
   delivery_id: string;
   transit_point_id: number;
@@ -178,6 +178,9 @@ export const getCityName = (cityId: number, cities: City[] = []) => {
 
 export const useTransitPointDriver = (worker_id: string) => {
   const { data: deliveriesDriver } = useDeliveryByWorker(worker_id);
+  const { data: deliveryDetail } = useDeliveryDetail(
+    deliveriesDriver?.data?.id || ""
+  );
   const { data: routeDriver } = useRoute(
     deliveriesDriver?.data?.route_id || ""
   );
@@ -187,21 +190,45 @@ export const useTransitPointDriver = (worker_id: string) => {
   const isReady =
     !!routeDriver?.data?.end_city_name &&
     !!citiesData?.data &&
-    Array.isArray(citiesData.data);
+    Array.isArray(citiesData.data) &&
+    !!deliveryDetail?.data;
 
   return useQuery({
     queryKey: ["transit-point-driver", worker_id],
     queryFn: fetchTransitPoints,
     staleTime: 10 * 60 * 1000,
     enabled: isReady,
-    select: (data) => ({
-      ...data,
-      data: data.data.filter(
-        (point) =>
-          point.is_active &&
-          getCityName(point.loading_city_id, citiesData!.data) ===
-            routeDriver!.data.end_city_name
-      ),
-    }),
+    select: (data) => {
+      // Dapatkan transit terakhir yang sudah diterima (accepted)
+      const acceptedTransits =
+        deliveryDetail!.data.transits?.filter(
+          (transit) => transit.is_accepted
+        ) || [];
+
+      let currentCityName: string;
+
+      if (acceptedTransits.length === 0) {
+        // Belum ada transit yang diterima, gunakan end_city_name dari route
+        currentCityName = routeDriver!.data.end_city_name;
+      } else {
+        // Sudah ada transit yang diterima, gunakan unloading city dari transit terakhir
+        const lastAcceptedTransit =
+          acceptedTransits[acceptedTransits.length - 1];
+        currentCityName = getCityName(
+          lastAcceptedTransit.transit_point.unloading_city_id,
+          citiesData!.data
+        );
+      }
+
+      return {
+        ...data,
+        data: data.data.filter(
+          (point) =>
+            point.is_active &&
+            getCityName(point.loading_city_id, citiesData!.data) ===
+              currentCityName
+        ),
+      };
+    },
   });
 };
