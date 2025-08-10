@@ -45,10 +45,12 @@ public class Delivery {
 
     // satu delivery bisa memiliki banyak alert
     @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt ASC") // dari yang paling lama ke baru
     private List<DeliverAlert> alerts = new ArrayList<>();
 
     // satu delivery bisa memiliki banyak transit
     @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("arrivedAt ASC")
     private List<DeliveryTransit> transits = new ArrayList<>();
 
 }

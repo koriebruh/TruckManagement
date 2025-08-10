@@ -1,4 +1,4 @@
-@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2RlcmF0b3JidWRpIiwiaWF0IjoxNzU0MzM0NjQ1LCJleHAiOjE3NTQzMzU1NDV9.j0fPHlcZoHqF5Z6V6AI1kZMsbnQ9G_BVl-nXa4MLzE8
+@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2RlcmF0b3JidWRpIiwiaWF0IjoxNzU0NzQ1MTQ5LCJleHAiOjE3NTQ3NDYwNDl9.W-a1HZHw9sMTNUr4CwUxQNjvYFtUn1aO5WSR3Rf91LA
 
 ### login request to example server
 POST http://localhost:8080/auth/login
@@ -43,15 +43,15 @@ Accept: application/json
 Authorization: Bearer {{TOKEN_OPERATOR}}
 
 {
-  "truck_id": "b8677164-0e63-45a6-b86d-b7facf784632",
-  "route_id": "f948242d-26b0-4839-8092-407ad18e0608",
-  "worker_id": "aee9fe37-1979-4644-b996-4a43adbbb1b9",
+  "truck_id": "541b8fe0-3e2b-4afc-9342-54a7863cd49c",
+  "route_id": "d330ece3-00b9-4d38-a524-60ec2abdc747",
+  "worker_id": "6cd18362-8d31-41bb-bd20-f6dd048424f3",
   "latitude": -6.200000,
   "longitude": 106.816666
 }
 
-### GET Truck Avaliable to make delivery
-GET http://localhost:8080/api/delivery/active/aee9fe37-1979-4644-b996-4a43adbbb1b9
+### GET Avaliable to make delivery
+GET http://localhost:8080/api/delivery/active
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN_OPERATOR}}
@@ -70,7 +70,7 @@ Accept: application/json
 Authorization: Bearer {{TOKEN_OPERATOR}}
 
 {
-"delivery_id": "984f6f89-2f0f-462e-8b79-0e79f77ce14d",
+"delivery_id": "d5d1dec9-ad42-4b08-a126-31eb6360f884",
 "transit_point_id": 55
 }
 
@@ -112,7 +112,7 @@ Authorization: Bearer {{TOKEN_OPERATOR}}
 
 
 ### get all delivery ACTIVE
-GET http://localhost:8080/api/delivery/detail/984f6f89-2f0f-462e-8b79-0e79f77ce14d
+GET http://localhost:8080/api/delivery/detail/d5d1dec9-ad42-4b08-a126-31eb6360f884
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN_OPERATOR}}

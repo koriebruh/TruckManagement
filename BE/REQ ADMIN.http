@@ -1,5 +1,5 @@
 
-@TOKEN_ADMIN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTQ0ODMwMzIsImV4cCI6MTc1NDQ4MzkzMn0.GIhXjbABgyf9_Lqy1_pcv7O_dNf-3xSe0l75nZkeiaQ
+@TOKEN_ADMIN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTQ3NDUyNTIsImV4cCI6MTc1NDc0NjE1Mn0.GPkA2eACKcLYsktBMiWz1MzMhnD20yAhSqvrp8RKQ1o
 
 ### login for admin
 POST http://localhost:8080/auth/login
@@ -73,10 +73,10 @@ Accept: application/json
 Authorization: Bearer {{TOKEN_ADMIN}}
 
 {
-  "license_plate": "B12BI287",
-  "model": "Toyota Hilux",
+  "license_plate": "B1XXXX",
+  "model": "MERCEDES BENZ ACTROS",
   "cargo_type": "furniture",
-  "capacity_kg": 9000.0,
+  "capacity_kg": 10000.0,
   "is_available": true
 }
 

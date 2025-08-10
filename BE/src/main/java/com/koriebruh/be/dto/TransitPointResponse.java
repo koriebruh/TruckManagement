@@ -21,7 +21,7 @@ public class TransitPointResponse {
     // estimation duration IN this location
     private Long estimatedDurationMinute;
 
-    private String typeCargo;
+    private String cargoType;
 
     private Double extraCost;
 
