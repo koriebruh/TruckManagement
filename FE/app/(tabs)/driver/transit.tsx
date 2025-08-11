@@ -1,6 +1,6 @@
 import {  useDeliveryDetailsByWorker, useRoute, useTruck, useWorker } from "@/hooks/useDelivery";
 import { useProfile } from "@/hooks/useProfile";
-import { getCityName, TransitRequest, useCities, useSubmitTransit, useTransitPointDriver, useTransitPoints } from "@/hooks/useTransit";
+import { getCityName, TransitRequest, useCities, useSubmitTransit, useTransitPointDriver } from "@/hooks/useTransit";
 
 import { Feather, Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
@@ -325,7 +325,7 @@ const truckId = deliveriesData?.data.truck_id;
                   <View className="flex-1">
                     <Text className="font-semibold text-gray-800 " style={{lineHeight: 20}}>
                       {getCityName(point.loading_city_id, cities)} →{" "}
-                      {getCityName(point.unloading_city_id, cities)} ({point.type_cargo})
+                      {getCityName(point.unloading_city_id, cities)} ({point.cargo_type})
                     </Text>
                     <Text className="text-gray-500 text-sm mt-1">
                       ⏱ Estimasi:{" "}

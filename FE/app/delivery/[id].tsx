@@ -12,7 +12,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useDeliveryDetail } from "@/hooks/useDeliveryDetail";
 import { useWorker, useTruck, useRoute } from "@/hooks/useDelivery";
-import { getCityName, useCities, useCityById  } from "@/hooks/useTransit";
+import { getCityName, useCities  } from "@/hooks/useTransit";
 
 const DeliveryDetail = () => {
   const insets = useSafeAreaInsets();
@@ -242,7 +242,7 @@ const DeliveryDetail = () => {
 
               <View className="space-y-2">
                 <View className="flex-row justify-between">
-                  <Text className="text-gray-600">
+                  <Text style={{ lineHeight: 22 }} className="text-gray-600">
                     {route
                       ? `${route.start_city_name} → ${route.end_city_name}`
                       : "Loading..."}{" "}
@@ -260,12 +260,19 @@ const DeliveryDetail = () => {
                         key={transit.id}
                         className="flex-row justify-between mt-2">
                         <Text className="text-gray-600">
-                          {getCityName(transit.transit_point.loading_city_id, citiesData?.data)} →{" "}
-                          {getCityName(transit.transit_point.unloading_city_id, citiesData?.data)} (
-                          {transit.transit_point.type_cargo})
+                          {getCityName(
+                            transit.transit_point.loading_city_id,
+                            citiesData?.data
+                          )}{" "}
+                          →{" "}
+                          {getCityName(
+                            transit.transit_point.unloading_city_id,
+                            citiesData?.data
+                          )}{" "}
+                          ({transit.transit_point.cargo_type ?? "-"})
                         </Text>
                         <Text
-                          style={{ lineHeight: 20 }}
+                          style={{ lineHeight: 22 }}
                           className="text-gray-800 font-medium">
                           {formatCurrency(transit.transit_point.extra_cost)}
                         </Text>
