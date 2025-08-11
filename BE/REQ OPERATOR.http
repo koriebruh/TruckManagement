@@ -1,4 +1,4 @@
-@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2RlcmF0b3JidWRpIiwiaWF0IjoxNzU0NzQ1MTQ5LCJleHAiOjE3NTQ3NDYwNDl9.W-a1HZHw9sMTNUr4CwUxQNjvYFtUn1aO5WSR3Rf91LA
+@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2RlcmF0b3JidWRpIiwiaWF0IjoxNzU0OTIyMTcyLCJleHAiOjE3NTQ5MjMwNzJ9.P3skRvrnPJHbQ_d64mkAGbiEFMPadDZrDAkyzOfVUdQ
 
 ### login request to example server
 POST http://localhost:8080/auth/login
