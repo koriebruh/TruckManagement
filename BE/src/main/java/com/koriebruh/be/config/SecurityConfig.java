@@ -34,7 +34,8 @@ public class SecurityConfig {
                                 "/swagger-resources/**",
                                 "/configuration/ui",
                                 "/configuration/security",
-                                "/webjars/**"
+                                "/webjars/**",
+                                "/actuator/**"
                         ).permitAll()
                         .requestMatchers("/api/**").authenticated() // API endpoints butuh auth
                         .anyRequest().authenticated()) // Yang lain bebas
@@ -42,7 +43,8 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable) // ⬅️ ini yang nonaktifkan form login
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);;
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        ;
 
         return http.build();
     }
@@ -56,7 +58,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setAllowCredentials(false); // jangan true kalau pakai "*" di origin
 

@@ -2,6 +2,15 @@
 
 
 ### login request to example server
+POST http://localhost/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "bunderess",
+  "password": "admin1234#"
+}
+### login request to example server
 POST http://localhost:8080/auth/login
 Content-Type: application/json
 Accept: application/json
@@ -12,7 +21,7 @@ Accept: application/json
 }
 
 ### registration request to example server
-POST http://localhost:8080/auth/register
+POST http://localhost/auth/register
 Content-Type: application/json
 Accept: application/json
 
