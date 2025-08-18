@@ -1,4 +1,4 @@
-@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2RlcmF0b3JidWRpIiwiaWF0IjoxNzU0OTIyMTcyLCJleHAiOjE3NTQ5MjMwNzJ9.P3skRvrnPJHbQ_d64mkAGbiEFMPadDZrDAkyzOfVUdQ
+@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2RlcmF0b3JidWRpIiwiaWF0IjoxNzU1NTI2MzcwLCJleHAiOjE3NTU1MjcyNzB9.v56SFZnYsEQ7zOl11y-VLa_V8G0oV4ZI9J6u4PUtvZs
 
 ### login request to example server
 POST http://localhost:8080/auth/login
@@ -43,12 +43,25 @@ Accept: application/json
 Authorization: Bearer {{TOKEN_OPERATOR}}
 
 {
-  "truck_id": "541b8fe0-3e2b-4afc-9342-54a7863cd49c",
-  "route_id": "d330ece3-00b9-4d38-a524-60ec2abdc747",
-  "worker_id": "6cd18362-8d31-41bb-bd20-f6dd048424f3",
-  "latitude": -6.200000,
-  "longitude": 106.816666
+  "truck_id": "4cddbbb9-c3aa-434b-9ae6-b85d9413f8e6",
+  "route_id": "f237f00a-e679-4893-84f9-8b57d14148ee",
+  "worker_id": "2f2013ad-b37a-4fbd-b225-32570c9f1147",
+  "latitude": -7.46667,
+  "longitude": 110.21667
 }
+
+### GET LOKASI WORKER ID USAGE API
+GET http://localhost:8080/api/delivery/position/2f2013ad-b37a-4fbd-b225-32570c9f1147
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+### GET LOKASI by delivery ID USAGE API
+GET http://localhost:8080/api/delivery/positions/234826e6-250a-463c-ae04-3bbfe91c8fcb
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
 
 ### GET Avaliable to make delivery
 GET http://localhost:8080/api/delivery/active
@@ -57,7 +70,7 @@ Accept: application/json
 Authorization: Bearer {{TOKEN_OPERATOR}}
 
 ### get transit point
-GET http://localhost:8080/api/transit-points
+GET http://localhost:8080/api/delivery/active
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN_OPERATOR}}
