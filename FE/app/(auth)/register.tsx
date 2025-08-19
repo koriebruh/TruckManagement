@@ -43,7 +43,7 @@ const registerSchema = z.object({
     .refine((val) => {
       const num = parseInt(val);
       return !isNaN(num) && num >= 13 && num <= 120;
-    }, "Umur harus antara 13-120 tahun"),
+    }),
 });
 
 type RegisterFormData = z.infer<typeof registerSchema>;

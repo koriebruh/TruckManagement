@@ -30,6 +30,12 @@
       "favicon": "./assets/images/logo.png"
     },
     "plugins": [
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow Tracking Truck to use your location."
+        }
+      ],
       "expo-router",
       [
         "expo-splash-screen",
@@ -39,7 +45,8 @@
           "resizeMode": "contain",
           "backgroundColor": "#b6d0fa"
         }
-      ]
+      ],
+      "expo-maps"
     ],
     "experiments": {
       "typedRoutes": true

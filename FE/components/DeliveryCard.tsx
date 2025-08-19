@@ -58,7 +58,7 @@ const DeliveryCard: React.FC<DeliveryCardProps> = ({ delivery, onPress }) => {
 
   return (
     <TouchableOpacity
-      className="bg-white rounded-2xl p-5 mb-4 shadow-sm border border-gray-100"
+      className="bg-white rounded-2xl mt-4 p-5 mb-4 shadow-sm border border-gray-100"
       onPress={onPress}
       activeOpacity={0.7}>
       {/* Header */}
