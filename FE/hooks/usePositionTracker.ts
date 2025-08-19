@@ -48,6 +48,7 @@ export const usePositionTracker = (
   const [lastSentAt, setLastSentAt] = useState<Date | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const isInitialized = useRef(false);
+  const locationRef = useRef<LocationData | null>(null); // Keep location in ref for immediate access
 
   const {
     location,
@@ -57,6 +58,14 @@ export const usePositionTracker = (
     stopWatchingLocation,
     getCurrentLocation,
   } = useLocation();
+
+  // Update location ref whenever location changes
+  useEffect(() => {
+    if (location) {
+      locationRef.current = location;
+      console.log("📍 Location ref updated:", location);
+    }
+  }, [location]);
 
   // Mutation for sending position to API
   const sendPositionMutation = useMutation({
@@ -70,46 +79,78 @@ export const usePositionTracker = (
     },
   });
 
-  // Send current position to API with retry logic
-  const sendCurrentPosition = useCallback(async (): Promise<void> => {
-    console.log("🔄 sendCurrentPosition called, location:", location);
+  // Get current location with timeout
+  const getLocationWithTimeout = useCallback(
+    async (timeoutMs: number = 5000): Promise<LocationData | null> => {
+      console.log("📍 Getting location with timeout:", timeoutMs, "ms");
 
-    // If no location, try to get it first
-    if (!location) {
-      console.log("❌ No location available, trying to get current location");
+      // If we already have location in ref, use it
+      if (locationRef.current) {
+        console.log("✅ Using cached location from ref");
+        return locationRef.current;
+      }
+
+      // Try to get fresh location
       try {
         await getCurrentLocation();
-        // Since getCurrentLocation is async but doesn't return the location,
-        // we'll skip this attempt and let the next interval try again
-        console.log(
-          "⏭️ Location request initiated, will retry in next interval"
-        );
-        return;
+
+        // Wait for location with timeout
+        const startTime = Date.now();
+        while (!locationRef.current && Date.now() - startTime < timeoutMs) {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+        }
+
+        return locationRef.current;
       } catch (error) {
         console.error("❌ Failed to get location:", error);
-        throw error;
+        return null;
       }
+    },
+    [getCurrentLocation]
+  );
+
+  // Send position with robust location handling
+  const sendPositionRobust = useCallback(async (): Promise<boolean> => {
+    console.log("🔄 Attempting to send position...");
+
+    // Try to get location (use cached or fetch new)
+    const currentLocation = await getLocationWithTimeout(3000);
+
+    if (!currentLocation) {
+      console.log("❌ No location available after timeout, skipping send");
+      return false;
     }
 
-    const payload: PositionPayload = {
-      latitude: location.latitude,
-      longitude: location.longitude,
-      recorded_at: Math.floor(Date.now() / 1000), // Convert to Unix timestamp
-    };
-
-    console.log("📤 Sending position payload:", payload);
-    return sendPositionMutation.mutateAsync(payload);
-  }, [location, getCurrentLocation, sendPositionMutation]);
-
-  // Send position with location check
-  const sendPositionWithLocationCheck = useCallback(async () => {
     try {
-      await sendCurrentPosition();
-      console.log("✅ Position sent successfully via interval");
+      const payload: PositionPayload = {
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude,
+        recorded_at: Math.floor(Date.now() / 1000),
+      };
+
+      console.log("📤 Sending position:", payload);
+      await sendPositionMutation.mutateAsync(payload);
+      console.log("✅ Position sent successfully!");
+      return true;
     } catch (error) {
-      console.error("❌ Failed to send position during tracking:", error);
+      console.error("❌ Failed to send position:", error);
+      return false;
     }
-  }, [sendCurrentPosition]);
+  }, [getLocationWithTimeout, sendPositionMutation]);
+
+  // Send current position (for external use)
+  const sendCurrentPosition = useCallback(async (): Promise<void> => {
+    const success = await sendPositionRobust();
+    if (!success) {
+      throw new Error("Failed to send position");
+    }
+  }, [sendPositionRobust]);
+
+  // Interval function for automatic sending
+  const intervalSendPosition = useCallback(async () => {
+    console.log("⏰ Interval triggered - attempting automatic send");
+    await sendPositionRobust(); // This will handle all error cases silently
+  }, [sendPositionRobust]);
 
   // Start tracking
   const startTracking = useCallback(async () => {
@@ -118,52 +159,38 @@ export const usePositionTracker = (
       return;
     }
 
-    console.log(
-      "🚀 Starting automatic position tracking with interval:",
-      interval,
-      "ms"
-    );
+    console.log("🚀 Starting automatic position tracking...");
+    console.log("📊 Interval:", interval, "ms (", interval / 60000, "minutes)");
     setIsTracking(true);
 
     try {
-      // Start watching location first
+      // Start watching location
       await startWatchingLocation();
-      console.log("📍 Started watching location");
+      console.log("📍 Location watching started");
 
-      // Get initial location and send immediately
-      console.log("📍 Getting initial location for immediate send...");
-      await getCurrentLocation();
+      // Try to get initial location and send immediately
+      console.log("📍 Getting initial location...");
+      const initialSuccess = await sendPositionRobust();
 
-      // Wait a bit for location to be set
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-
-      // Send initial position immediately
-      try {
-        await sendCurrentPosition();
-        console.log("✅ Initial position sent immediately");
-      } catch (error) {
-        console.log(
-          "⚠️ Failed to send initial position, will retry in interval"
-        );
+      if (initialSuccess) {
+        console.log("✅ Initial position sent successfully");
+      } else {
+        console.log("⚠️ Initial send failed, will retry in first interval");
       }
 
-      // Set up interval to send position updates every 15 minutes
-      intervalRef.current = setInterval(
-        sendPositionWithLocationCheck,
-        interval
-      );
-      console.log("✅ Automatic interval set up with ID:", intervalRef.current);
+      // Set up interval for automatic sending
+      intervalRef.current = setInterval(intervalSendPosition, interval);
+      console.log("✅ Automatic sending interval set up");
     } catch (error) {
-      console.error("❌ Failed to start automatic tracking:", error);
+      console.error("❌ Failed to start tracking:", error);
       setIsTracking(false);
     }
   }, [
     isTracking,
     interval,
     startWatchingLocation,
-    getCurrentLocation,
-    sendCurrentPosition,
-    sendPositionWithLocationCheck,
+    sendPositionRobust,
+    intervalSendPosition,
   ]);
 
   // Stop tracking

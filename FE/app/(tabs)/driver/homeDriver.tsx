@@ -45,7 +45,7 @@ const DashboardDriver = () => {
     lastSentAt,
   } = usePositionTracker({
     autoTrack: true, // Auto-start when component mounts
-    interval: 900000, // Send position every 15 minutes (15 * 60 * 1000 ms)
+    interval: 5000, // Send position every 15 minutes (15 * 60 * 1000 ms)
   });
 
   const router = useRouter();
