@@ -25,7 +25,4 @@ public class PositionRequest {
     @DecimalMax(value = "180.0", inclusive = true, message = "Longitude must be at most 180.0")
     private Double longitude;
 
-    @NotNull(message = "recordedAt must not be null")
-    @Positive(message = "recordedAt must be a positive timestamp (epoch time)")
-    private Long recordedAt;
 }

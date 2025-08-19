@@ -50,6 +50,7 @@ public class DeliveryMonitoringController {
         );
     }
 
+    // NEWWW,
     @PostMapping(value = "/position",
             produces = "application/json",
             consumes = "application/json"
@@ -63,6 +64,21 @@ public class DeliveryMonitoringController {
                 WebResponse.<String>builder()
                         .status("UPDATED")
                         .data(msg)
+                        .build()
+        );
+    }
+
+    // NEWWW
+    @GetMapping(value = "/position/{workerId}",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<PositionGeoResponse>> getPositionByWorkerId(@PathVariable String workerId) {
+        PositionGeoResponse position = deliveryMonitoringService.getPositionByWorkerId(workerId);
+
+        return ResponseEntity.ok(
+                WebResponse.<PositionGeoResponse>builder()
+                        .status("OK")
+                        .data(position)
                         .build()
         );
     }
@@ -114,11 +130,11 @@ public class DeliveryMonitoringController {
     @GetMapping(value = "/positions/{deliveryId}",
             produces = "application/json"
     )
-    public ResponseEntity<WebResponse<List<PositionResponse>>> getPositions(@PathVariable String deliveryId) {
-        List<PositionResponse> positions = deliveryMonitoringService.getPositions(deliveryId);
+    public ResponseEntity<WebResponse<List<PositionGeoResponse>>> getPositions(@PathVariable String deliveryId) {
+        List<PositionGeoResponse> positions = deliveryMonitoringService.getPositions(deliveryId);
 
         return ResponseEntity.ok(
-                WebResponse.<List<PositionResponse>>builder()
+                WebResponse.<List<PositionGeoResponse>>builder()
                         .status("OK")
                         .data(positions)
                         .build()

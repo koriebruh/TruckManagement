@@ -7,6 +7,7 @@ import com.koriebruh.be.entity.City;
 import com.koriebruh.be.entity.Route;
 import com.koriebruh.be.repository.CityRepository;
 import com.koriebruh.be.repository.RouteRepository;
+import com.koriebruh.be.utils.Estimation;
 import com.koriebruh.be.utils.GeoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,18 +45,14 @@ public class RouteService {
                 endCity.getLatitude(),
                 endCity.getLongitude()
         );
+        // Bulatkan distanceKM ke 2 desimal
+        distanceKM = Math.round(distanceKM * 100.0) / 100.0;
 
-        /* Speed rata-rata truck pengiriman (km/jam)
-         * Tambahan faktor untuk istirahat, loading/unloading, dll
-         */
-        final Double AVERAGE_TRUCK_SPEED = 55.0;
-        final Double TIME_BUFFER_FACTOR = 1.3; // 30% buffer
-        Double estimatedDurationHours = (distanceKM / AVERAGE_TRUCK_SPEED) * TIME_BUFFER_FACTOR;
+        // Hitung estimasi waktu menggunakan EstimationUtils
+        Double estimatedDurationHours = Estimation.calculateRealisticTravelTime(distanceKM);
 
-        // Minimal 1 jam untuk jarak dekat
-        if (estimatedDurationHours < 1.0) {
-            estimatedDurationHours = 1.0;
-        }
+        // Bulatkan estimatedDurationHours ke 2 desimal
+        estimatedDurationHours = Estimation.roundToTwoDecimals(estimatedDurationHours);
 
         Route newRoute = new Route();
         newRoute.setStartCity(startCity);
@@ -122,17 +119,13 @@ public class RouteService {
                 endCity.getLongitude()
         );
 
-        /* Speed rata-rata truck pengiriman (km/jam)
-         * Tambahan faktor untuk istirahat, loading/unloading, dll
-         */
-        final Double AVERAGE_TRUCK_SPEED = 55.0;
-        final Double TIME_BUFFER_FACTOR = 1.3; // 30% buffer
-        Double estimatedDurationHours = (distanceKM / AVERAGE_TRUCK_SPEED) * TIME_BUFFER_FACTOR;
+        distanceKM = Math.round(distanceKM * 100.0) / 100.0;
+        // Hitung estimasi waktu menggunakan EstimationUtils
+        Double estimatedDurationHours = Estimation.calculateRealisticTravelTime(distanceKM);
 
-        // Minimal 1 jam untuk jarak dekat
-        if (estimatedDurationHours < 1.0) {
-            estimatedDurationHours = 1.0;
-        }
+        // Bulatkan estimatedDurationHours ke 2 desimal
+        estimatedDurationHours = Estimation.roundToTwoDecimals(estimatedDurationHours);
+
 
         route.setStartCity(startCity);
         route.setEndCity(endCity);

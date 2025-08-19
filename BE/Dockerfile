@@ -20,6 +20,9 @@ RUN ./mvnw clean package -DskipTests
 # Runtime stage
 FROM eclipse-temurin:22-jre
 
+# Install curl untuk health check
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 # Create non-root user untuk security
 RUN groupadd -r spring && useradd -r -g spring spring
 

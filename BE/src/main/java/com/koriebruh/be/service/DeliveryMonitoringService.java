@@ -17,6 +17,7 @@ import com.koriebruh.be.dto.*;
 import com.koriebruh.be.entity.*;
 import com.koriebruh.be.entity.Enum.RoleType;
 import com.koriebruh.be.repository.*;
+import com.koriebruh.be.utils.GeoAPI;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -62,7 +63,11 @@ public class DeliveryMonitoringService {
     @Autowired
     private UserRepository UserRepository;
 
+    @Autowired
+    private GeoAPI geoAPI;
 
+//
+//
 //    @Scheduled(fixedRate = 300_000)
 //    public void detectLostGPS() {
 //        // CHECK DI DELIVERY
@@ -214,11 +219,43 @@ public class DeliveryMonitoringService {
         position.setDelivery(delivery);
         position.setLatitude(request.getLatitude());
         position.setLongitude(request.getLongitude());
-        position.setRecordedAt(request.getRecordedAt());
+        position.setRecordedAt(Instant.now().getEpochSecond());
         positionRepo.save(position);
 
         return "Position recorded successfully for delivery ID: " + delivery.getId();
     }
+
+    // get /delivery/position/{workerId}
+    public PositionGeoResponse getPositionByWorkerId(String workerId) {
+        User worker = workerRepo.findByIdAndDeletedAtIsNull(workerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Worker not found"));
+
+        Delivery delivery = deliveryRepo.findByWorkerIdAndFinishedAtIsNull(worker.getId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No active delivery found for this worker"));
+
+        Position lastPosition = positionRepo.findTopByDeliveryIdOrderByRecordedAtDesc(delivery.getId());
+
+        if (lastPosition == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No position data found for this delivery");
+        }
+
+        // INI HIT API YA BROWW
+        GeoResponseAPI apiRes = geoAPI.reverseGeocode(lastPosition.getLatitude(), lastPosition.getLongitude());
+
+        // MAPPING from api response to DTO
+        return PositionGeoResponse.builder()
+                .latitude(lastPosition.getLatitude())
+                .longitude(lastPosition.getLongitude())
+                .name(apiRes.getFeatures().get(0).getProperties().getName())
+                .formatedAddress(apiRes.getFeatures().get(0).getProperties().getFormatted())
+                .city(apiRes.getFeatures().get(0).getProperties().getCity())
+                .state(apiRes.getFeatures().get(0).getProperties().getState())
+                .country(apiRes.getFeatures().get(0).getProperties().getCountry())
+                .plusCode(apiRes.getFeatures().get(0).getProperties().getPlus_code())
+                .recordedAt(lastPosition.getRecordedAt())
+                .build();
+    }
+
 
     // get detail of a delivery (buat worker)
     // get /delivery/detail/
@@ -329,17 +366,37 @@ public class DeliveryMonitoringService {
 
     // get all position of a
     // get /delivery/position
-    public List<PositionResponse> getPositions(String deliveryId) {
+    public List<PositionGeoResponse> getPositions(String deliveryId) {
 
         List<Position> positions = positionRepo.findAllByDeliveryIdOrderByRecordedAtDesc(deliveryId);
 
-        return positions.stream()
-                .map(position -> PositionResponse.builder()
-                        .latitude(position.getLatitude())
-                        .longitude(position.getLongitude())
-                        .recordedAt(position.getRecordedAt())
-                        .build())
-                .toList();
+        //SEND ALL
+        List<GeoResponseAPIBatch> batches = geoAPI.reverseGeocodeBatch(positions);
+
+        //DO MAPPING
+        List<PositionGeoResponse> responses = new ArrayList<>(batches.size());
+        for (int i = 0; i < batches.size(); i++) { // Fixed: added .size()
+            Position position = positions.get(i);
+            GeoResponseAPIBatch batch = batches.get(i);
+
+            // MAPPING from api response to DTO
+            PositionGeoResponse response = PositionGeoResponse.builder() // Fixed: changed variable name from apiRes to response
+                    .latitude(position.getLatitude())
+                    .longitude(position.getLongitude())
+                    .name(batch.getName()) // Fixed: get from batch instead of apiRes
+                    .formatedAddress(batch.getFormatted()) // Fixed: get from batch and method name
+                    .city(batch.getCity()) // Fixed: get from batch
+                    .state(batch.getState()) // Fixed: get from batch
+                    .country(batch.getCountry()) // Fixed: get from batch
+                    .plusCode(batch.getPlus_code()) // Fixed: get from batch
+                    .recordedAt(position.getRecordedAt())
+                    .build();
+
+            responses.add(response);
+        }
+
+        return responses;
+
     }
 
     // get last deliveries position
