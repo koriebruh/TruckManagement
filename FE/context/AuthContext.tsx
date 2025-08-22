@@ -18,6 +18,7 @@ import api, {
 } from "@/services/axios";
 import { useQueryClient } from '@tanstack/react-query';
 
+
 // Create context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -29,10 +30,7 @@ export const AuthProvider = ({ children }: { children: ReactNode}) => {
   const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
 
-
-
-
-  // Initialize auth state on app start
+// Initialize auth state on app start
   useEffect(() => {
     let isMounted = true;
 

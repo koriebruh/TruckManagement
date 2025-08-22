@@ -6,18 +6,22 @@ import {
   ActivityIndicator,
   StatusBar,
 } from "react-native";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useDeliveryDetail } from "@/hooks/useDeliveryDetail";
 import { useWorker, useTruck, useRoute } from "@/hooks/useDelivery";
-import { getCityName, useCities  } from "@/hooks/useTransit";
+import { getCityName, useCities } from "@/hooks/useTransit";
+import { usePositionDrivers } from "@/hooks/usePositionDrivers"; // Add this import
 
 const DeliveryDetail = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { id } = useLocalSearchParams();
+  const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout |number| null>(
+    null
+  );
 
   const delivery_id = Array.isArray(id) ? id[0] : id;
 
@@ -29,19 +33,57 @@ const DeliveryDetail = () => {
 
   const delivery = delivery_data?.data;
   delivery?.transits.forEach((transit) => {
-    console.log({transit});
+    console.log({ transit });
   });
+
+  console.log({delivery});
 
   const { data: worker_data } = useWorker(delivery?.worker_id || "");
   const { data: truck_data } = useTruck(delivery?.truck_id || "");
   const { data: route_data } = useRoute(delivery?.route_id || "");
+  const { data: citiesData } = useCities();
 
-    const { data: citiesData } = useCities();
+  // Add position tracking hook
+  const {
+    data: positionData,
+    isLoading: positionLoading,
+    error: positionError,
+    refetch: refetchPosition,
+  } = usePositionDrivers(delivery_id || "");
 
 
   const worker = worker_data?.data;
   const truck = truck_data?.data;
   const route = route_data?.data;
+  const positions = positionData?.data || [];
+  const currentPosition = positions.length > 0 ? positions[0] : null; // Latest position
+
+  console.log(currentPosition);
+
+  // Auto-refresh positions for active deliveries
+  useEffect(() => {
+    const isActiveDelivery =
+      delivery?.started_at! > 0 && delivery?.finished_at === 0;
+
+    if (isActiveDelivery) {
+      const interval = setInterval(() => {
+        refetchPosition();
+      }, 900000); // Refresh every 15 menit
+
+      setRefreshInterval(interval);
+
+      return () => {
+        if (interval) {
+          clearInterval(interval);
+        }
+      };
+    } else {
+      if (refreshInterval) {
+        clearInterval(refreshInterval);
+        setRefreshInterval(null);
+      }
+    }
+  }, [delivery?.started_at, delivery?.finished_at, refetchPosition, refreshInterval]);
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp * 1000).toLocaleDateString("id-ID", {
@@ -61,6 +103,17 @@ const DeliveryDetail = () => {
     }).format(amount);
   };
 
+  const formatPositionTime = (timestamp: number) => {
+    return new Date(timestamp * 1000).toLocaleString("id-ID", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+  };
+
   const calculateTotalCost = () => {
     let total = route?.base_price || 0;
 
@@ -73,7 +126,6 @@ const DeliveryDetail = () => {
 
     return total;
   };
-  
 
   const getDeliveryStatus = () => {
     if (!delivery) return { status: "Unknown", color: "gray" };
@@ -86,7 +138,6 @@ const DeliveryDetail = () => {
       return { status: "Menunggu", color: "orange" };
     }
   };
-
 
   if (delivery_loading) {
     return (
@@ -180,6 +231,58 @@ const DeliveryDetail = () => {
               )}
             </View>
 
+            {/* Current Position (only show for active deliveries) */}
+            {delivery.started_at > 0 && delivery.finished_at === null && (
+              <View className="bg-purple-50 rounded-xl p-4 mb-4">
+                <View className="flex-row items-center justify-between mb-2">
+                  <View className="flex-row items-center">
+                    <Ionicons name="location" size={20} color="#7C3AED" />
+                    <Text className="text-purple-800 font-semibold ml-2">
+                      Posisi Saat Ini
+                    </Text>
+                  </View>
+                  {/* <TouchableOpacity onPress={() => refetchPosition()}>
+                    <Ionicons
+                      name="refresh"
+                      size={20}
+                      color={positionLoading ? "#9CA3AF" : "#7C3AED"}
+                    />
+                  </TouchableOpacity> */}
+                </View>
+
+                {positionLoading ? (
+                  <View className="flex-row items-center">
+                    <ActivityIndicator size="small" color="#7C3AED" />
+                    <Text className="text-gray-600 ml-2">Memuat posisi...</Text>
+                  </View>
+                ) : positionError || !currentPosition ? (
+                  <Text className="text-red-600 text-sm">
+                    Posisi tidak dapat dimuat
+                  </Text>
+                ) : (
+                  <>
+                    <Text className="text-gray-800 font-medium text-base mb-1">
+                      {currentPosition.city ||
+                        currentPosition.formatted_address}
+                    </Text>
+                    <Text className="text-gray-600 text-sm mb-2">
+                      {currentPosition.city}, {currentPosition.state},{" "}
+                      {currentPosition.country}
+                    </Text>
+                    <View className="flex-row items-center justify-between">
+                      <Text className="text-gray-500 text-xs">
+                        Koordinat: {currentPosition.latitude.toFixed(6)},{" "}
+                        {currentPosition.longitude.toFixed(6)}
+                      </Text>
+                      <Text className="text-gray-500 text-xs">
+                        {formatPositionTime(currentPosition.recorded_at)}
+                      </Text>
+                    </View>
+                  </>
+                )}
+              </View>
+            )}
+
             {/* Driver Info */}
             <View className="bg-blue-50 rounded-xl p-4 mb-4">
               <View className="flex-row items-center mb-2">
@@ -233,6 +336,31 @@ const DeliveryDetail = () => {
                 </Text>
               )}
             </View>
+
+            {/* Position History (show last 5 positions for completed deliveries) */}
+            {delivery.finished_at > 0 && positions.length > 1 && (
+              <View className="bg-gray-50 rounded-xl p-4 mb-6">
+                <View className="flex-row items-center mb-3">
+                  <Ionicons name="trail-sign" size={20} color="#6B7280" />
+                  <Text className="text-gray-700 font-semibold ml-2">
+                    Riwayat Perjalanan
+                  </Text>
+                </View>
+                {positions.slice(0, 5).map((position, index) => (
+                  <View
+                    key={index}
+                    className="mb-2 pb-2 border-b border-gray-200 last:border-b-0">
+                    <Text className="text-gray-800 font-medium text-sm">
+                      {position.name || position.formatted_address}
+                    </Text>
+                    <Text className="text-gray-600 text-xs">
+                      {position.city}, {position.state} •{" "}
+                      {formatPositionTime(position.recorded_at)}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            )}
 
             {/* Cost Breakdown */}
             <View className="border-t border-gray-200 pt-4">
@@ -295,17 +423,8 @@ const DeliveryDetail = () => {
           </View>
         </View>
 
-        {/* Footer
-        <View className="bg-white mx-6 rounded-b-2xl border-l border-r border-b border-gray-200 mb-6">
-          <View className="px-6 py-4 border-t border-dashed border-gray-300">
-            <Text className="text-center text-gray-500 text-sm">
-              Terima kasih atas kepercayaan Anda
-            </Text>
-            <Text className="text-center text-gray-400 text-xs mt-1">
-              Dokumen ini dicetak otomatis oleh sistem
-            </Text>
-          </View>
-        </View> */}
+        {/* Footer */}
+        <View className="h-6" />
       </ScrollView>
     </View>
   );
