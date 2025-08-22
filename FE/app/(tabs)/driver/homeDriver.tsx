@@ -7,13 +7,13 @@ import { Ionicons } from "@expo/vector-icons";
 import DeliveryCard from "@/components/DeliveryCard";
 import {
   ActivityIndicator,
+  Alert,
   RefreshControl,
   ScrollView,
   StatusBar,
   Text,
   TouchableOpacity,
   View,
-  Alert,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useDeliveryByWorker } from "@/hooks/useDelivery";
@@ -25,6 +25,8 @@ const DashboardDriver = () => {
   const { data: user } = useProfile();
   const worker_id = user?.data.id || "";
   const [nextUpdateCountdown, setNextUpdateCountdown] = useState<string>("");
+
+
 
   const {
     data: deliveriesData,
@@ -43,9 +45,10 @@ const DashboardDriver = () => {
     isSendingPosition,
     sendPositionError,
     lastSentAt,
+    isMocked,
   } = usePositionTracker({
     autoTrack: true, // Auto-start when component mounts
-    interval: 5000, // Send position every 15 minutes (15 * 60 * 1000 ms)
+    interval: 900000, 
   });
 
   const router = useRouter();
@@ -65,6 +68,7 @@ const DashboardDriver = () => {
 
       if (timeLeft <= 0) {
         setNextUpdateCountdown("Sending soon...");
+
       } else {
         const minutes = Math.floor(timeLeft / 60000);
         const seconds = Math.floor((timeLeft % 60000) / 1000);
@@ -98,6 +102,17 @@ const DashboardDriver = () => {
   const handleRefresh = () => {
     refetch();
   };
+
+    useEffect(() => {
+      if (isMocked) {
+        Alert.alert(
+          "🚨 Fake GPS Terdeteksi",
+          "Lokasi kamu terdeteksi menggunakan aplikasi Fake GPS. Matikan aplikasi tersebut untuk melanjutkan.",
+          [{ text: "OK" }]
+        );
+      }
+    }, [isMocked]);
+
 
   const handleDeliveryPress = (deliveryId: string) => {
     console.log("Navigate to delivery:", deliveryId);
@@ -140,6 +155,7 @@ const DashboardDriver = () => {
     );
   }
 
+
   const deliveries = deliveriesData?.data || null;
 
   return (
@@ -159,77 +175,125 @@ const DashboardDriver = () => {
           />
         }>
         {/* Header with Location Status */}
-        <View
-          style={{ marginTop: insets.top }}
-          className="flex-row justify-between items-start mb-4">
-          <View className="flex-1">
-            <Text className="text-xl font-bold text-gray-800">
-              Delivery Aktif
-            </Text>
+        <View style={{ marginTop: insets.top }} className="mb-6">
+          <Text className="text-2xl font-bold text-gray-800 mb-4">
+            Delivery Aktif
+          </Text>
 
-            {/* Automatic Location Status */}
-            <View className="flex-row items-center mt-2">
-              <Ionicons
-                name="radio"
-                size={16}
-                color={isTracking ? "#10B981" : "#9CA3AF"}
-              />
-              <Text
-                className={`text-base ml-1 ${isTracking ? "text-green-600" : "text-gray-500"}`}>
-                {isLoadingLocation
-                  ? "Initializing location..."
-                  : isTracking
-                    ? "Auto-tracking (15 min interval)"
-                    : "Connecting to location services..."}
+          {/* Fake GPS Warning Banner */}
+          {isMocked && (
+            <View className="bg-red-100 border border-red-400 rounded-xl p-3 mb-4 flex-row items-center">
+              <Ionicons name="alert-circle" size={20} color="#DC2626" />
+              <Text className="text-red-700 font-medium ml-2">
+                Fake GPS terdeteksi! Nonaktifkan segera 🚨
               </Text>
-              {(isSendingPosition || isLoadingLocation) && (
-                <ActivityIndicator
-                  size="small"
-                  color="#2563EB"
-                  style={{ marginLeft: 8 }}
+            </View>
+          )}
+
+          {/* Status Overview Card */}
+          <View className="bg-white rounded-2xl p-4 shadow-sm">
+            <View className="flex-row items-center justify-between mb-3">
+              <View className="flex-row items-center">
+                <Ionicons
+                  name="radio"
+                  size={20}
+                  color={isTracking ? "#10B981" : "#9CA3AF"}
                 />
+                <Text className="text-base font-semibold text-gray-800 ml-2">
+                  Status Tracking
+                </Text>
+              </View>
+              {(isSendingPosition || isLoadingLocation) && (
+                <ActivityIndicator size="small" color="#2563EB" />
               )}
             </View>
 
-            {/* Location Info */}
-            {location && (
-              <Text className="text-sm text-gray-400 mt-1">
-                📍{" "}
-                {location.city
-                  ? location.address
-                  : `${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`}
-              </Text>
-            )}
+            <View className="space-y-2">
+              {/* Tracking Status */}
+              <View className="flex-row items-center">
+                <View
+                  className={`w-2 h-2 rounded-full mr-3 ${
+                    isLoadingLocation
+                      ? "bg-yellow-500"
+                      : isTracking
+                        ? "bg-green-500"
+                        : "bg-gray-400"
+                  }`}
+                />
+                <Text
+                  className={`text-sm font-medium ${
+                    isLoadingLocation
+                      ? "text-yellow-600"
+                      : isTracking
+                        ? "text-green-600"
+                        : "text-gray-500"
+                  }`}>
+                  {isLoadingLocation
+                    ? "Menginisialisasi lokasi..."
+                    : isTracking
+                      ? "Auto-tracking aktif "
+                      : "Menghubungkan ke layanan lokasi..."}
+                </Text>
+              </View>
 
-            {/* Automatic Status Info */}
-            {isTracking && (
-              <>
-                {lastSentAt && (
-                  <Text className="text-xs text-gray-400 mt-1">
-                    ✅ Last sent: {lastSentAt.toLocaleTimeString()}
+              {/* Location Info */}
+              {location && (
+                <View className="flex-row items-start">
+                  <Ionicons
+                    name="location"
+                    size={14}
+                    color="#6B7280"
+                    style={{ marginTop: 1 }}
+                  />
+                  <Text
+                    className="text-sm text-gray-600 ml-2 flex-1"
+                    numberOfLines={2}>
+                    {location.city
+                      ? location.address
+                      : `${location.latitude.toFixed(6)}, ${location.longitude.toFixed(6)}`}
                   </Text>
-                )}
+                </View>
+              )}
 
-                {nextUpdateCountdown && (
-                  <Text className="text-xs text-blue-600">
-                    ⏱️ Next update: {nextUpdateCountdown}
+              {/* Last Sent Info */}
+              {isTracking && lastSentAt && (
+                <View className="flex-row items-center">
+                  <Ionicons name="checkmark-circle" size={14} color="#10B981" />
+                  <Text className="text-xs text-gray-500 ml-2">
+                    Terakhir dikirim: {lastSentAt.toLocaleTimeString()}
                   </Text>
-                )}
-              </>
-            )}
+                </View>
+              )}
 
-            {!isTracking && (
-              <Text className="text-xs text-gray-400 mt-1">
-                🔄 Starting automatic tracking...
-              </Text>
-            )}
+              {/* Next Update Countdown */}
+              {nextUpdateCountdown && isTracking && (
+                <View className="flex-row items-center">
+                  <Ionicons name="timer-outline" size={14} color="#2563EB" />
+                  <Text className="text-xs text-blue-600 ml-2 font-medium">
+                    Update berikutnya: {nextUpdateCountdown}
+                  </Text>
+                </View>
+              )}
 
-            {/* Silent Error Indicator (no alert, just visual indicator) */}
-            {sendPositionError && (
-              <Text className="text-xs text-orange-600 mt-1">
-                ⚠️ Connection issue - will retry automatically
-              </Text>
-            )}
+              {/* Error Indicators */}
+              {!isTracking && !isLoadingLocation && (
+                <View className="flex-row items-center">
+                  <Ionicons name="sync" size={14} color="#F59E0B" />
+                  <Text className="text-xs text-orange-600 ml-2">
+                    Memulai tracking otomatis...
+                  </Text>
+                </View>
+              )}
+
+              {sendPositionError && (
+                <View className="flex-row items-center">
+                  <Ionicons name="warning-outline" size={14} color="#F59E0B" />
+                  <Text className="text-xs text-orange-600 ml-2">
+                    Masalah koneksi - akan mencoba lagi otomatis
+                  </Text>
+                </View>
+              )}
+            </View>
           </View>
         </View>
 

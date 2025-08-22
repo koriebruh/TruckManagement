@@ -23,6 +23,7 @@ interface UsePositionTrackerReturn {
   isSendingPosition: boolean;
   sendPositionError: string | null;
   lastSentAt: Date | null;
+  isMocked: boolean; 
   startTracking: () => void;
   stopTracking: () => void;
   sendCurrentPosition: () => Promise<void>;
@@ -46,7 +47,7 @@ export const usePositionTracker = (
 
   const [isTracking, setIsTracking] = useState(false);
   const [lastSentAt, setLastSentAt] = useState<Date | null>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | number | null>(null);
   const isInitialized = useRef(false);
   const locationRef = useRef<LocationData | null>(null); // Keep location in ref for immediate access
 
@@ -54,6 +55,7 @@ export const usePositionTracker = (
     location,
     isLoading: isLoadingLocation,
     error: locationError,
+    isMocked, // 👈 dari useLocation
     startWatchingLocation,
     stopWatchingLocation,
     getCurrentLocation,
@@ -84,17 +86,14 @@ export const usePositionTracker = (
     async (timeoutMs: number = 5000): Promise<LocationData | null> => {
       console.log("📍 Getting location with timeout:", timeoutMs, "ms");
 
-      // If we already have location in ref, use it
       if (locationRef.current) {
         console.log("✅ Using cached location from ref");
         return locationRef.current;
       }
 
-      // Try to get fresh location
       try {
         await getCurrentLocation();
 
-        // Wait for location with timeout
         const startTime = Date.now();
         while (!locationRef.current && Date.now() - startTime < timeoutMs) {
           await new Promise((resolve) => setTimeout(resolve, 100));
@@ -113,11 +112,15 @@ export const usePositionTracker = (
   const sendPositionRobust = useCallback(async (): Promise<boolean> => {
     console.log("🔄 Attempting to send position...");
 
-    // Try to get location (use cached or fetch new)
     const currentLocation = await getLocationWithTimeout(3000);
 
     if (!currentLocation) {
       console.log("❌ No location available after timeout, skipping send");
+      return false;
+    }
+
+    if (currentLocation.mocked) {
+      console.log("🚫 Fake GPS detected, skipping send");
       return false;
     }
 
@@ -149,7 +152,7 @@ export const usePositionTracker = (
   // Interval function for automatic sending
   const intervalSendPosition = useCallback(async () => {
     console.log("⏰ Interval triggered - attempting automatic send");
-    await sendPositionRobust(); // This will handle all error cases silently
+    await sendPositionRobust();
   }, [sendPositionRobust]);
 
   // Start tracking
@@ -164,12 +167,9 @@ export const usePositionTracker = (
     setIsTracking(true);
 
     try {
-      // Start watching location
       await startWatchingLocation();
       console.log("📍 Location watching started");
 
-      // Try to get initial location and send immediately
-      console.log("📍 Getting initial location...");
       const initialSuccess = await sendPositionRobust();
 
       if (initialSuccess) {
@@ -178,7 +178,6 @@ export const usePositionTracker = (
         console.log("⚠️ Initial send failed, will retry in first interval");
       }
 
-      // Set up interval for automatic sending
       intervalRef.current = setInterval(intervalSendPosition, interval);
       console.log("✅ Automatic sending interval set up");
     } catch (error) {
@@ -203,10 +202,8 @@ export const usePositionTracker = (
     console.log("🛑 Stopping position tracking...");
     setIsTracking(false);
 
-    // Stop watching location
     stopWatchingLocation();
 
-    // Clear interval
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
       intervalRef.current = null;
@@ -214,12 +211,11 @@ export const usePositionTracker = (
     }
   }, [isTracking, stopWatchingLocation]);
 
-  // Auto-start tracking if enabled (only run once)
+  // Auto-start tracking
   useEffect(() => {
     if (autoTrack && !isInitialized.current) {
       console.log("🚀 Auto-starting automatic position tracking...");
       isInitialized.current = true;
-      // Small delay to ensure component is fully mounted
       setTimeout(() => {
         startTracking();
       }, 1000);
@@ -229,9 +225,8 @@ export const usePositionTracker = (
       console.log("🧹 Cleanup: stopping automatic tracking");
       stopTracking();
     };
-  }, []); // Empty dependency array to run only once
+  }, []);
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       if (intervalRef.current) {
@@ -245,11 +240,12 @@ export const usePositionTracker = (
     location,
     isLoadingLocation,
     locationError,
+    isMocked, // 👈 expose biar bisa dipakai di UI
     isSendingPosition: sendPositionMutation.isPending,
     sendPositionError: sendPositionMutation.error?.message || null,
     lastSentAt,
     startTracking,
     stopTracking,
-    sendCurrentPosition, // Keep this for internal use only
+    sendCurrentPosition,
   };
 };

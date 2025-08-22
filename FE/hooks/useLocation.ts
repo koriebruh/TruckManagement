@@ -10,12 +10,14 @@ export interface LocationData {
   region?: string;
   country?: string;
   address?: string;
+  mocked?: boolean; 
 }
 
 export interface UseLocationReturn {
   location: LocationData | null;
   isLoading: boolean;
   error: string | null;
+  isMocked: boolean; 
   requestLocationPermission: () => Promise<boolean>;
   getCurrentLocation: () => Promise<void>;
   startWatchingLocation: () => void;
@@ -28,6 +30,7 @@ export const useLocation = (): UseLocationReturn => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isWatching, setIsWatching] = useState(false);
+  const [isMocked, setIsMocked] = useState(false); 
   const [watchSubscription, setWatchSubscription] =
     useState<Location.LocationSubscription | null>(null);
 
@@ -42,7 +45,6 @@ export const useLocation = (): UseLocationReturn => {
         return false;
       }
 
-      // Check if location services are enabled
       const isEnabled = await Location.hasServicesEnabledAsync();
       if (!isEnabled) {
         setError("Location services are not enabled");
@@ -56,71 +58,73 @@ export const useLocation = (): UseLocationReturn => {
     }
   };
 
+  // Helper: build LocationData + deteksi mocked
+  const buildLocationData = async (locationResult: Location.LocationObject) => {
+    const { latitude, longitude, accuracy } = locationResult.coords;
+
+    let locationData: LocationData = {
+      latitude,
+      longitude,
+      accuracy: accuracy || undefined,
+      mocked: locationResult.mocked ?? false,
+    };
+
+    setIsMocked(locationResult.mocked ?? false);
+
+    try {
+      const geocoding = await Location.reverseGeocodeAsync({
+        latitude,
+        longitude,
+      });
+      if (geocoding && geocoding.length > 0) {
+        const address = geocoding[0];
+        locationData = {
+          ...locationData,
+          city: address.city || undefined,
+          region: address.region || undefined,
+          country: address.country || undefined,
+          address: [
+            address.name,
+            address.street,
+            address.city,
+            address.region,
+            address.country,
+          ]
+            .filter(Boolean)
+            .join(", "),
+        };
+      }
+    } catch (err) {
+      console.warn("Reverse geocoding failed:", err);
+    }
+
+    return locationData;
+  };
+
   // Get current location once
   const getCurrentLocation = async (): Promise<void> => {
-    console.log("📍 getCurrentLocation called");
     setIsLoading(true);
     setError(null);
 
     try {
       const hasPermission = await requestLocationPermission();
       if (!hasPermission) {
-        console.log("❌ Location permission denied");
         setIsLoading(false);
         return;
       }
 
-      console.log("📍 Getting current position...");
       const locationResult = await Location.getCurrentPositionAsync({
         accuracy: Location.Accuracy.High,
-        timeInterval: 5000,
-        distanceInterval: 10,
       });
 
-      const { latitude, longitude, accuracy } = locationResult.coords;
-      console.log("📍 Got coordinates:", { latitude, longitude, accuracy });
-
-      // Get reverse geocoding (address info)
-      let locationData: LocationData = {
-        latitude,
-        longitude,
-        accuracy: accuracy || undefined,
-      };
-
-      try {
-        const geocoding = await Location.reverseGeocodeAsync({
-          latitude,
-          longitude,
-        });
-
-        if (geocoding && geocoding.length > 0) {
-          const address = geocoding[0];
-          locationData = {
-            ...locationData,
-            city: address.city || undefined,
-            region: address.region || undefined,
-            country: address.country || undefined,
-            address: [
-              address.name,
-              address.street,
-              address.city,
-              address.region,
-              address.country,
-            ]
-              .filter(Boolean)
-              .join(", "),
-          };
-          console.log("📍 Geocoding successful:", address.city);
-        }
-      } catch (geocodingError) {
-        console.warn("Reverse geocoding failed:", geocodingError);
-        // Continue without address info
-      }
+      const locationData = await buildLocationData(locationResult);
 
       setLocation(locationData);
-      console.log("✅ Location set successfully:", locationData);
+
+      if (locationData.mocked) {
+        setError("⚠️ Fake GPS terdeteksi!");
+      }
     } catch (err) {
-      console.error("❌ Location error:", err);
       setError(
         "Failed to get current location. Please check your GPS settings."
       );
@@ -131,76 +135,38 @@ export const useLocation = (): UseLocationReturn => {
 
   // Start watching location changes
   const startWatchingLocation = async (): Promise<void> => {
-    if (isWatching) {
-      console.log("⚠️ Already watching location");
-      return;
-    }
+    if (isWatching) return;
 
     try {
       const hasPermission = await requestLocationPermission();
       if (!hasPermission) return;
 
-      console.log("👀 Starting to watch location changes");
       setIsWatching(true);
       setError(null);
 
       const subscription = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
-          timeInterval: 5000, // Update every 5 seconds
-          distanceInterval: 5, // Update when moved 5 meters
+          timeInterval: 5000,
+          distanceInterval: 5,
         },
         async (locationResult) => {
-          const { latitude, longitude, accuracy } = locationResult.coords;
-          console.log("📍 Location updated:", { latitude, longitude });
-
-          let locationData: LocationData = {
-            latitude,
-            longitude,
-            accuracy: accuracy || undefined,
-          };
-
-          try {
-            const geocoding = await Location.reverseGeocodeAsync({
-              latitude,
-              longitude,
-            });
-
-            if (geocoding && geocoding.length > 0) {
-              const address = geocoding[0];
-              locationData = {
-                ...locationData,
-                city: address.city || undefined,
-                region: address.region || undefined,
-                country: address.country || undefined,
-                address: [
-                  address.name,
-                  address.street,
-                  address.city,
-                  address.region,
-                  address.country,
-                ]
-                  .filter(Boolean)
-                  .join(", "),
-              };
-            }
-          } catch (geocodingError) {
-            console.warn("Reverse geocoding failed:", geocodingError);
-          }
-
+          const locationData = await buildLocationData(locationResult);
           setLocation(locationData);
+
+          if (locationData.mocked) {
+            setError("⚠️ Fake GPS terdeteksi!");
+          }
         }
       );
 
       setWatchSubscription(subscription);
     } catch (err) {
-      console.error("Watch location error:", err);
       setError("Failed to start location tracking");
       setIsWatching(false);
     }
   };
 
-  // Stop watching location changes
   const stopWatchingLocation = (): void => {
     if (watchSubscription) {
       watchSubscription.remove();
@@ -209,7 +175,6 @@ export const useLocation = (): UseLocationReturn => {
     setIsWatching(false);
   };
 
-  // Cleanup on unmount
   useEffect(() => {
     return () => {
       stopWatchingLocation();
@@ -220,6 +185,7 @@ export const useLocation = (): UseLocationReturn => {
     location,
     isLoading,
     error,
+    isMocked, // <-- expose ke luar
     requestLocationPermission,
     getCurrentLocation,
     startWatchingLocation,
