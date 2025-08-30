@@ -1,0 +1,19 @@
+@TOKEN_OWNER=
+
+### mendapatkan semua id pengiriman yg aktif
+GET http://localhost:8080/api/delivery/active
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OWNER}}
+
+### mendapatkan detail delivery berdasarkan id_delivery
+GET http://localhost:8080/api/delivery/detail/6f66d439-3549-4080-9e3c-804b7aced61c
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OWNER}}
+
+### get position delivery by  uuid, in dari record terbaru baru ke terlama
+GET http://localhost:8080/api/delivery/positions/6f66d439-3549-4080-9e3c-804b7aced61c
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OWNER}}

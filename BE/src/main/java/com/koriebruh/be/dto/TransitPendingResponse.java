@@ -1,20 +1,22 @@
 package com.koriebruh.be.dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LoginRequest {
+@Builder
+public class TransitPendingResponse {
 
-    private String username;
+    private String id;
 
-    private String password;
+    private String deliveryId;
 
+    private Long transitPointId;
+
+    private Long arrivedAt;
 }

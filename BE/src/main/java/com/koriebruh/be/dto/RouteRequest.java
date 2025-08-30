@@ -21,6 +21,9 @@ public class RouteRequest {
     @Size(max = 255, message = "Details can't exceed 255 characters")
     private String details;
 
+    @NotBlank(message = "Cargo type is required")
+    private String cargoType;
+
     @NotNull(message = "Base price is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Base price must be greater than 0")
     private Double basePrice;

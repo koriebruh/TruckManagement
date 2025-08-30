@@ -39,6 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 requestPath.startsWith("/v3/api-docs") ||
                 requestPath.startsWith("/swagger-resources") ||
                 requestPath.startsWith("/webjars") ||
+                requestPath.startsWith("/actuator") ||
                 requestPath.startsWith("/auth")) {
 
             filterChain.doFilter(request, response); // ⬅️ langsung lanjut tanpa validasi JWT

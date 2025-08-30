@@ -1,5 +1,8 @@
 version: '3.8'
 
+# Set project name eksplisit untuk konsistensi
+name: truck-app
+
 services:
   mysql-db:
     container_name: mysql-db
@@ -17,7 +20,7 @@ services:
     networks:
       - truck-net
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pkorie123"]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pkorie123" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -30,26 +33,76 @@ services:
     container_name: truck-management
     environment:
       SPRING_PROFILES_ACTIVE: prod
-      DB_USER: korie              # ✅ Gunakan user yang konsisten
+      DB_USER: korie
       DB_PASS: korie123
     ports:
-      - "8080:8080"
+      - "8080:8080" # keep for direct access /hidden juga nanti
     depends_on:
       mysql-db:
-        condition: service_healthy  # ✅ Tunggu MySQL siap
+        condition: service_healthy
     networks:
       - truck-net
+      - proxy-net
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 60s           # ✅ Berikan waktu lebih untuk startup
+      retries: 10
+      start_period: 60s
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"  # PENTING: ini yang missing!
+      - "traefik.docker.network=truck-app_proxy-net"  # Network dengan project name
+
+      # HTTP routing - redirect ke HTTPS
+      - "traefik.http.routers.truck-http.rule=Host(`localhost`)" # Ganti dengan domain Anda jika ada
+      - "traefik.http.routers.truck-http.entrypoints=web"
+      - "traefik.http.routers.truck-http.middlewares=https-redirect"
+
+      # HTTPS routing
+      - "traefik.http.routers.truck-https.rule=Host(`localhost`)" # Ganti dengan domain Anda jika ada
+      - "traefik.http.routers.truck-https.entrypoints=websecure"
+      - "traefik.http.routers.truck-https.tls=true"
+      - "traefik.http.routers.truck-https.service=truck-service"
+
+      # Service definition
+      - "traefik.http.services.truck-service.loadbalancer.server.port=8080"
+      - "traefik.http.services.truck-service.loadbalancer.server.scheme=http"
+
+      # Middleware untuk redirect HTTP ke HTTPS
+      - "traefik.http.middlewares.https-redirect.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.https-redirect.redirectscheme.permanent=true"
+
+  traefik:
+    image: traefik:v3.1
+    container_name: traefik
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+      - "--log.level=INFO"
+
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8081:8080"  # Traefik dashboard ini di hidden kalo prod
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - traefik_letsencrypt:/letsencrypt
+    networks:
+      - proxy-net
     restart: unless-stopped
 
 volumes:
   mysql_data:
+  traefik_letsencrypt:
 
 networks:
   truck-net:
+    driver: bridge
+  proxy-net:
     driver: bridge

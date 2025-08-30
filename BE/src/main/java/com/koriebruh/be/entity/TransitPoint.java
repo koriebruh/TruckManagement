@@ -29,11 +29,13 @@ public class TransitPoint {
     // estimation duration IN this location
     private Long estimatedDurationMinute;
 
+    private String cargoType;
+
     private Double extraCost;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Long createdAt;
 
-    @Column(name = "deleted_at")
-    private Long deletedAt;
+    @Column(name = "is_active", nullable = false)
+    private Boolean isActive;
 }

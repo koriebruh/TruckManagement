@@ -7,6 +7,7 @@ import com.koriebruh.be.entity.City;
 import com.koriebruh.be.entity.Route;
 import com.koriebruh.be.repository.CityRepository;
 import com.koriebruh.be.repository.RouteRepository;
+import com.koriebruh.be.utils.Estimation;
 import com.koriebruh.be.utils.GeoUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -44,18 +45,14 @@ public class RouteService {
                 endCity.getLatitude(),
                 endCity.getLongitude()
         );
+        // Bulatkan distanceKM ke 2 desimal
+        distanceKM = Math.round(distanceKM * 100.0) / 100.0;
 
-        /* Speed rata-rata truck pengiriman (km/jam)
-         * Tambahan faktor untuk istirahat, loading/unloading, dll
-         */
-        final Double AVERAGE_TRUCK_SPEED = 55.0;
-        final Double TIME_BUFFER_FACTOR = 1.3; // 30% buffer
-        Double estimatedDurationHours = (distanceKM / AVERAGE_TRUCK_SPEED) * TIME_BUFFER_FACTOR;
+        // Hitung estimasi waktu menggunakan EstimationUtils
+        Double estimatedDurationHours = Estimation.calculateRealisticTravelTime(distanceKM);
 
-        // Minimal 1 jam untuk jarak dekat
-        if (estimatedDurationHours < 1.0) {
-            estimatedDurationHours = 1.0;
-        }
+        // Bulatkan estimatedDurationHours ke 2 desimal
+        estimatedDurationHours = Estimation.roundToTwoDecimals(estimatedDurationHours);
 
         Route newRoute = new Route();
         newRoute.setStartCity(startCity);
@@ -63,6 +60,7 @@ public class RouteService {
         newRoute.setDetails(request.getDetails());
         newRoute.setBasePrice(request.getBasePrice());
         newRoute.setDistanceKM(distanceKM);
+        newRoute.setCargoType(request.getCargoType());
         newRoute.setEstimatedDurationHours(estimatedDurationHours);
         newRoute.setIsActive(request.getIsActive());
         newRoute.setCreatedAt(System.currentTimeMillis());
@@ -83,6 +81,7 @@ public class RouteService {
         response.setDetails(route.getDetails());
         response.setBasePrice(route.getBasePrice());
         response.setDistanceKM(route.getDistanceKM());
+        response.setCargoType(route.getCargoType());
         response.setEstimatedDurationHours(route.getEstimatedDurationHours());
         response.setIsActive(route.getIsActive());
         response.setCreatedAt(route.getCreatedAt());
@@ -120,26 +119,22 @@ public class RouteService {
                 endCity.getLongitude()
         );
 
-        /* Speed rata-rata truck pengiriman (km/jam)
-         * Tambahan faktor untuk istirahat, loading/unloading, dll
-         */
-        final Double AVERAGE_TRUCK_SPEED = 55.0;
-        final Double TIME_BUFFER_FACTOR = 1.3; // 30% buffer
-        Double estimatedDurationHours = (distanceKM / AVERAGE_TRUCK_SPEED) * TIME_BUFFER_FACTOR;
+        distanceKM = Math.round(distanceKM * 100.0) / 100.0;
+        // Hitung estimasi waktu menggunakan EstimationUtils
+        Double estimatedDurationHours = Estimation.calculateRealisticTravelTime(distanceKM);
 
-        // Minimal 1 jam untuk jarak dekat
-        if (estimatedDurationHours < 1.0) {
-            estimatedDurationHours = 1.0;
-        }
-        Route newRoute = new Route();
-        newRoute.setStartCity(startCity);
-        newRoute.setEndCity(endCity);
-        newRoute.setDetails(request.getDetails());
-        newRoute.setBasePrice(request.getBasePrice());
-        newRoute.setDistanceKM(distanceKM);
-        newRoute.setEstimatedDurationHours(estimatedDurationHours);
-        newRoute.setIsActive(request.getIsActive());
-        newRoute.setCreatedAt(System.currentTimeMillis());
+        // Bulatkan estimatedDurationHours ke 2 desimal
+        estimatedDurationHours = Estimation.roundToTwoDecimals(estimatedDurationHours);
+
+
+        route.setStartCity(startCity);
+        route.setEndCity(endCity);
+        route.setDetails(request.getDetails());
+        route.setBasePrice(request.getBasePrice());
+        route.setDistanceKM(distanceKM);
+        route.setCargoType(request.getCargoType());
+        route.setEstimatedDurationHours(estimatedDurationHours);
+        route.setIsActive(request.getIsActive());
 
         routeRepository.save(route);
         return "Route updated successfully";
@@ -152,6 +147,7 @@ public class RouteService {
                 .startCityName(route.getStartCity().getName())
                 .endCityName(route.getEndCity().getName())
                 .details(route.getDetails())
+                .cargoType(route.getCargoType())
                 .basePrice(route.getBasePrice())
                 .distanceKM(route.getDistanceKM())
                 .estimatedDurationHours(route.getEstimatedDurationHours())

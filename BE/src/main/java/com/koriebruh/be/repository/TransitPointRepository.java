@@ -8,8 +8,10 @@ import java.util.Optional;
 
 public interface TransitPointRepository extends JpaRepository<TransitPoint, Long> {
 
-    List<TransitPoint> findAllByDeletedAtNull();
+//    List<TransitPoint> findAllByDeletedAtNull();
 
-    Optional<TransitPoint> findByIdAndDeletedAtIsNull(Long transitPointId);
+    List<TransitPoint> findAllByIsActiveTrue();
+
+//    Optional<TransitPoint> findByIdAndDeletedAtIsNull(Long transitPointId);
 
 }

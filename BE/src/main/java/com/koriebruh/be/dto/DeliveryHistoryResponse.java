@@ -1,18 +1,16 @@
 package com.koriebruh.be.dto;
 
-
+import com.koriebruh.be.entity.Route;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
+@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Data
-@Builder
-public class DeliveryDetailResponse {
+public class DeliveryHistoryResponse {
 
     private String id;
 
@@ -22,14 +20,9 @@ public class DeliveryDetailResponse {
 
     private String routeId;
 
-    private String addByOperatorId;
-
     private Long startedAt;
 
     private Long finishedAt;
 
-    private List<DeliveryTransitDTO> transits;
-
-    private List<DeliveryAlertDTO> alerts;
-
+    private String addByOperatorId;
 }

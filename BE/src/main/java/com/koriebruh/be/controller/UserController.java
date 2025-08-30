@@ -70,7 +70,7 @@ public class UserController {
         );
     }
 
-    @GetMapping(value = "/available",
+    @GetMapping(value = "drivers/available",
             produces = "application/json"
     )
     public ResponseEntity<WebResponse<List<UserAvailableResponse>>> getAvailableUsers() {
@@ -100,4 +100,38 @@ public class UserController {
         );
     }
 
+    @DeleteMapping(value = "/{userId}",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<String>> deleteUser(@PathVariable String userId) {
+        String msg = userService.deleteUser(userId);
+        return ResponseEntity.ok(
+                WebResponse.<String>builder()
+                        .status("OK")
+                        .data(msg)
+                        .build()
+        );
+    }
+
+    @GetMapping("/operators")
+    public ResponseEntity<WebResponse<List<UserResponse>>> getAllOperators() {
+        List<UserResponse> users = userService.getAllUsers("OPERATOR");
+        return ResponseEntity.ok(
+                WebResponse.<List<UserResponse>>builder()
+                        .status("OK")
+                        .data(users)
+                        .build()
+        );
+    }
+
+    @GetMapping("/drivers")
+    public ResponseEntity<WebResponse<List<UserResponse>>> getAllDrivers() {
+        List<UserResponse> users = userService.getAllUsers("DRIVER");
+        return ResponseEntity.ok(
+                WebResponse.<List<UserResponse>>builder()
+                        .status("OK")
+                        .data(users)
+                        .build()
+        );
+    }
 }

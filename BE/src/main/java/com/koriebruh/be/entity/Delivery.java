@@ -39,12 +39,18 @@ public class Delivery {
     @Column(name = "finished_at")
     private Long finishedAt;
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "add_by_operator_id", nullable = true)
+    private User addByOperatorId;
+
     // satu delivery bisa memiliki banyak alert
     @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("createdAt ASC") // dari yang paling lama ke baru
     private List<DeliverAlert> alerts = new ArrayList<>();
 
     // satu delivery bisa memiliki banyak transit
     @OneToMany(mappedBy = "delivery", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("arrivedAt ASC")
     private List<DeliveryTransit> transits = new ArrayList<>();
 
 }

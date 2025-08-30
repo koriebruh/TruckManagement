@@ -13,4 +13,5 @@ public interface DeliverAlertRepository extends JpaRepository<DeliverAlert, Stri
 
     DeliverAlert findTopByDeliveryIdAndTypeOrderByCreatedAtDesc(String deliveryId, DeliverAlertType type);
 
+    void deleteAllByDeliveryId(String deliveryId);
 }

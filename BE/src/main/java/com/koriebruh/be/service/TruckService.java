@@ -83,9 +83,9 @@ public class TruckService {
      * */
     public List<TruckResponse> getAllAvailableTrucks() {
         List<Truck> activeDelivery = truckRepository.findAvailableTrucksNotInActiveDelivery();
-        if (activeDelivery.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No available trucks found all trucks are in active delivery");
-        }
+//        if (activeDelivery.isEmpty()) {
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No available trucks found all trucks are in active delivery");
+//        }
 
         return activeDelivery.stream()
                 .map(truck -> TruckResponse.builder()
@@ -117,4 +117,12 @@ public class TruckService {
 
     // History Delivery By Truck id
     // latter add
+    public String toggleToAvailable(String truckId) {
+        Truck existingTruck = truckRepository.findById(truckId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Truck not found"));
+
+        existingTruck.setIsAvailable(!existingTruck.getIsAvailable());
+        truckRepository.save(existingTruck);
+        return "Truck availability toggled successfully";
+    }
 }

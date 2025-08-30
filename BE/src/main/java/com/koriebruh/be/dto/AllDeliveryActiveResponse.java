@@ -22,5 +22,7 @@ public class AllDeliveryActiveResponse {
 
     private String routeId;
 
+    private String addByOperatorId;
+
     private Long startedAt;
 }

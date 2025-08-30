@@ -24,9 +24,9 @@ public class DeliveryMonitoringController {
     )
     public ResponseEntity<WebResponse<String>> createDelivery(@RequestBody @Valid DeliveryRequest request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        String operator = authentication.getName();
 
-        String msg = deliveryMonitoringService.createDelivery(request, username);
+        String msg = deliveryMonitoringService.createDelivery(request, operator);
         return ResponseEntity.ok(
                 WebResponse.<String>builder()
                         .status("CREATED")
@@ -35,15 +35,13 @@ public class DeliveryMonitoringController {
         );
     }
 
-    @PatchMapping(value = "/finish",
+    @PatchMapping(value = "/finish/{deliveryId}",
             produces = "application/json",
             consumes = "application/json"
     )
-    public ResponseEntity<WebResponse<String>> finishDelivery() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+    public ResponseEntity<WebResponse<String>> finishDelivery(@PathVariable String deliveryId) {
 
-        String msg = deliveryMonitoringService.finishDelivery(username);
+        String msg = deliveryMonitoringService.finishDelivery(deliveryId);
         return ResponseEntity.ok(
                 WebResponse.<String>builder()
                         .status("FINISHED")
@@ -52,6 +50,7 @@ public class DeliveryMonitoringController {
         );
     }
 
+    // NEWWW,
     @PostMapping(value = "/position",
             produces = "application/json",
             consumes = "application/json"
@@ -65,6 +64,21 @@ public class DeliveryMonitoringController {
                 WebResponse.<String>builder()
                         .status("UPDATED")
                         .data(msg)
+                        .build()
+        );
+    }
+
+    // NEWWW
+    @GetMapping(value = "/position/{workerId}",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<PositionGeoResponse>> getPositionByWorkerId(@PathVariable String workerId) {
+        PositionGeoResponse position = deliveryMonitoringService.getPositionByWorkerId(workerId);
+
+        return ResponseEntity.ok(
+                WebResponse.<PositionGeoResponse>builder()
+                        .status("OK")
+                        .data(position)
                         .build()
         );
     }
@@ -99,14 +113,28 @@ public class DeliveryMonitoringController {
         );
     }
 
+    @GetMapping(value = "/active/{workerId}",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<AllDeliveryActiveResponse>> getActiveDeliveriesByWorkerId(@PathVariable String workerId) {
+
+        AllDeliveryActiveResponse activeDelivery = deliveryMonitoringService.getActiveDeliveriesByUserId(workerId);
+        return ResponseEntity.ok(
+                WebResponse.<AllDeliveryActiveResponse>builder()
+                        .status("OK")
+                        .data(activeDelivery)
+                        .build()
+        );
+    }
+
     @GetMapping(value = "/positions/{deliveryId}",
             produces = "application/json"
     )
-    public ResponseEntity<WebResponse<List<PositionResponse>>> getPositions(@PathVariable String deliveryId) {
-        List<PositionResponse> positions = deliveryMonitoringService.getPositions(deliveryId);
+    public ResponseEntity<WebResponse<List<PositionGeoResponse>>> getPositions(@PathVariable String deliveryId) {
+        List<PositionGeoResponse> positions = deliveryMonitoringService.getPositions(deliveryId);
 
         return ResponseEntity.ok(
-                WebResponse.<List<PositionResponse>>builder()
+                WebResponse.<List<PositionGeoResponse>>builder()
                         .status("OK")
                         .data(positions)
                         .build()
@@ -157,4 +185,104 @@ public class DeliveryMonitoringController {
         );
     }
 
+
+    @DeleteMapping(
+            value = "/{deliveryId}",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<String>> deleteDelivery(@PathVariable String deliveryId) {
+        deliveryMonitoringService.deleteDelivery(deliveryId);
+        return ResponseEntity.ok(
+                WebResponse.<String>builder()
+                        .status("DELETED")
+                        .data("Delivery with ID " + deliveryId + " has been deleted.")
+                        .build()
+        );
+    }
+
+    @PatchMapping(value = "/transit/accept-or-reject",
+            produces = "application/json",
+            consumes = "application/json"
+    )
+    public ResponseEntity<WebResponse<String>> acceptOrRejectTransit(@RequestBody @Valid AccOrRejectTransitRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String operator = authentication.getName();
+
+        String msg = deliveryMonitoringService.ApproveTransit(operator, request);
+        return ResponseEntity.ok(
+                WebResponse.<String>builder()
+                        .status("UPDATED")
+                        .data(msg)
+                        .build()
+        );
+    }
+
+    @GetMapping(value = "/transit/pending",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<List<TransitPendingResponse>>> getPendingTransits() {
+        List<TransitPendingResponse> pendingTransits = deliveryMonitoringService.getPendingTransitRequest();
+        return ResponseEntity.ok(
+                WebResponse.<List<TransitPendingResponse>>builder()
+                        .status("OK")
+                        .data(pendingTransits)
+                        .build()
+        );
+    }
+
+    @GetMapping(value = "/transit/{transitId}",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<TransitPendingDetail>> getTransitDetail(@PathVariable String transitId) {
+        TransitPendingDetail transitDetail = deliveryMonitoringService.getTransitPendingDetailById(transitId);
+        return ResponseEntity.ok(
+                WebResponse.<TransitPendingDetail>builder()
+                        .status("OK")
+                        .data(transitDetail)
+                        .build()
+        );
+    }
+
+    @GetMapping(value = "/transit",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<List<TransitPendingDetail>>> getAllTransits() {
+        List<TransitPendingDetail> allTransits = deliveryMonitoringService.getAllTransitPendingDetail();
+        return ResponseEntity.ok(
+                WebResponse.<List<TransitPendingDetail>>builder()
+                        .status("OK")
+                        .data(allTransits)
+                        .build()
+        );
+    }
+
+
+    @GetMapping(value = "/history",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<List<DeliveryHistoryResponse>>> getDeliveryHistory() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        List<DeliveryHistoryResponse> deliveryHistory = deliveryMonitoringService.getAllDeliveryHistory();
+        return ResponseEntity.ok(
+                WebResponse.<List<DeliveryHistoryResponse>>builder()
+                        .status("OK")
+                        .data(deliveryHistory)
+                        .build()
+        );
+    }
+
+    @GetMapping(value = "/history/{workerId}",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<List<DeliveryHistoryResponse>>> getDeliveryHistoryByWorkerId(@PathVariable String workerId) {
+        List<DeliveryHistoryResponse> deliveryHistory = deliveryMonitoringService.getDeliveryHistoryByWorkerId(workerId);
+        return ResponseEntity.ok(
+                WebResponse.<List<DeliveryHistoryResponse>>builder()
+                        .status("OK")
+                        .data(deliveryHistory)
+                        .build()
+        );
+    }
 }

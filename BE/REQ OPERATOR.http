@@ -1,0 +1,172 @@
+@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2RlcmF0b3JidWRpIiwiaWF0IjoxNzU1NTI2MzcwLCJleHAiOjE3NTU1MjcyNzB9.v56SFZnYsEQ7zOl11y-VLa_V8G0oV4ZI9J6u4PUtvZs
+
+### login request to example server
+POST http://localhost:8080/auth/login
+Content-Type: application/json
+Accept: application/json
+
+{
+  "username": "moderatorbudi",
+  "password": "budi4567"
+}
+
+
+### get all workers
+###
+GET http://localhost:8080/api/users/drivers/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+###
+GET http://localhost:8080/api/users/drivers
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+### get all routes
+GET http://localhost:8080/api/routes
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+### GET Truck Avaliable to make delivery
+GET http://localhost:8080/api/trucks/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+### CREATE DELIVERY
+POST http://localhost:8080/api/delivery
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+{
+  "truck_id": "4cddbbb9-c3aa-434b-9ae6-b85d9413f8e6",
+  "route_id": "f237f00a-e679-4893-84f9-8b57d14148ee",
+  "worker_id": "2f2013ad-b37a-4fbd-b225-32570c9f1147",
+  "latitude": -7.46667,
+  "longitude": 110.21667
+}
+
+### GET LOKASI WORKER ID USAGE API
+GET http://localhost:8080/api/delivery/position/2f2013ad-b37a-4fbd-b225-32570c9f1147
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+### GET LOKASI by delivery ID USAGE API
+GET http://localhost:8080/api/delivery/positions/234826e6-250a-463c-ae04-3bbfe91c8fcb
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+
+### GET Avaliable to make delivery
+GET http://localhost:8080/api/delivery/active
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+### get transit point
+GET http://localhost:8080/api/delivery/active
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+
+###
+POST http://localhost:8080/api/delivery/transit
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+{
+"delivery_id": "d5d1dec9-ad42-4b08-a126-31eb6360f884",
+"transit_point_id": 55
+}
+
+###
+GET http://localhost:8080/api/delivery/transit
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+###
+GET http://localhost:8080/api/delivery/transit/pending
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+### get all delivery ACTIVE
+GET http://localhost:8080/api/delivery/active
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+###
+GET http://localhost:8080/api/delivery/transit/79c332d8-f762-4a28-adf4-25facfb7f119
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+###
+PATCH http://localhost:8080/api/delivery/transit/accept-or-reject
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+{
+  "delivery_transit_id": "79c332d8-f762-4a28-adf4-25facfb7f119",
+  "is_accepted": true,
+  "reason": "gas aja mayan duid nihh"
+}
+
+
+### get all delivery ACTIVE
+GET http://localhost:8080/api/delivery/detail/d5d1dec9-ad42-4b08-a126-31eb6360f884
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+
+### get all history delivery
+PATCH http://localhost:8080/api/delivery/finish/984f6f89-2f0f-462e-8b79-0e79f77ce14d
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+
+### get all history delivery
+GET http://localhost:8080/api/delivery/history
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+### get all history delivery
+GET http://localhost:8080/api/delivery/history/816c3d51-e2a1-4c8d-a2b6-6ac124e021c8
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+### ACC TRANSIT
+
+
+
+
+### DELETE DELIVERY
+DELETE http://localhost:8080/api/delivery/f0ce657b-d1a7-4b73-96ea-095fd7f269c6
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+
+
+### FINISHED CURENNT DELIVERY
+PATCH http://localhost:8080/api/delivery/{}/finish
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+
