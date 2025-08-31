@@ -162,6 +162,11 @@ const DeliveryHistory = () => {
             tintColor="#2563EB"
           />
         }>
+          <View className="flex-row justify-between items-center mb-4">
+                    <Text className="text-xl font-bold text-gray-800">
+                      Riwayat Pengiriman
+                    </Text>
+                  </View>
         {/* Content */}
         {deliveries.length === 0 ? (
           <View className="bg-white rounded-2xl p-8 items-center shadow-sm">

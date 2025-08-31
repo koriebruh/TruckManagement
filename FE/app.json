@@ -22,7 +22,11 @@
         "backgroundColor": "#b6d0fa"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.michellee.trackingtruck"
+      "package": "com.michellee.trackingtruck",
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -46,7 +50,8 @@
           "backgroundColor": "#b6d0fa"
         }
       ],
-      "expo-maps"
+      "expo-maps",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
@@ -56,6 +61,7 @@
       "eas": {
         "projectId": "54b09975-1cef-47e3-80a2-31b2ec99ef82"
       }
-    }
+    },
+    "owner": "michellee"
   }
 }

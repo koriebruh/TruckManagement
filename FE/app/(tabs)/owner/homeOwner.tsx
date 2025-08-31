@@ -137,13 +137,6 @@ const Dashboard = () => {
           <Text className="text-xl font-bold text-gray-800">
             Delivery Aktif
           </Text>
-
-
-          {/* {deliveries.length > 0 && (
-            <TouchableOpacity>
-              <Text className="text-blue-600 font-medium">Lihat Semua</Text>
-            </TouchableOpacity>
-          )} */}
         </View>
 
         {/* Delivery List */}
