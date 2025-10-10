@@ -64,6 +64,9 @@ public class DeliveryMonitoringService {
     private UserRepository UserRepository;
 
     @Autowired
+    private DeliveryHandoverRepository deliveryHandoverRepository;
+
+    @Autowired
     private GeoAPI geoAPI;
 
 //
@@ -655,6 +658,74 @@ public class DeliveryMonitoringService {
                     .startedAt(delivery.getStartedAt())
                     .finishedAt(delivery.getFinishedAt())
                     .addByOperatorId(delivery.getAddByOperatorId().getId())
+                    .build();
+        }).toList();
+    }
+
+    // take over delivery
+    public String takeOverDelivery(TakeOverRequest request, String operatorN) {
+        Delivery delivery = deliveryRepo.findById(request.getDeliveryId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "delivery not found"));
+
+        if (delivery.getFinishedAt() != null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot take over a finished delivery");
+        }
+
+        User oldWorker = workerRepo.findByIdAndDeletedAtIsNull(request.getFromWorkerId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Old worker not found"));
+
+        User newWorker = workerRepo.findByIdAndDeletedAtIsNull(request.getToWorkerId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "New worker not found"));
+
+        User operatorUser = workerRepo.findByUsernameAndDeletedAtIsNull(operatorN)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "This is user can`t create delivery"));
+
+        // UPDATE KE WORKER BARU
+        delivery.setWorker(newWorker);
+        deliveryRepo.save(delivery);
+
+        // SIMPAN KE TABLE HANDOVER
+        System.out.println(request);
+        DeliveryHandover handover = new DeliveryHandover();
+        handover.setDelivery(delivery);
+        handover.setFromWorker(oldWorker);
+        handover.setToWorker(newWorker);
+        handover.setReason(request.getReason());
+        handover.setHandoverAt(request.getHandoverAt());
+        handover.setActionByOperatorId(operatorUser);
+        deliveryHandoverRepository.save(handover);
+
+        return "Delivery takeover successful.";
+    }
+
+    // get all delivery handover
+    public List<DeliveryHandoverResponse> getAllDeliveryHandovers() {
+        List<DeliveryHandover> handovers = deliveryHandoverRepository.findAll();
+
+        return handovers.stream().map(handover -> {
+            return DeliveryHandoverResponse.builder()
+                    .deliveryId(handover.getDelivery().getId())
+                    .fromWorker(handover.getFromWorker().getUsername())
+                    .toWorker(handover.getToWorker().getUsername())
+                    .reason(handover.getReason())
+                    .handoverAt(handover.getHandoverAt())
+                    .actionByOperator(handover.getActionByOperatorId().getUsername() != null ? handover.getActionByOperatorId().getUsername() : null)
+                    .build();
+        }).toList();
+    }
+
+    // get delivery handover by delivery id
+    public List<DeliveryHandoverResponse> getDeliveryHandoversByDeliveryId(String deliveryId) {
+        List<DeliveryHandover> handovers = deliveryHandoverRepository.findAllByDeliveryIdOrderByHandoverAtDesc(deliveryId);
+
+        return handovers.stream().map(handover -> {
+            return DeliveryHandoverResponse.builder()
+                    .deliveryId(handover.getDelivery().getId())
+                    .fromWorker(handover.getFromWorker().getUsername())
+                    .toWorker(handover.getToWorker().getUsername())
+                    .handoverAt(handover.getHandoverAt())
+                    .reason(handover.getReason())
+                    .actionByOperator(handover.getActionByOperatorId().getUsername() != null ? handover.getActionByOperatorId().getUsername() : null)
                     .build();
         }).toList();
     }

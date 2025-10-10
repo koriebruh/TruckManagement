@@ -285,4 +285,50 @@ public class DeliveryMonitoringController {
                         .build()
         );
     }
+
+    @PostMapping(value = "/takeover",
+            produces = "application/json",
+            consumes = "application/json"
+    )
+    public ResponseEntity<WebResponse<String>> takeOverDelivery(@RequestBody @Valid TakeOverRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String operator = authentication.getName();
+
+        String msg = deliveryMonitoringService.takeOverDelivery(request, operator);
+        return ResponseEntity.ok(
+                WebResponse.<String>builder()
+                        .status("TAKEN OVER")
+                        .data(msg)
+                        .build()
+        );
+    }
+
+
+    @GetMapping(value = "/takeover",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<List<DeliveryHandoverResponse>>> getAllTakeOverRequests() {
+        List<DeliveryHandoverResponse> takeOverResponses = deliveryMonitoringService.getAllDeliveryHandovers();
+        return ResponseEntity.ok(
+                WebResponse.<List<DeliveryHandoverResponse>>builder()
+                        .status("OK")
+                        .data(takeOverResponses)
+                        .build()
+        );
+    }
+
+    @GetMapping(value = "/takeover/{deliveryId}",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<List<DeliveryHandoverResponse>>> getTakeOverRequestByDeliveryId(@PathVariable String deliveryId) {
+        List<DeliveryHandoverResponse> takeOverResponse = deliveryMonitoringService.getDeliveryHandoversByDeliveryId(deliveryId);
+        return ResponseEntity.ok(
+                WebResponse.<List<DeliveryHandoverResponse>>builder()
+                        .status("OK")
+                        .data(takeOverResponse)
+                        .build()
+        );
+    }
+
+
 }

@@ -3,6 +3,7 @@ package com.koriebruh.be.service;
 import com.koriebruh.be.entity.*;
 import com.koriebruh.be.entity.Enum.DeliverAlertType;
 import com.koriebruh.be.repository.*;
+import com.koriebruh.be.utils.GeoAPI;
 import com.koriebruh.be.utils.GeoUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,13 @@ public class DetectionService {
 
     @Autowired
     private RouteRepository routeRepo;
-//
+
+    @Autowired
+    private CityRepository cityRepo;
+
+    @Autowired
+    private GeoAPI geoAPI;
+
 //    @Scheduled(fixedRate = 1000 * 60 * 5) // Every 5 minutes
 //    public void detectIssues() { // Ganti nama biar lebih umum
 //        long now = Instant.now().getEpochSecond();
@@ -114,25 +121,25 @@ public class DetectionService {
 //                        );
 //                        if (isIdle) {
 //                            // Reverse Geocode posisi terbaru
-//                            Map<String, Object> geoResult = reverseGeocode(latest.getLatitude(), latest.getLongitude());
+//                            Map<String, Object> geoResult = G(latest.getLatitude(), latest.getLongitude());
 //                            if (geoResult != null) {
 //                                // Ambil city dari Geoapify
 //                                Map<String, Object> properties = (Map<String, Object>) geoResult.get("properties");
 //                                String cityName = (String) properties.get("city");
 //                                if (cityName != null) {
 //                                    // Cek apakah city match dengan loading_city dari route atau transit_points
-//                                    Route route = routeRepo.findById(delivery.getRouteId()).orElse(null);
+//                                    Route route = routeRepo.findById(delivery.getRoute().getId()).orElse(null);
 //                                    if (route != null) {
-//                                        City loadingCity = cityRepo.findById(route.getStartId()).orElse(null);
+//                                        City loadingCity = cityRepo.findById(route.getStartCity().getId()).orElse(null);
 //                                        if (loadingCity != null && cityName.equalsIgnoreCase(loadingCity.getName())) {
 //                                            // Cek apakah ada transit baru untuk loading city ini
 //                                            DeliveryTransit recentTransit = deliveryTransitRepo.findTopByDeliveryIdAndTransitPointIdLoadingCityIdAndIsAcceptedTrueOrderByArrivedAtDesc(
-//                                                    delivery.getId(), route.getStartId());
+//                                                    delivery.getId(), route.getStartCity().getId());
 //                                            if (recentTransit == null || recentTransit.getArrivedAt() < now - 1800) {
 //                                                // Trigger alert
 //                                                DeliverAlert unauthorizedAlert = new DeliverAlert();
 //                                                unauthorizedAlert.setDelivery(delivery);
-//                                                unauthorizedAlert.setType(DeliverAlertType.UNAUTHORIZED_LOADING);
+//                                                unauthorizedAlert.setType(DeliverAlertType.UNAUTHORIZED_UNLOADING);
 //                                                unauthorizedAlert.setMessage(String.format(
 //                                                        "Unauthorized loading detected at %s (%.6f, %.6f)",
 //                                                        cityName, latest.getLatitude(), latest.getLongitude()));

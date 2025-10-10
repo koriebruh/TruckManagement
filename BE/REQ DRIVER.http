@@ -1,5 +1,5 @@
 
-@TOKEN_DRIVER=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTQ0ODI1NDYsImV4cCI6MTc1NDQ4MzQ0Nn0.8kLTzWzsKF8ungLOW_WpUpqIubUVXVzOXY9Li9mZkLM
+@TOKEN_DRIVER=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkcml2ZXJhbmRpIiwiaWF0IjoxNzU5OTc5NTg2LCJleHAiOjE3NTk5ODA0ODZ9.jsL_y4Z4-pyWNG98eCrXRiR_BCLMrtfkFjGJmz_H_-4
 
 ### login request to example server
 POST http://localhost:8080/auth/login
@@ -7,9 +7,14 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "bunderess",
-  "password": "admin1234#"
+  "username": "driverandi",
+  "password": "andi7890"
 }
+###
+#{
+#  "username": "bunderess",
+#  "password": "admin1234#"
+#}
 
 ### registration request to example server
 POST http://localhost:8080/auth/register
