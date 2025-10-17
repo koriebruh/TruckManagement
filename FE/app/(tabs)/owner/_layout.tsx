@@ -30,6 +30,7 @@ const TabLayoutOwner = () => {
         tabBarShowLabel: false,
         tabBarActiveTintColor: "#007bff",
         tabBarInactiveTintColor: "#999",
+        header: () => <CustomHeader />,
         tabBarItemStyle: {
           flex: 1,
           justifyContent: "center",
@@ -58,7 +59,6 @@ const TabLayoutOwner = () => {
         name="homeOwner"
         options={{
           title: "Home",
-          header: () => <CustomHeader />,
           tabBarIcon: ({ focused, color }) => (
             <View className="items-center h-full">
               <Feather name="home" size={24} color={color} />
@@ -75,7 +75,6 @@ const TabLayoutOwner = () => {
       <Tabs.Screen
         name="delivery"
         options={{
-          header: () => <CustomHeader />,
           tabBarLabel: "History Delivery",
           tabBarIcon: ({ focused, color }) => (
             <View className="items-center h-full">
@@ -95,7 +94,6 @@ const TabLayoutOwner = () => {
         options={{
           title: "Profile",
           tabBarLabel: "Profile",
-          header: () => <CustomHeader />,
           tabBarIcon: ({ focused, color }) => (
             <View className="items-center h-full">
               <Ionicons

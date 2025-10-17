@@ -30,6 +30,7 @@ const TabLayoutDriver = () => {
         tabBarShowLabel: false,
         tabBarActiveTintColor: "#007bff",
         tabBarInactiveTintColor: "#999",
+        header: () => <CustomHeader />,
         tabBarItemStyle: {
           flex: 1,
           justifyContent: "center",
@@ -58,7 +59,6 @@ const TabLayoutDriver = () => {
         name="homeDriver"
         options={{
           title: "Home",
-          header: () => <CustomHeader />,
           tabBarIcon: ({ focused, color }) => (
             <View className="items-center h-full">
               <Feather name="home" size={24} color={color} />
@@ -73,7 +73,6 @@ const TabLayoutDriver = () => {
       <Tabs.Screen
         name="transit"
         options={{
-          header: () => <CustomHeader />,
           tabBarLabel: "Transit",
           tabBarIcon: ({ focused, color }) => (
             <View className="items-center h-full">
@@ -91,7 +90,6 @@ const TabLayoutDriver = () => {
         options={{
           title: "Profile",
           tabBarLabel: "Profile",
-          header: () => <CustomHeader />,
           tabBarIcon: ({ focused, color }) => (
             <View className="items-center h-full">
               <Ionicons
