@@ -47,8 +47,18 @@ import { useQueryClient } from "@tanstack/react-query";
         await handleLogin(data);
         await queryClient.invalidateQueries({ queryKey: ["user_profile"] });
         setLoginSuccess(true); // Mark login as successful
-      } catch (error) {
-        console.log("Login error handled by hook:", error.response.data.errors);
+      } catch (err: unknown) {
+        // Safely handle unknown errors and attempt to log useful info
+        if (err && typeof err === "object" && "response" in err) {
+          // axios-like error shape
+          const maybeResponse = (err as any).response;
+          const maybeDataErrors = maybeResponse?.data?.errors ?? maybeResponse?.data ?? (err as any).message;
+          console.log("Login error handled by hook:", maybeDataErrors);
+        } else if (err instanceof Error) {
+          console.log("Login error handled by hook:", err.message);
+        } else {
+          console.log("Login error handled by hook:", String(err));
+        }
       }
     };
 
