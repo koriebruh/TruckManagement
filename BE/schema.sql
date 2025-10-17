@@ -122,7 +122,7 @@ CREATE TABLE `positions` (
   PRIMARY KEY (`id`),
   KEY `FKhosicwu2b3kblxu0fimpy61q9` (`delivery_id`),
   CONSTRAINT `FKhosicwu2b3kblxu0fimpy61q9` FOREIGN KEY (`delivery_id`) REFERENCES `deliveries` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -229,4 +229,4 @@ CREATE TABLE `users` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-08-16 11:04:22
+-- Dump completed on 2025-10-09  7:56:58

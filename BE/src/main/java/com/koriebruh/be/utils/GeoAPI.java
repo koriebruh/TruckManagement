@@ -68,7 +68,7 @@ public class GeoAPI {
                 .map(pos -> new double[]{pos.getLongitude(), pos.getLatitude()})
                 .toArray(double[][]::new);
 
-        String apiKey = "b4c102bec4454bd8937b222ed9868a7c";
+        String apiKey = "c66621a2c3e240a99a156d8b9cbb3cfd";
         String url = String.format(
                 "https://api.geoapify.com/v1/batch/geocode/reverse?apiKey=%s", apiKey
         );
