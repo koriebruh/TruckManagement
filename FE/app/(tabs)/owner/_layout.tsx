@@ -73,12 +73,29 @@ const TabLayoutOwner = () => {
         }}
       />
       <Tabs.Screen
+        name="truck"
+        options={{
+          tabBarLabel: "Truck",
+          tabBarIcon: ({ focused, color }) => (
+            <View className="items-center h-full">
+              <Feather name="truck" size={24} color={color} />
+              <Text
+                className={`w-full text-xs mt-1 ${
+                  focused ? "text-blue-600 font-medium" : "text-gray-500"
+                }`}>
+                Truck
+              </Text>
+            </View>
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="delivery"
         options={{
           tabBarLabel: "History Delivery",
           tabBarIcon: ({ focused, color }) => (
             <View className="items-center h-full">
-              <Feather name="truck" size={24} color={color} />
+              <Feather name="clock" size={24} color={color} />
               <Text
                 className={`w-full text-xs mt-1 ${
                   focused ? "text-blue-600 font-medium" : "text-gray-500"
