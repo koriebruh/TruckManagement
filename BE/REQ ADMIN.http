@@ -1,5 +1,5 @@
 
-@TOKEN_ADMIN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTk5NzkzNTcsImV4cCI6MTc1OTk4MDI1N30.bsVUT1OUjFE2q8-_o7xtdMUuQLim0DIpdvlzcW2l-TU
+@TOKEN_ADMIN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NjA5Njc5NTUsImV4cCI6MTc2MDk2ODg1NX0.kgopZ0aPIyJ445o9gjIf0KuHP_-imatObULXXCWBaJ0
 
 ### login for admin
 POST http://localhost:8080/auth/login
@@ -225,6 +225,19 @@ Authorization: Bearer {{TOKEN_ADMIN}}
 
 ### DELETE TRANSIT POINT
 DELETE http://localhost:8080/api/transit-points/57
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### DELETE TRANSIT POINT
+GET http://localhost:8080/api/users/drivers/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+
+### DELETE TRANSIT POINT
+DELETE http://localhost:8080/api/users/653e733e-13e0-4ecc-8944-e208cc806bcc
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN_ADMIN}}

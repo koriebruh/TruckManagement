@@ -1,42 +1,60 @@
-2025-10-10T09:56:16.659+07:00  INFO 31820 --- [BE] [main] com.koriebruh.be.BeApplication           : Starting BeApplication using Java 22.0.1 with PID 31820 (D:\TruckManagement\BE\target\classes started by ACER NITRO in D:\TruckManagement\BE)
-2025-10-10T09:56:16.668+07:00  INFO 31820 --- [BE] [main] com.koriebruh.be.BeApplication           : No active profile set, falling back to 1 default profile: "default"
-2025-10-10T09:56:23.705+07:00  INFO 31820 --- [BE] [main] com.koriebruh.be.BeApplication           : Started BeApplication in 7.653 seconds (process running for 8.47)
-2025-10-10T09:56:24.366+07:00  INFO 31820 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ OWNER user already exists: ownerapp
-2025-10-10T09:56:24.385+07:00  INFO 31820 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ ADMIN user already exists: jamalgantenk
-2025-10-10T09:56:24.388+07:00  INFO 31820 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ MODERATOR user already exists: moderatorbudi
-2025-10-10T09:56:24.392+07:00  INFO 31820 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ DRIVER user already exists: driverandi
-2025-10-10T09:56:24.392+07:00  INFO 31820 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : 🎉 User seeding process completed!
-2025-10-10T09:56:50.808+07:00  INFO 31820 --- [BE] [http-nio-8080-exec-1] c.k.be.controller.AuthController         : Login successful [username=moderatorbudi, ip=127.0.0.1]
-2025-10-10T10:05:36.202+07:00  INFO 27788 --- [BE] [main] com.koriebruh.be.BeApplication           : Starting BeApplication using Java 22.0.1 with PID 27788 (D:\TruckManagement\BE\target\classes started by ACER NITRO in D:\TruckManagement\BE)
-2025-10-10T10:05:36.204+07:00  INFO 27788 --- [BE] [main] com.koriebruh.be.BeApplication           : No active profile set, falling back to 1 default profile: "default"
-2025-10-10T10:05:43.081+07:00  INFO 27788 --- [BE] [main] com.koriebruh.be.BeApplication           : Started BeApplication in 7.429 seconds (process running for 8.118)
-2025-10-10T10:05:43.559+07:00  INFO 27788 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ OWNER user already exists: ownerapp
-2025-10-10T10:05:43.564+07:00  INFO 27788 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ ADMIN user already exists: jamalgantenk
-2025-10-10T10:05:43.566+07:00  INFO 27788 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ MODERATOR user already exists: moderatorbudi
-2025-10-10T10:05:43.568+07:00  INFO 27788 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ DRIVER user already exists: driverandi
-2025-10-10T10:05:43.569+07:00  INFO 27788 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : 🎉 User seeding process completed!
-2025-10-10T10:07:09.047+07:00  INFO 38756 --- [BE] [main] com.koriebruh.be.BeApplication           : Starting BeApplication using Java 22.0.1 with PID 38756 (D:\TruckManagement\BE\target\classes started by ACER NITRO in D:\TruckManagement\BE)
-2025-10-10T10:07:09.049+07:00  INFO 38756 --- [BE] [main] com.koriebruh.be.BeApplication           : No active profile set, falling back to 1 default profile: "default"
-2025-10-10T10:07:15.128+07:00  INFO 38756 --- [BE] [main] com.koriebruh.be.BeApplication           : Started BeApplication in 6.593 seconds (process running for 7.193)
-2025-10-10T10:07:15.830+07:00  INFO 38756 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ OWNER user already exists: ownerapp
-2025-10-10T10:07:15.834+07:00  INFO 38756 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ ADMIN user already exists: jamalgantenk
-2025-10-10T10:07:15.838+07:00  INFO 38756 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ MODERATOR user already exists: moderatorbudi
-2025-10-10T10:07:15.842+07:00  INFO 38756 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ DRIVER user already exists: driverandi
-2025-10-10T10:07:15.842+07:00  INFO 38756 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : 🎉 User seeding process completed!
-2025-10-10T10:08:46.972+07:00  INFO 17516 --- [BE] [main] com.koriebruh.be.BeApplication           : Starting BeApplication using Java 22.0.1 with PID 17516 (D:\TruckManagement\BE\target\classes started by ACER NITRO in D:\TruckManagement\BE)
-2025-10-10T10:08:46.976+07:00  INFO 17516 --- [BE] [main] com.koriebruh.be.BeApplication           : No active profile set, falling back to 1 default profile: "default"
-2025-10-10T10:08:53.405+07:00  INFO 17516 --- [BE] [main] com.koriebruh.be.BeApplication           : Started BeApplication in 7.074 seconds (process running for 7.773)
-2025-10-10T10:08:54.158+07:00  INFO 17516 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ OWNER user already exists: ownerapp
-2025-10-10T10:08:54.165+07:00  INFO 17516 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ ADMIN user already exists: jamalgantenk
-2025-10-10T10:08:54.170+07:00  INFO 17516 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ MODERATOR user already exists: moderatorbudi
-2025-10-10T10:08:54.177+07:00  INFO 17516 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ DRIVER user already exists: driverandi
-2025-10-10T10:08:54.177+07:00  INFO 17516 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : 🎉 User seeding process completed!
-2025-10-10T10:12:08.974+07:00  INFO 12040 --- [BE] [main] com.koriebruh.be.BeApplication           : Starting BeApplication using Java 22.0.1 with PID 12040 (D:\TruckManagement\BE\target\classes started by ACER NITRO in D:\TruckManagement\BE)
-2025-10-10T10:12:08.977+07:00  INFO 12040 --- [BE] [main] com.koriebruh.be.BeApplication           : No active profile set, falling back to 1 default profile: "default"
-2025-10-10T10:12:14.839+07:00  INFO 12040 --- [BE] [main] com.koriebruh.be.BeApplication           : Started BeApplication in 6.349 seconds (process running for 6.945)
-2025-10-10T10:12:15.318+07:00  INFO 12040 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ OWNER user already exists: ownerapp
-2025-10-10T10:12:15.323+07:00  INFO 12040 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ ADMIN user already exists: jamalgantenk
-2025-10-10T10:12:15.326+07:00  INFO 12040 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ MODERATOR user already exists: moderatorbudi
-2025-10-10T10:12:15.328+07:00  INFO 12040 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ DRIVER user already exists: driverandi
-2025-10-10T10:12:15.328+07:00  INFO 12040 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : 🎉 User seeding process completed!
-2025-10-10T10:12:39.546+07:00  INFO 12040 --- [BE] [http-nio-8080-exec-4] c.k.be.controller.AuthController         : Login successful [username=moderatorbudi, ip=127.0.0.1]
+2025-10-20T20:36:49.030+07:00  INFO 10504 --- [BE] [main] com.koriebruh.be.BeApplication           : Starting BeApplication using Java 22.0.1 with PID 10504 (D:\TruckManagement\BE\target\classes started by ACER NITRO in D:\TruckManagement\BE)
+2025-10-20T20:36:49.043+07:00  INFO 10504 --- [BE] [main] com.koriebruh.be.BeApplication           : No active profile set, falling back to 1 default profile: "default"
+2025-10-20T20:37:04.047+07:00  INFO 10504 --- [BE] [main] com.koriebruh.be.BeApplication           : Started BeApplication in 16.25 seconds (process running for 17.563)
+2025-10-20T20:37:05.858+07:00  INFO 10504 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ OWNER user already exists: ownerapp
+2025-10-20T20:37:05.875+07:00  INFO 10504 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ ADMIN user already exists: jamalgantenk
+2025-10-20T20:37:05.891+07:00  INFO 10504 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ MODERATOR user already exists: moderatorbudi
+2025-10-20T20:37:05.902+07:00  INFO 10504 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ DRIVER user already exists: driverandi
+2025-10-20T20:37:05.904+07:00  INFO 10504 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : 🎉 User seeding process completed!
+2025-10-20T20:40:08.343+07:00  INFO 10504 --- [BE] [http-nio-8080-exec-1] c.k.be.controller.AuthController         : Login successful [username=moderatorbudi, ip=127.0.0.1]
+2025-10-20T20:40:36.007+07:00  INFO 10504 --- [BE] [http-nio-8080-exec-2] c.k.be.controller.AuthController         : Login successful [username=moderatorbudi, ip=127.0.0.1]
+2025-10-20T20:45:55.924+07:00  INFO 10504 --- [BE] [http-nio-8080-exec-3] c.k.be.controller.AuthController         : Login successful [username=jamalgantenk, ip=127.0.0.1]
+2025-10-20T20:52:17.712+07:00  INFO 13668 --- [BE] [main] com.koriebruh.be.BeApplication           : Starting BeApplication using Java 22.0.1 with PID 13668 (D:\TruckManagement\BE\target\classes started by ACER NITRO in D:\TruckManagement\BE)
+2025-10-20T20:52:17.715+07:00  INFO 13668 --- [BE] [main] com.koriebruh.be.BeApplication           : No active profile set, falling back to 1 default profile: "default"
+2025-10-20T20:52:27.445+07:00  INFO 13668 --- [BE] [main] com.koriebruh.be.BeApplication           : Started BeApplication in 10.563 seconds (process running for 11.7)
+2025-10-20T20:52:28.647+07:00  INFO 13668 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ OWNER user already exists: ownerapp
+2025-10-20T20:52:28.657+07:00  INFO 13668 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ ADMIN user already exists: jamalgantenk
+2025-10-20T20:52:28.664+07:00  INFO 13668 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ MODERATOR user already exists: moderatorbudi
+2025-10-20T20:52:28.674+07:00  INFO 13668 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ DRIVER user already exists: driverandi
+2025-10-20T20:52:28.674+07:00  INFO 13668 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : 🎉 User seeding process completed!
+2025-10-20T20:52:45.882+07:00  INFO 32596 --- [BE] [main] com.koriebruh.be.BeApplication           : Starting BeApplication using Java 22.0.1 with PID 32596 (D:\TruckManagement\BE\target\classes started by ACER NITRO in D:\TruckManagement\BE)
+2025-10-20T20:52:45.885+07:00  INFO 32596 --- [BE] [main] com.koriebruh.be.BeApplication           : No active profile set, falling back to 1 default profile: "default"
+2025-10-20T20:52:55.170+07:00  INFO 32596 --- [BE] [main] com.koriebruh.be.BeApplication           : Started BeApplication in 10.025 seconds (process running for 10.898)
+2025-10-20T20:52:55.993+07:00  INFO 32596 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ OWNER user already exists: ownerapp
+2025-10-20T20:52:56.000+07:00  INFO 32596 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ ADMIN user already exists: jamalgantenk
+2025-10-20T20:52:56.004+07:00  INFO 32596 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ MODERATOR user already exists: moderatorbudi
+2025-10-20T20:52:56.009+07:00  INFO 32596 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ DRIVER user already exists: driverandi
+2025-10-20T20:52:56.011+07:00  INFO 32596 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : 🎉 User seeding process completed!
+2025-10-20T20:53:43.604+07:00  INFO 24608 --- [BE] [main] com.koriebruh.be.BeApplication           : Starting BeApplication using Java 22.0.1 with PID 24608 (D:\TruckManagement\BE\target\classes started by ACER NITRO in D:\TruckManagement\BE)
+2025-10-20T20:53:43.608+07:00  INFO 24608 --- [BE] [main] com.koriebruh.be.BeApplication           : No active profile set, falling back to 1 default profile: "default"
+2025-10-20T20:53:51.693+07:00  INFO 24608 --- [BE] [main] com.koriebruh.be.BeApplication           : Started BeApplication in 8.782 seconds (process running for 9.647)
+2025-10-20T20:53:52.522+07:00  INFO 24608 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ OWNER user already exists: ownerapp
+2025-10-20T20:53:52.529+07:00  INFO 24608 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ ADMIN user already exists: jamalgantenk
+2025-10-20T20:53:52.534+07:00  INFO 24608 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ MODERATOR user already exists: moderatorbudi
+2025-10-20T20:53:52.540+07:00  INFO 24608 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ DRIVER user already exists: driverandi
+2025-10-20T20:53:52.541+07:00  INFO 24608 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : 🎉 User seeding process completed!
+2025-10-20T20:55:43.179+07:00  INFO 32488 --- [BE] [main] com.koriebruh.be.BeApplication           : Starting BeApplication using Java 22.0.1 with PID 32488 (D:\TruckManagement\BE\target\classes started by ACER NITRO in D:\TruckManagement\BE)
+2025-10-20T20:55:43.183+07:00  INFO 32488 --- [BE] [main] com.koriebruh.be.BeApplication           : No active profile set, falling back to 1 default profile: "default"
+2025-10-20T20:55:52.606+07:00  INFO 32488 --- [BE] [main] com.koriebruh.be.BeApplication           : Started BeApplication in 10.152 seconds (process running for 11.14)
+2025-10-20T20:55:53.531+07:00  INFO 32488 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ OWNER user already exists: ownerapp
+2025-10-20T20:55:53.539+07:00  INFO 32488 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ ADMIN user already exists: jamalgantenk
+2025-10-20T20:55:53.545+07:00  INFO 32488 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ MODERATOR user already exists: moderatorbudi
+2025-10-20T20:55:53.550+07:00  INFO 32488 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ DRIVER user already exists: driverandi
+2025-10-20T20:55:53.551+07:00  INFO 32488 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : 🎉 User seeding process completed!
+2025-10-20T21:04:05.634+07:00  INFO 18436 --- [BE] [main] com.koriebruh.be.BeApplication           : Starting BeApplication using Java 22.0.1 with PID 18436 (D:\TruckManagement\BE\target\classes started by ACER NITRO in D:\TruckManagement\BE)
+2025-10-20T21:04:05.637+07:00  INFO 18436 --- [BE] [main] com.koriebruh.be.BeApplication           : No active profile set, falling back to 1 default profile: "default"
+2025-10-20T21:04:16.193+07:00  INFO 18436 --- [BE] [main] com.koriebruh.be.BeApplication           : Started BeApplication in 11.389 seconds (process running for 12.377)
+2025-10-20T21:04:17.041+07:00  INFO 18436 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ OWNER user already exists: ownerapp
+2025-10-20T21:04:17.050+07:00  INFO 18436 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ ADMIN user already exists: jamalgantenk
+2025-10-20T21:04:17.055+07:00  INFO 18436 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ MODERATOR user already exists: moderatorbudi
+2025-10-20T21:04:17.062+07:00  INFO 18436 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ DRIVER user already exists: driverandi
+2025-10-20T21:04:17.063+07:00  INFO 18436 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : 🎉 User seeding process completed!
+2025-10-20T21:04:35.698+07:00  INFO 18436 --- [BE] [http-nio-8080-exec-3] c.k.be.controller.AuthController         : Login successful [username=moderatorbudi, ip=127.0.0.1]
+2025-10-20T21:06:11.323+07:00  INFO 5168 --- [BE] [main] com.koriebruh.be.BeApplication           : Starting BeApplication using Java 22.0.1 with PID 5168 (D:\TruckManagement\BE\target\classes started by ACER NITRO in D:\TruckManagement\BE)
+2025-10-20T21:06:11.325+07:00  INFO 5168 --- [BE] [main] com.koriebruh.be.BeApplication           : No active profile set, falling back to 1 default profile: "default"
+2025-10-20T21:06:23.630+07:00  INFO 5168 --- [BE] [main] com.koriebruh.be.BeApplication           : Started BeApplication in 13.105 seconds (process running for 14.257)
+2025-10-20T21:06:24.431+07:00  INFO 5168 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ OWNER user already exists: ownerapp
+2025-10-20T21:06:24.440+07:00  INFO 5168 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ ADMIN user already exists: jamalgantenk
+2025-10-20T21:06:24.447+07:00  INFO 5168 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ MODERATOR user already exists: moderatorbudi
+2025-10-20T21:06:24.453+07:00  INFO 5168 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : ℹ️ DRIVER user already exists: driverandi
+2025-10-20T21:06:24.453+07:00  INFO 5168 --- [BE] [main] com.koriebruh.be.seeder.UserSeeder       : 🎉 User seeding process completed!
