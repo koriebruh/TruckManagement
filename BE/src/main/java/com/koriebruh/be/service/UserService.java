@@ -145,9 +145,9 @@ public class UserService {
     }
 
     // DELETE USER
-    public String deleteUser(String username) {
-        User user = userRepository.findByUsernameAndDeletedAtIsNull(username)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+    public String deleteUser(String id) {
+        User user = userRepository.findByIdAndDeletedAtIsNull(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "user not found or maybe already deleted"));
 
         user.setDeletedAt(Instant.now().getEpochSecond());
         userRepository.save(user);

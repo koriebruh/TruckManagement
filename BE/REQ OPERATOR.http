@@ -1,4 +1,4 @@
-@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2RlcmF0b3JidWRpIiwiaWF0IjoxNzYwMDY1OTU5LCJleHAiOjE3NjAwNjY4NTl9.Ni6PrpI7ZfWhLTpx4iNReItlrVGpK4pccuaKbVQ-r9M
+@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2RlcmF0b3JidWRpIiwiaWF0IjoxNzYwOTY3NjM2LCJleHAiOjE3NjA5Njg1MzZ9.5j-lz9CAGi2lyCINH_T1qoOlldU7aIBaSgj8odDiAnQ
 
 ### login request to example server
 POST http://localhost:8080/auth/login
@@ -45,7 +45,7 @@ Authorization: Bearer {{TOKEN_OPERATOR}}
 {
   "truck_id": "4cddbbb9-c3aa-434b-9ae6-b85d9413f8e6",
   "route_id": "f237f00a-e679-4893-84f9-8b57d14148ee",
-  "worker_id": "2f2013ad-b37a-4fbd-b225-32570c9f1147",
+  "worker_id": "653e733e-13e0-4ecc-8944-e208cc806bcc",
   "latitude": -7.46667,
   "longitude": 110.21667
 }
