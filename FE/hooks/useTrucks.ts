@@ -35,7 +35,7 @@ export interface UpdateTruckData {
   model?: string;
   capacity_kg?: number;
   cargo_type?: string;
-  is_available: boolean;
+  is_available?: boolean;
 }
 
 export interface MaintenanceData {
@@ -165,9 +165,7 @@ export const useCreateTruck = () => {
       // Invalidate and refetch trucks list
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
     },
-    onError: (error) => {
-      console.error("Create truck error:", error.response.data.errors);
-    },
+  
   });
 };
 
@@ -184,9 +182,7 @@ export const useUpdateTruck = () => {
       // Invalidate trucks list to refetch
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
     },
-    onError: (error) => {
-      console.error("Update truck error:", error.response.data.errors);
-    },
+
   });
 };
 

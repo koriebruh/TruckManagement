@@ -88,7 +88,7 @@ public class AuthService {
          * Kalau refresh token nggak valid, generate baru
          * */
         Long sevenDaysInMillis = 604800000L; // 7 days in milliseconds
-        Long fifteenMillis = 900000L; // 15 minutes in milliseconds
+        Long fifteenMillis = 10000L; // 15 minutes in milliseconds
         String refreshToken;
         try {
             if (user.getRefreshToken() != null && jwtUtil.validateToken(user.getRefreshToken(), user.getUsername())) {
@@ -134,7 +134,7 @@ public class AuthService {
 
     public RefreshTokenResponse getAccessToken(RefreshTokenRequest request) {
         logger.debug("Processing refresh token request");
-        Long fifteenMillis = 900000L; // 15 minutes in milliseconds
+        Long fifteenMillis = 10000L; // 15 minutes in milliseconds
 
         Optional<User> userOps = userRepository.findByRefreshToken(request.getRefreshToken());
         if (userOps.isEmpty()) {

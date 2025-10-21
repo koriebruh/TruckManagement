@@ -149,7 +149,7 @@ const TruckManagement = () => {
   const handleToggleAvailability = async (truck: Truck) => {
     try {
       await toggleAvailabilityMutation.mutateAsync(truck.id);
-    } catch (err) {
+    } catch (err) {https://www.figma.com/design/qfH0RHg4ttO1ImDwQujhak/Nowted-%E2%80%93%C2%A0A-Note-taking-App--Community-?node-id=18-2122&p=f&t=CmoBMSE1AwksYFKQ-0
       Alert.alert("Error", "Gagal mengubah status ketersediaan truck!");
       console.error(err);
     }
