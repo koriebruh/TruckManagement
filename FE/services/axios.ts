@@ -14,6 +14,17 @@ const REFRESH_TOKEN_KEY = "refresh_token";
 // Store for refresh token promise to prevent multiple simultaneous refresh calls
 let refresh_tokenPromise: Promise<string | null> | null = null;
 
+// Helper to get timestamp for logs
+const getTimestamp = () => {
+  const now = new Date();
+  return now.toLocaleTimeString('en-US', { hour12: false });
+};
+
+// Helper to get token prefix for logging (first 20 chars)
+const getTokenPrefix = (token: string) => {
+  return token.length > 20 ? `${token.substring(0, 20)}...` : token;
+};
+
 // Create axios instance
 const api = axios.create({
   baseURL: BASE_URL,
@@ -54,25 +65,31 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
+      console.log(`[${getTimestamp()}] ⚠️ [TOKEN REFRESH] 401 Unauthorized detected, attempting token refresh...`);
+
       try {
         if (refresh_tokenPromise) {
+          console.log(`[${getTimestamp()}] 🔄 [TOKEN REFRESH] Refresh already in progress, waiting...`);
           const newToken = await refresh_tokenPromise;
           if (newToken && originalRequest.headers) {
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            console.log(`[${getTimestamp()}] ✅ [TOKEN REFRESH] Retry with refreshed token successful`);
             return api(originalRequest);
           }
         } else {
+          console.log(`[${getTimestamp()}] 🔄 [TOKEN REFRESH] Starting refresh process...`);
           refresh_tokenPromise = refreshAccessToken();
           const newToken = await refresh_tokenPromise;
           refresh_tokenPromise = null;
 
           if (newToken && originalRequest.headers) {
             originalRequest.headers.Authorization = `Bearer ${newToken}`;
+            console.log(`[${getTimestamp()}] ↩️ [TOKEN REFRESH] Retrying original request with new token`);
             return api(originalRequest);
           }
         }
       } catch (refreshError) {
-        console.error("❌ Token refresh failed (interceptor):", refreshError);
+        console.error(`[${getTimestamp()}] ❌ [TOKEN REFRESH] Failed:`, refreshError);
         await clearTokens();
         return Promise.reject(refreshError);
       }
@@ -90,11 +107,12 @@ const refreshAccessToken = async (): Promise<string | null> => {
     const refresh_token = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
 
     if (!refresh_token) {
-      console.warn("⚠️ No refresh token available");
+      console.warn(`[${getTimestamp()}] ⚠️ [TOKEN REFRESH] No refresh token available`);
       return null;
     }
 
-    console.log("🔄 Attempting token refresh...");
+    console.log(`[${getTimestamp()}] 🔄 [TOKEN REFRESH] Current refresh token: ${getTokenPrefix(refresh_token)}`);
+    console.log(`[${getTimestamp()}] 📡 [TOKEN REFRESH] Request: POST /auth/refresh-token`);
 
     const refreshApi = axios.create({
       baseURL: BASE_URL,
@@ -113,20 +131,28 @@ const refreshAccessToken = async (): Promise<string | null> => {
     const newrefresh_token =
       response.data?.data?.refresh_token || refresh_token;
 
-    console.log("🔑 Refresh response:", response.data);
+    console.log(`[${getTimestamp()}] 🔑 [TOKEN REFRESH] Response:`, response.data);
 
     // Simpan hanya jika string
     if (access_token && typeof access_token === "string") {
       await SecureStore.setItemAsync(ACCESS_TOKEN_KEY, access_token);
+      console.log(`[${getTimestamp()}] ✅ [TOKEN REFRESH] New access token stored: ${getTokenPrefix(access_token)}`);
     }
     if (newrefresh_token && typeof newrefresh_token === "string") {
       await SecureStore.setItemAsync(REFRESH_TOKEN_KEY, newrefresh_token);
+      if (newrefresh_token !== refresh_token) {
+        console.log(`[${getTimestamp()}] 🔄 [TOKEN REFRESH] Token rotated!`);
+        console.log(`[${getTimestamp()}]    Old: ${getTokenPrefix(refresh_token)}`);
+        console.log(`[${getTimestamp()}]    New: ${getTokenPrefix(newrefresh_token)}`);
+      } else {
+        console.log(`[${getTimestamp()}] ℹ️ [TOKEN REFRESH] Refresh token unchanged`);
+      }
     }
 
-    console.log("✅ Tokens refreshed successfully");
+    console.log(`[${getTimestamp()}] ✅ [TOKEN REFRESH] Success! Tokens refreshed at ${getTimestamp()}`);
     return access_token;
   } catch (error) {
-    console.error("❌ Token refresh failed:", error);
+    console.error(`[${getTimestamp()}] ❌ [TOKEN REFRESH] Failed:`, error);
     await clearTokens();
     return null;
   }
@@ -143,9 +169,9 @@ const clearTokens = async (): Promise<void> => {
       SecureStore.deleteItemAsync(REFRESH_TOKEN_KEY),
       SecureStore.deleteItemAsync("user"),
     ]);
-    console.log("🗑️ Tokens cleared");
+    console.log(`[${getTimestamp()}] 🗑️ [TOKEN CLEAR] All tokens cleared`);
   } catch (error) {
-    console.error("❌ Error clearing tokens:", error);
+    console.error(`[${getTimestamp()}] ❌ [TOKEN CLEAR] Error:`, error);
   }
 };
 

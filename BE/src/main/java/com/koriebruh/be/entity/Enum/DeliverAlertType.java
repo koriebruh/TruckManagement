@@ -10,7 +10,16 @@ public enum DeliverAlertType {
     UNAUTHORIZED_UNLOADING, // Diduga bongkar muatan ilegal
     IDLE_OUTSIDE_ALLOWED_AREA, // Diam terlalu lama di titik acak
     ROUTE_DEVIATION, // Menyimpang dari rute resmi
-    GPS_LOST;
+    GPS_LOST,
+
+    // Driver-initiated notifications
+    TRAFFIC_DELAY,      // Heavy traffic causing delays
+    PUNCTURE,           // Tire puncture
+    BREAKDOWN,          // Vehicle mechanical failure
+    FUEL_ISSUE,         // Running low on fuel
+    ACCIDENT,           // Accident involved
+    WEATHER_DELAY,      // Weather-related delays
+    DRIVER_MESSAGE;     // Custom message from driver
 
     @Override
     @JsonValue // <-- ini buat JSON output (pakai Jackson)

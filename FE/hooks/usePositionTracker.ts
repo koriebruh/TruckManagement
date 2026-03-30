@@ -3,6 +3,8 @@ import { useMutation } from "@tanstack/react-query";
 import { useState, useCallback, useRef, useEffect } from "react";
 import { useLocation, LocationData } from "./useLocation";
 import api from "@/services/axios";
+import { BackgroundLocationService } from "@/services/backgroundLocationService";
+import * as Location from 'expo-location';
 
 interface PositionPayload {
   latitude: number;
@@ -13,20 +15,27 @@ interface PositionPayload {
 interface UsePositionTrackerOptions {
   autoTrack?: boolean; // Automatically start tracking when component mounts
   interval?: number; // Interval in milliseconds to send position updates
+  useBackgroundTracking?: boolean; // Use background location service (works even when app is closed)
+  distanceInterval?: number; // Distance in meters to trigger update (for background tracking)
 }
 
 interface UsePositionTrackerReturn {
   isTracking: boolean;
+  isBackgroundTracking: boolean;
   location: LocationData | null;
   isLoadingLocation: boolean;
   locationError: string | null;
   isSendingPosition: boolean;
   sendPositionError: string | null;
   lastSentAt: Date | null;
-  isMocked: boolean; 
+  isMocked: boolean;
+  hasBackgroundPermission: boolean;
   startTracking: () => void;
   stopTracking: () => void;
   sendCurrentPosition: () => Promise<void>;
+  startBackgroundTracking: () => Promise<boolean>;
+  stopBackgroundTracking: () => Promise<boolean>;
+  checkBackgroundPermissions: () => Promise<void>;
 }
 
 // API function to send position
@@ -43,9 +52,16 @@ const sendPositionToAPI = async (position: PositionPayload): Promise<any> => {
 export const usePositionTracker = (
   options: UsePositionTrackerOptions = {}
 ): UsePositionTrackerReturn => {
-  const { autoTrack = false, interval = 900000 } = options; // Default 15 minutes
+  const {
+    autoTrack = false,
+    interval = 900000,
+    useBackgroundTracking = false,
+    distanceInterval = 100
+  } = options; // Default 15 minutes
 
   const [isTracking, setIsTracking] = useState(false);
+  const [isBackgroundTracking, setIsBackgroundTracking] = useState(false);
+  const [hasBackgroundPermission, setHasBackgroundPermission] = useState(false);
   const [lastSentAt, setLastSentAt] = useState<Date | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | number | null>(null);
   const isInitialized = useRef(false);
@@ -211,19 +227,113 @@ export const usePositionTracker = (
     }
   }, [isTracking, stopWatchingLocation]);
 
+  // Start background tracking
+  const startBackgroundTracking = useCallback(async (): Promise<boolean> => {
+    console.log("🚀 Starting background location tracking...");
+
+    try {
+      const success = await BackgroundLocationService.start({
+        accuracy: Location.Accuracy.High,
+        timeInterval: interval,
+        distanceInterval: distanceInterval,
+      });
+
+      if (success) {
+        setIsBackgroundTracking(true);
+        console.log("✅ Background tracking started successfully");
+        return true;
+      } else {
+        console.error("❌ Failed to start background tracking");
+        return false;
+      }
+    } catch (error) {
+      console.error("❌ Error starting background tracking:", error);
+      return false;
+    }
+  }, [interval, distanceInterval]);
+
+  // Stop background tracking
+  const stopBackgroundTracking = useCallback(async (): Promise<boolean> => {
+    console.log("🛑 Stopping background location tracking...");
+
+    try {
+      const success = await BackgroundLocationService.stop();
+
+      if (success) {
+        setIsBackgroundTracking(false);
+        console.log("✅ Background tracking stopped successfully");
+        return true;
+      } else {
+        console.log("⚠️ Background tracking was not running");
+        return false;
+      }
+    } catch (error) {
+      console.error("❌ Error stopping background tracking:", error);
+      return false;
+    }
+  }, []);
+
+  // Check background permissions
+  const checkBackgroundPermissions = useCallback(async () => {
+    try {
+      const permissions = await BackgroundLocationService.checkPermissions();
+      const hasPermission =
+        permissions.foreground === 'granted' &&
+        permissions.background === 'granted';
+
+      setHasBackgroundPermission(hasPermission);
+
+      console.log("📋 Background permissions:", {
+        foreground: permissions.foreground,
+        background: permissions.background,
+        hasFullAccess: hasPermission,
+      });
+    } catch (error) {
+      console.error("❌ Error checking permissions:", error);
+      setHasBackgroundPermission(false);
+    }
+  }, []);
+
+  // Check permissions on mount
+  useEffect(() => {
+    checkBackgroundPermissions();
+  }, [checkBackgroundPermissions]);
+
+  // Check if background tracking is running on mount
+  useEffect(() => {
+    const checkBackgroundStatus = async () => {
+      const isRunning = await BackgroundLocationService.isRunning();
+      setIsBackgroundTracking(isRunning);
+      console.log("📊 Background tracking status on mount:", isRunning);
+    };
+
+    checkBackgroundStatus();
+  }, []);
+
   // Auto-start tracking
   useEffect(() => {
     if (autoTrack && !isInitialized.current) {
-      console.log("🚀 Auto-starting automatic position tracking...");
+      console.log("🚀 Auto-starting position tracking...");
       isInitialized.current = true;
-      setTimeout(() => {
-        startTracking();
+
+      setTimeout(async () => {
+        if (useBackgroundTracking) {
+          console.log("📱 Using background tracking mode");
+          await startBackgroundTracking();
+        } else {
+          console.log("📱 Using foreground tracking mode");
+          startTracking();
+        }
       }, 1000);
     }
 
     return () => {
-      console.log("🧹 Cleanup: stopping automatic tracking");
-      stopTracking();
+      console.log("🧹 Cleanup: stopping tracking");
+      if (useBackgroundTracking) {
+        stopBackgroundTracking();
+      } else {
+        stopTracking();
+      }
     };
   }, []);
 
@@ -237,15 +347,20 @@ export const usePositionTracker = (
 
   return {
     isTracking,
+    isBackgroundTracking,
     location,
     isLoadingLocation,
     locationError,
     isMocked, // 👈 expose biar bisa dipakai di UI
+    hasBackgroundPermission,
     isSendingPosition: sendPositionMutation.isPending,
     sendPositionError: sendPositionMutation.error?.message || null,
     lastSentAt,
     startTracking,
     stopTracking,
     sendCurrentPosition,
+    startBackgroundTracking,
+    stopBackgroundTracking,
+    checkBackgroundPermissions,
   };
 };

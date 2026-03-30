@@ -22,8 +22,8 @@ export interface LoginResponse {
 
 export interface refreshTokenResponse {
   access_token: string;
-  refresh_token: string;
-  tokenType: string;
+  refresh_token?: string;
+  tokenType?: string;
 }
 
 export interface User {

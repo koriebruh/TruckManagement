@@ -68,7 +68,7 @@ const DeliveryDetail = () => {
     if (isActiveDelivery) {
       const interval = setInterval(() => {
         refetchPosition();
-      }, 900000); // Refresh every 15 menit
+      }, 900000); // Refresh every 15 minutes
 
       setRefreshInterval(interval);
 

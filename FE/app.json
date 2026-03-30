@@ -14,7 +14,14 @@
     },
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.michellee.trackingtruck", // ← tambah
+      "infoPlist": {
+        "UIBackgroundModes": ["location"],
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Tracking Truck needs your location to track deliveries even when the app is in the background.",
+        "NSLocationWhenInUseUsageDescription": "Tracking Truck needs your location to track deliveries.",
+        "NSLocationAlwaysUsageDescription": "Tracking Truck needs your location to track deliveries even when the app is closed."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -23,9 +30,13 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.michellee.trackingtruck",
+      "foregroundServiceTypes": ["location"], // ← tambah
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION"
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_BACKGROUND_LOCATION",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_LOCATION"
       ]
     },
     "web": {
@@ -37,7 +48,11 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow Tracking Truck to use your location."
+          "locationAlwaysAndWhenInUsePermission": "Tracking Truck needs your location to track deliveries even when the app is in the background.",
+          "locationWhenInUsePermission": "Tracking Truck needs your location to track deliveries.",
+          "locationAlwaysPermission": "Tracking Truck needs your location to track deliveries even when the app is closed.", // ← tambah
+          "isAndroidBackgroundLocationEnabled": true,
+          "isIosBackgroundLocationEnabled": true
         }
       ],
       "expo-router",

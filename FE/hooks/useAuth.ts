@@ -22,8 +22,33 @@ export const useLogin = () => {
         await login(payload);
       } catch (err: Error | any) {
         console.log("Login error:", err);
-        setError(err || "Login failed");
-        throw err.response.data.errors;
+        
+        // Safely extract error message from various error shapes
+        let errorMessage = "Login failed";
+        
+        if (err?.response?.data?.errors) {
+          // API validation errors - extract first error
+          const errors = err.response.data.errors;
+          errorMessage = typeof errors === 'object' 
+            ? Object.values(errors)[0] as string || "Login failed"
+            : errors;
+        } else if (err?.response?.data?.message) {
+          // API general error message
+          errorMessage = err.response.data.message;
+        } else if (err?.response?.data) {
+          // Response data exists but different structure
+          errorMessage = typeof err.response.data === 'string' 
+            ? err.response.data 
+            : "Login failed";
+        } else if (err?.message) {
+          // Network error or other Error object
+          errorMessage = err.message;
+        } else if (typeof err === 'string') {
+          errorMessage = err;
+        }
+        
+        setError(errorMessage);
+        throw new Error(errorMessage);
       } finally {
         setIsLoading(false);
       }

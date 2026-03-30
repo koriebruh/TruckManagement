@@ -275,6 +275,8 @@ public class DeliveryMonitoringService {
                 deliveryAlertDTO.setType(alert.getType().toString());
                 deliveryAlertDTO.setMessage(alert.getMessage());
                 deliveryAlertDTO.setCreatedAt(alert.getCreatedAt());
+                deliveryAlertDTO.setSenderId(alert.getSender() != null ? alert.getSender().getId() : null);
+                deliveryAlertDTO.setSenderUsername(alert.getSender() != null ? alert.getSender().getUsername() : null);
                 deliveryAlertDTOs.add(deliveryAlertDTO);
             }
         }
@@ -457,6 +459,8 @@ public class DeliveryMonitoringService {
                 deliveryAlertDTO.setType(alert.getType().toString());
                 deliveryAlertDTO.setMessage(alert.getMessage());
                 deliveryAlertDTO.setCreatedAt(alert.getCreatedAt());
+                deliveryAlertDTO.setSenderId(alert.getSender() != null ? alert.getSender().getId() : null);
+                deliveryAlertDTO.setSenderUsername(alert.getSender() != null ? alert.getSender().getUsername() : null);
                 deliveryAlertDTOs.add(deliveryAlertDTO);
             }
         }
@@ -728,6 +732,43 @@ public class DeliveryMonitoringService {
                     .actionByOperator(handover.getActionByOperatorId().getUsername() != null ? handover.getActionByOperatorId().getUsername() : null)
                     .build();
         }).toList();
+    }
+
+    /**
+     * Driver sends a manual notification/alert to admin and owner
+     * about issues like traffic, puncture, breakdown, etc.
+     */
+    public String sendDriverAlert(DeliveryAlertRequest request, String driverUsername) {
+        validationService.validate(request);
+
+        User driver = workerRepo.findByUsernameAndDeletedAtIsNull(driverUsername)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Driver not found"));
+
+        if (driver.getRole() != RoleType.DRIVER) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only drivers can send alerts");
+        }
+
+        // Find active delivery for this driver
+        Delivery delivery = null;
+        if (request.getDeliveryId() != null && !request.getDeliveryId().isEmpty()) {
+            delivery = deliveryRepo.findByIdAndFinishedAtIsNull(request.getDeliveryId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Active delivery not found with ID: " + request.getDeliveryId()));
+        } else {
+            // Get current active delivery for this driver
+            delivery = deliveryRepo.findByWorkerUsernameAndFinishedAtIsNull(driverUsername)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No active delivery found. Please specify delivery ID"));
+        }
+
+        // Create the alert
+        DeliverAlert alert = new DeliverAlert();
+        alert.setDelivery(delivery);
+        alert.setType(request.getType());
+        alert.setMessage(request.getMessage());
+        alert.setSender(driver);
+        alert.setCreatedAt(Instant.now().getEpochSecond());
+        deliverAlertRepo.save(alert);
+
+        return "Alert sent successfully to admin and owner for delivery: " + delivery.getId();
     }
 
 }

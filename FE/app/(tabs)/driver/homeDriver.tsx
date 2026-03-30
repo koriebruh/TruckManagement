@@ -48,7 +48,7 @@ const DashboardDriver = () => {
     isMocked,
   } = usePositionTracker({
     autoTrack: true, // Auto-start when component mounts
-    interval: 900000, 
+    interval: 900000,
   });
 
   const router = useRouter();

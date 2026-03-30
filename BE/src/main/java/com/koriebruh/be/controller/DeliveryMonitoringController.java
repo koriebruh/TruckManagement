@@ -330,5 +330,26 @@ public class DeliveryMonitoringController {
         );
     }
 
+    /**
+     * Driver sends a manual notification/alert to admin and owner
+     * POST /api/delivery/alert/send
+     */
+    @PostMapping(value = "/alert/send",
+            produces = "application/json",
+            consumes = "application/json"
+    )
+    public ResponseEntity<WebResponse<String>> sendDriverAlert(@RequestBody @Valid DeliveryAlertRequest request) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String driverUsername = authentication.getName();
+
+        String msg = deliveryMonitoringService.sendDriverAlert(request, driverUsername);
+        return ResponseEntity.ok(
+                WebResponse.<String>builder()
+                        .status("SENT")
+                        .data(msg)
+                        .build()
+        );
+    }
+
 
 }

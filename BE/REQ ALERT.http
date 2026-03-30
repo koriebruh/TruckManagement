@@ -1,0 +1,245 @@
+@TOKEN_DRIVER=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkcml2ZXJhbmRpIiwiaWF0IjoxNzczMTQzODkwLCJleHAiOjE3NzMxNDQ3OTB9.-E2loSq3_wo52WfR062sTkSV49qLLkuXgyGnDJIRIvA
+@TOKEN_ADMIN=
+@TOKEN_OWNER=
+@DELIVERY_ID=b436afe3-215a-4ed8-af5b-ccd9aaa62044
+
+### ====================================
+### DRIVER NOTIFICATION API TESTING
+### ====================================
+### IMPORTANT: Replace {{DELIVERY_ID}} with actual delivery UUID
+### Get it from: GET /api/delivery/active or after creating a delivery
+### ====================================
+
+### 1. Driver Send Alert - Traffic Delay
+POST http://localhost:8080/api/delivery/alert/send
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+{
+  "type": "traffic_delay",
+  "message": "Heavy traffic on highway, expected 2 hours delay to destination",
+  "deliveryId": "{{DELIVERY_ID}}"
+}
+
+### 2. Driver Send Alert - Puncture
+POST http://localhost:8080/api/delivery/alert/send
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+{
+  "type": "puncture",
+  "message": "Front left tire punctured. Need assistance at nearest workshop.",
+  "deliveryId": "{{DELIVERY_ID}}"
+}
+
+### 3. Driver Send Alert - Breakdown
+POST http://localhost:8080/api/delivery/alert/send
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+{
+  "type": "breakdown",
+  "message": "Engine overheating. Truck stopped on roadside. Need mechanic assistance.",
+  "deliveryId": "{{DELIVERY_ID}}"
+}
+
+### 4. Driver Send Alert - Fuel Issue
+POST http://localhost:8080/api/delivery/alert/send
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+{
+  "type": "fuel_issue",
+  "message": "Running low on fuel. Nearest gas station is 50km away.",
+  "deliveryId": "{{DELIVERY_ID}}"
+}
+
+### 5. Driver Send Alert - Accident
+POST http://localhost:8080/api/delivery/alert/send
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+{
+  "type": "accident",
+  "message": "Minor collision with another vehicle. Police report filed. Waiting for tow truck.",
+  "deliveryId": "{{DELIVERY_ID}}"
+}
+
+### 6. Driver Send Alert - Weather Delay
+POST http://localhost:8080/api/delivery/alert/send
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+{
+  "type": "weather_delay",
+  "message": "Heavy flooding on route. Cannot proceed safely. Waiting for water to recede.",
+  "deliveryId": "{{DELIVERY_ID}}"
+}
+
+### 7. Driver Send Alert - Custom Message
+POST http://localhost:8080/api/delivery/alert/send
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+{
+  "type": "driver_message",
+  "message": "Taking a short rest break. Will continue in 30 minutes.",
+  "deliveryId": "{{DELIVERY_ID}}"
+}
+
+### ====================================
+### VIEW ALERTS (Admin/Owner/Driver)
+### ====================================
+
+### 8. Get Active Delivery Details (includes all alerts)
+GET http://localhost:8080/api/delivery/detail
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+### 9. Get Delivery Detail by ID (Admin/Owner)
+GET http://localhost:8080/api/delivery/detail/{{DELIVERY_ID}}
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### 10. Get All Active Deliveries (Admin/Owner)
+GET http://localhost:8080/api/delivery/active
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### 11. Get Driver's Delivery History (includes past alerts)
+GET http://localhost:8080/api/delivery/history
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+### ====================================
+### CREATE DELIVERY (Prerequisite for Alerts)
+### ====================================
+
+### 12. Create a New Delivery (Operator/Admin only)
+POST http://localhost:8080/api/delivery
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+{
+  "truckId": "truck-id-here",
+  "routeId": "route-id-here",
+  "workerId": "driver-id-here",
+  "latitude": -6.2088,
+  "longitude": 106.8456
+}
+
+### 13. Get Available Trucks (before creating delivery)
+GET http://localhost:8080/api/trucks/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### ====================================
+### ERROR CASES TESTING
+### ====================================
+
+### 14. Error: Non-driver trying to send alert
+POST http://localhost:8080/api/delivery/alert/send
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+{
+  "type": "puncture",
+  "message": "Test from admin",
+  "deliveryId": "{{DELIVERY_ID}}"
+}
+
+### 15. Error: Missing required type field
+POST http://localhost:8080/api/delivery/alert/send
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+{
+  "message": "Missing type field",
+  "deliveryId": "{{DELIVERY_ID}}"
+}
+
+### 16. Error: Missing required message field
+POST http://localhost:8080/api/delivery/alert/send
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+{
+  "type": "puncture",
+  "deliveryId": "{{DELIVERY_ID}}"
+}
+
+### 17. Error: Invalid alert type
+POST http://localhost:8080/api/delivery/alert/send
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+{
+  "type": "INVALID_TYPE",
+  "message": "This should fail",
+  "deliveryId": "{{DELIVERY_ID}}"
+}
+
+### 18. Error: No active delivery found (no deliveryId provided)
+POST http://localhost:8080/api/delivery/alert/send
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+{
+  "type": "puncture",
+  "message": "No active delivery"
+}
+
+### ====================================
+### AUTO-DETECTION TESTING (System Alerts)
+### ====================================
+
+### Note: Auto-detection runs every 5 minutes
+### To test GPS_LOST alert:
+###   1. Start a delivery
+###   2. Stop sending position updates
+###   3. Wait 10+ minutes
+###   4. Check delivery detail for gps_lost alert
+
+### To test ILLEGAL_STOP alert:
+###   1. Start a delivery
+###   2. Keep GPS at same location
+###   3. Wait 45+ minutes
+###   4. Check delivery detail for illegal_stop alert
+
+### 19. Check for Auto-Generated Alerts
+GET http://localhost:8080/api/delivery/detail
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_DRIVER}}
+
+### Expected Response:
+### {
+###   "alerts": [
+###     {
+###       "id": "alert-id",
+###       "type": "gps_lost",
+###       "message": "No GPS update...",
+###       "createdAt": 1234567890,
+###       "senderId": null,
+###       "senderUsername": null
+###     }
+###   ]
+### }
