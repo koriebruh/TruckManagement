@@ -90,4 +90,17 @@ public class CityService {
         return "City deleted successfully";
     }
 
+    public City findOrCreateCity(String name, Double latitude, Double longitude, String country) {
+        return cityRepository.findByName(name)
+                .orElseGet(() -> {
+                    City city = new City();
+                    city.setName(name);
+                    city.setLatitude(latitude);
+                    city.setLongitude(longitude);
+                    city.setCountry(country != null ? country : "Indonesia");
+                    city.setCreatedAt(Instant.now().getEpochSecond());
+                    return cityRepository.save(city);
+                });
+    }
+
 }

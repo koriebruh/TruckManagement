@@ -1,4 +1,4 @@
-@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2RlcmF0b3JidWRpIiwiaWF0IjoxNzU1NTI2MzcwLCJleHAiOjE3NTU1MjcyNzB9.v56SFZnYsEQ7zOl11y-VLa_V8G0oV4ZI9J6u4PUtvZs
+@TOKEN_OPERATOR=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJtb2RlcmF0b3JidWRpIiwiaWF0IjoxNzczMTQ0NTEyLCJleHAiOjE3NzMxNDU0MTJ9.hKba00pc8JAi9YvRs3vNfj2InM6EuYtHXP4OIR_bpTA
 
 ### login request to example server
 POST http://localhost:8080/auth/login
@@ -43,9 +43,9 @@ Accept: application/json
 Authorization: Bearer {{TOKEN_OPERATOR}}
 
 {
-  "truck_id": "4cddbbb9-c3aa-434b-9ae6-b85d9413f8e6",
-  "route_id": "f237f00a-e679-4893-84f9-8b57d14148ee",
-  "worker_id": "2f2013ad-b37a-4fbd-b225-32570c9f1147",
+  "truck_id": "6d55ce39-1379-460e-8519-50204cedc947",
+  "route_id": "01ace9d7-a14d-42ce-9f70-2025ad7ddf94",
+  "worker_id": "3fe3b08f-128c-4daf-b9ce-c0cce02c5918",
   "latitude": -7.46667,
   "longitude": 110.21667
 }
@@ -161,6 +161,26 @@ Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN_OPERATOR}}
 
+
+###
+POST http://localhost:8080/api/delivery/takeover
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
+
+{
+  "delivery_id": "234826e6-250a-463c-ae04-3bbfe91c8fcb",
+  "from_worker_id": "653e733e-13e0-4ecc-8944-e208cc806bcc",
+  "to_worker_id": "2f2013ad-b37a-4fbd-b225-32570c9f1147",
+  "handover_at": 1752,
+  "reason": "kembali sehattttttttttttttt"
+}
+
+### GET BY DELIVERY ID
+GET http://localhost:8080/api/delivery/takeover/234826e6-250a-463c-ae04-3bbfe91c8fcb
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_OPERATOR}}
 
 
 ### FINISHED CURENNT DELIVERY

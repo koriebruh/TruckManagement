@@ -15,4 +15,6 @@ public interface DeliveryTransitRepository extends JpaRepository<DeliveryTransit
 
 
     List<DeliveryTransit> findAllByIsAcceptedNullAndActionByOperatorIdNull();
+
+//    DeliveryTransit findTopByDeliveryIdAndTransitPointIdLoadingCityIdAndIsAcceptedTrueOrderByArrivedAtDesc(String id, Long id1);
 }

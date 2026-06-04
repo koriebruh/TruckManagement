@@ -34,7 +34,7 @@ public class UserSeeder implements CommandLineRunner {
 
         List<User> users = Arrays.asList(
                 createUser("ownerapp", "owner2024", "owner@company.com", RoleType.OWNER, "081234567001", 35L),
-                createUser("jamalgantenk", "jamal123", "jamal@admin.com", RoleType.ADMIN, "081234567890", 21L),
+                createUser("adminapp", "admin123", "admin@admin.com", RoleType.ADMIN, "081234567890", 21L),
                 createUser("moderatorbudi", "budi4567", "budi@moderator.com", RoleType.MODERATOR, "081234567002", 28L),
                 createUser("driverandi", "andi7890", "andi@driver.com", RoleType.DRIVER, "081234567003", 32L)
         );

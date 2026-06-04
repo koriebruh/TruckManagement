@@ -88,7 +88,7 @@ public class AuthService {
          * Kalau refresh token nggak valid, generate baru
          * */
         Long sevenDaysInMillis = 604800000L; // 7 days in milliseconds
-        Long fifteenMillis = 900000L; // 15 minutes in milliseconds
+        Long fifteenMillis = 10000L;; // 15 minutes in milliseconds
         String refreshToken;
         try {
             if (user.getRefreshToken() != null && jwtUtil.validateToken(user.getRefreshToken(), user.getUsername())) {
@@ -133,29 +133,40 @@ public class AuthService {
     }
 
     public RefreshTokenResponse getAccessToken(RefreshTokenRequest request) {
-        logger.debug("Processing refresh token request");
-        Long fifteenMillis = 900000L; // 15 minutes in milliseconds
+        logger.debug("🔧 [TOKEN REFRESH] Generating new tokens...");
+        Long fifteenMillis = 10000L; // 15 minutes in milliseconds
+        Long sevenDaysInMillis = 604800000L; // 7 days in milliseconds
 
         Optional<User> userOps = userRepository.findByRefreshToken(request.getRefreshToken());
         if (userOps.isEmpty()) {
-            logger.warn("Refresh token not found: {}", request.getRefreshToken());
+            logger.warn("⚠️ [TOKEN REFRESH] Refresh token not found: {}", request.getRefreshToken());
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Refresh token is not found");
         }
 
         User user = userOps.get();
         if (user.getRefreshToken() == null || !jwtUtil.validateToken(user.getRefreshToken(), user.getUsername())) {
-            logger.warn("Invalid refresh token for user: {}", user.getUsername());
+            logger.warn("⚠️ [TOKEN REFRESH] Invalid refresh token for user: {}", user.getUsername());
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid refresh token do login again");
         }
 
         // Generate new access token fresh 15 minutes
-        logger.debug("Generating new access token for user: {}", user.getUsername());
+        logger.debug("🔑 [TOKEN REFRESH] Generating new access token for user: {} (expires in 15 min)", user.getUsername());
         String tokenAccess = jwtUtil.generateToken(user.getUsername(), fifteenMillis);
 
-        // Return the new access token
-        logger.debug("Successfully generated new access token for user: {}", user.getUsername());
+        // Generate new refresh token for rotation (7 days)
+        logger.debug("🔄 [TOKEN REFRESH] Generating new refresh token for user: {} (expires in 7 days)", user.getUsername());
+        String newRefreshToken = jwtUtil.generateToken(user.getUsername(), sevenDaysInMillis);
+        user.setRefreshToken(newRefreshToken);
+        userRepository.save(user);
+
+        // Return the new access token and refresh token
+        logger.info("✅ [TOKEN REFRESH] Tokens generated successfully for user: {}", user.getUsername());
+        logger.debug("   Access Token (prefix): {}", tokenAccess != null && tokenAccess.length() > 20 ? tokenAccess.substring(0, 20) + "..." : tokenAccess);
+        logger.debug("   Refresh Token (prefix): {}", newRefreshToken != null && newRefreshToken.length() > 20 ? newRefreshToken.substring(0, 20) + "..." : newRefreshToken);
+        
         return RefreshTokenResponse.builder()
                 .accessToken(tokenAccess)
+                .refreshToken(newRefreshToken)
                 .build();
     }
 

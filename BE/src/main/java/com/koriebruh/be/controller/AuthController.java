@@ -128,23 +128,23 @@ public class AuthController {
             HttpServletRequest httpRequest
     ) {
         String clientIp = RequestUtil.getClientIp(httpRequest);
+
+        logger.info("🔄 [TOKEN REFRESH] Refresh token request received from IP: {}", clientIp);
         
-        logger.debug("Received refresh token request from IP: {}", clientIp);
-        /* Check if the Authorization header is present and starts with "Bearer "
-         *Authorization: Bearer <token>
-         */
         String token = request.getRefreshToken();
+        String tokenPrefix = token != null && token.length() > 20 ? token.substring(0, 20) + "..." : token;
+        logger.debug("🔑 [TOKEN REFRESH] Refresh token (prefix): {}", tokenPrefix);
 
         String username = jwtUtil.getUsernameFromToken(token);
-        logger.debug("Processing refresh token for username: {} from IP: {}", username, clientIp);
+        logger.info("👤 [TOKEN REFRESH] Processing refresh for user: {}", username);
 
         if (!jwtUtil.validateToken(token, username)) {
-            logger.warn("Invalid refresh token for username: {} from IP: {}", username, clientIp);
+            logger.warn("⚠️ [TOKEN REFRESH] Invalid refresh token for user: {} from IP: {}", username, clientIp);
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Token is invalid");
         }
 
         RefreshTokenResponse refreshTokenResponse = authService.getAccessToken(request);
-        logger.info("Successfully refreshed access token for username: {} from IP: {}", username, clientIp);
+        logger.info("✅ [TOKEN REFRESH] Successfully refreshed access token for user: {} from IP: {}", username, clientIp);
 
         return ResponseEntity.ok(
                 WebResponse.<RefreshTokenResponse>builder()

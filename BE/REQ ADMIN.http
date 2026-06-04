@@ -1,5 +1,5 @@
 
-@TOKEN_ADMIN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJqYW1hbGdhbnRlbmsiLCJpYXQiOjE3NTU0MTQwNTgsImV4cCI6MTc1NTQxNDk1OH0.gmTvPlXIkJuI3P97b1zjZ4UUQPJkDiqm5woKKpyMynY
+@TOKEN_ADMIN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbmFwcCIsImlhdCI6MTc3MzE0NDYyMSwiZXhwIjoxNzczMTQ1NTIxfQ.qcPW5kRUaVrqVb1a_FeBRU5Gcr00uQtkyNMlis5-FJk
 
 ### login for admin
 POST http://localhost:8080/auth/login
@@ -7,8 +7,8 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "jamalgantenk",
-  "password": "jamal123"
+  "username": "adminapp",
+  "password": "admin123"
 }
 
 ###
@@ -225,6 +225,19 @@ Authorization: Bearer {{TOKEN_ADMIN}}
 
 ### DELETE TRANSIT POINT
 DELETE http://localhost:8080/api/transit-points/57
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+### DELETE TRANSIT POINT
+GET http://localhost:8080/api/users/drivers/available
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{TOKEN_ADMIN}}
+
+
+### DELETE TRANSIT POINT
+DELETE http://localhost:8080/api/users/653e733e-13e0-4ecc-8944-e208cc806bcc
 Content-Type: application/json
 Accept: application/json
 Authorization: Bearer {{TOKEN_ADMIN}}

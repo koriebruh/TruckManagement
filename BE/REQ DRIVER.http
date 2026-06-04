@@ -1,5 +1,5 @@
 
-@TOKEN_DRIVER=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJidW5kZXJlc3MiLCJpYXQiOjE3NTQ0ODI1NDYsImV4cCI6MTc1NDQ4MzQ0Nn0.8kLTzWzsKF8ungLOW_WpUpqIubUVXVzOXY9Li9mZkLM
+@TOKEN=eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkcml2ZXJhbmRpIiwiaWF0IjoxNzczMTQzMzUwLCJleHAiOjE3NzMxNDMzNjB9.QOM3e_FOzBnivHsn9SFWv8mq74Zu88nYo9-z3VdXNaY
 
 ### login request to example server
 POST http://localhost:8080/auth/login
@@ -7,9 +7,14 @@ Content-Type: application/json
 Accept: application/json
 
 {
-  "username": "bunderess",
-  "password": "admin1234#"
+  "username": "driverandi",
+  "password": "andi7890"
 }
+###
+#{
+#  "username": "bunderess",
+#  "password": "admin1234#"
+#}
 
 ### registration request to example server
 POST http://localhost:8080/auth/register
@@ -28,13 +33,13 @@ Accept: application/json
 GET http://localhost:8080/api/trucks/available
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer {{TOKEN_DRIVER}}
+Authorization: Bearer {{TOKEN}}
 
 ### user send delivery position
 POST http://localhost:8080/api/delivery/position
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer {{TOKEN_DRIVER}}
+Authorization: Bearer {{TOKEN}}
 
 {
   "latitude": -6.2088,
@@ -46,13 +51,13 @@ Authorization: Bearer {{TOKEN_DRIVER}}
 GET http://localhost:8080/api/delivery/positions/latest
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer {{TOKEN_DRIVER}}
+Authorization: Bearer {{TOKEN}}
 
 ###  request make transit
 POST http://localhost:8080/api/delivery/transit
 Content-Type: application/json
 Accept: application/json
-Authorization: Bearer {{TOKEN_DRIVER}}
+Authorization: Bearer {{TOKEN}}
 
 {
   "delivery_id": "376424eb-0027-4678-9ded-1d6f9030dfca",

@@ -1,142 +1,251 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "@/services/axios";
-import { Truck } from "@/types/truck.types";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-// Fetch all trucks
-const fetchTrucks = async (): Promise<Truck[]> => {
-  const { data } = await api.get("/api/trucks");
-  return data.data;
-};
+// Types
+export interface Truck {
+  id: string;
+  license_plate: string;
+  model: string;
+  capacity_kg: number;
+  cargo_type: string;
+  is_available: boolean;
+  deleted_at: number | null;
+}
 
-// Fetch truck by ID
-const fetchTruckById = async (truck_id: string): Promise<Truck> => {
-  const { data } = await api.get(`/api/trucks/${truck_id}`);
-  return data.data;
-};
+export interface TruckResponse {
+  status: string;
+  data: Truck;
+}
 
-// Fetch available trucks
-const fetchAvailableTrucks = async (): Promise<Truck[]> => {
-  const { data } = await api.get("/api/trucks/available");
-  return data.data;
-};
+export interface TrucksResponse {
+  status: string;
+  data: Truck[];
+}
 
-// Create truck
-const createTruckRequest = async (truck: Partial<Truck>) => {
-  if (
-    !truck.license_plate ||
-    !truck.model ||
-    !truck.cargo_type ||
-    !truck.capacity_kg
-  ) {
-    throw new Error("Semua field wajib diisi");
+export interface CreateTruckData {
+  license_plate: string;
+  model: string;
+  capacity_kg: number;
+  cargo_type: string;
+  is_available?: boolean;
+}
+
+export interface UpdateTruckData {
+  license_plate?: string;
+  model?: string;
+  capacity_kg?: number;
+  cargo_type?: string;
+  is_available?: boolean;
+}
+
+export interface MaintenanceData {
+  truck_id: string;
+  description?: string;
+  cost?: number;
+}
+
+// API functions
+const fetchTrucks = async (): Promise<TrucksResponse> => {
+  const response = await api.get("/api/trucks");
+
+  if (response.status !== 200) {
+    throw new Error("Failed to fetch trucks");
   }
 
-  const payload = {
-    license_plate: truck.license_plate.trim().toUpperCase(),
-    model: truck.model.trim(),
-    cargo_type: truck.cargo_type.trim(),
-    capacity_kg: parseFloat(String(truck.capacity_kg)),
-    is_available: Boolean(truck.is_available ?? true),
-  };
-
-  const { data } = await api.post("/api/trucks", payload);
-  return data.data;
+  return response.data;
 };
 
-// Update truck
-const updateTruckRequest = async ({
-  truck_id,
-  truck,
-}: {
-  truck_id: string;
-  truck: Partial<Truck>;
-}) => {
-  const payload = {
-    license_plate: truck.license_plate?.trim().toUpperCase(),
-    model: truck.model?.trim(),
-    cargo_type: truck.cargo_type?.trim(),
-    capacity_kg: truck.capacity_kg,
-    is_available: truck.is_available,
-  };
+const fetchTruckById = async (truckId: string): Promise<TruckResponse> => {
+  const response = await api.get(`/api/trucks/${truckId}`);
 
-  const { data } = await api.put(`/api/trucks/${truck_id}`, payload);
-  return data.data;
+  if (response.status !== 200) {
+    throw new Error(`Failed to fetch truck ${truckId}`);
+  }
+
+  return response.data;
 };
 
-// Delete truck
-const deleteTruckRequest = async (truck_id: string) => {
-  const { data } = await api.delete(`/api/trucks/${truck_id}`);
-  return data.data;
+const fetchAvailableTrucks = async (): Promise<TrucksResponse> => {
+  const response = await api.get("/api/trucks/available");
+
+  if (response.status !== 200) {
+    throw new Error("Failed to fetch available trucks");
+  }
+
+  return response.data;
 };
 
-// Set truck to maintenance
-const setMaintenanceTruckRequest = async (truck_id: string) => {
-  const { data } = await api.put(`/api/trucks/maintenance/${truck_id}`);
-  return data.data;
+const createTruck = async (data: CreateTruckData): Promise<TruckResponse> => {
+  const response = await api.post("/api/trucks", data);
+
+  if (response.status !== 201 && response.status !== 200) {
+    throw new Error("Failed to create truck");
+  }
+
+  return response.data;
 };
 
-// Main Hook
-export function useTrucks() {
-  const queryClient = useQueryClient();
+const updateTruck = async (truckId: string, data: UpdateTruckData): Promise<TruckResponse> => {
+  const response = await api.put(`/api/trucks/${truckId}`, data);
 
-  const {
-    data: trucks,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  } = useQuery<Truck[]>({
+  if (response.status !== 200) {
+    throw new Error("Failed to update truck");
+  }
+
+  return response.data;
+};
+
+const deleteTruck = async (truckId: string): Promise<void> => {
+  const response = await api.delete(`/api/trucks/${truckId}`);
+
+  if (response.status !== 200 && response.status !== 204) {
+    throw new Error("Failed to delete truck");
+  }
+};
+
+const toggleTruckAvailability = async (truckId: string): Promise<TruckResponse> => {
+  const response = await api.get(`/api/trucks/toggle-availability/${truckId}`);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to toggle truck availability");
+  }
+
+  return response.data;
+};
+
+const updateTruckMaintenance = async (truckId: string, data: MaintenanceData): Promise<TruckResponse> => {
+  const response = await api.put(`/api/trucks/maintenance/${truckId}`, data);
+
+  if (response.status !== 200) {
+    throw new Error("Failed to update truck maintenance");
+  }
+
+  return response.data;
+};
+
+// Custom hooks
+
+// Hook to get all trucks
+export const useTrucks = () => {
+  return useQuery({
     queryKey: ["trucks"],
     queryFn: fetchTrucks,
+    staleTime: 2 * 60 * 1000, // 2 minutes
+    gcTime: 5 * 60 * 1000, // 5 minutes
   });
+};
 
-  const { data: availableTrucks, refetch: refetchAvailable } = useQuery<
-    Truck[]
-  >({
-    queryKey: ["available_trucks"],
+// Hook to get truck by ID
+export const useTruck = (truckId: string) => {
+  return useQuery({
+    queryKey: ["truck", truckId],
+    queryFn: () => fetchTruckById(truckId),
+    enabled: !!truckId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+// Hook to get available trucks
+export const useAvailableTrucks = () => {
+  return useQuery({
+    queryKey: ["trucks", "available"],
     queryFn: fetchAvailableTrucks,
+    staleTime: 1 * 60 * 1000, // 1 minute - more frequent updates for availability
+    gcTime: 5 * 60 * 1000,
   });
+};
 
-  const createTruck = useMutation({
-    mutationFn: createTruckRequest,
+// Hook to create truck
+export const useCreateTruck = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: createTruck,
     onSuccess: () => {
+      // Invalidate and refetch trucks list
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
     },
+  
   });
+};
 
-  const updateTruck = useMutation({
-    mutationFn: updateTruckRequest,
-    onSuccess: () => {
+// Hook to update truck
+export const useUpdateTruck = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ truckId, data }: { truckId: string; data: UpdateTruckData }) =>
+      updateTruck(truckId, data),
+    onSuccess: (data, variables) => {
+      // Update the specific truck in cache
+      queryClient.setQueryData(["truck", variables.truckId], data);
+      // Invalidate trucks list to refetch
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
     },
-  });
 
-  const deleteTruck = useMutation({
-    mutationFn: deleteTruckRequest,
+  });
+};
+
+// Hook to delete truck
+export const useDeleteTruck = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteTruck,
     onSuccess: () => {
+      // Invalidate trucks list
       queryClient.invalidateQueries({ queryKey: ["trucks"] });
     },
-  });
-
-  const setMaintenanceTruck = useMutation({
-    mutationFn: setMaintenanceTruckRequest,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["trucks"] });
+    onError: (error) => {
+      console.error("Delete truck error:", error);
     },
   });
+};
 
-  return {
-    trucks,
-    availableTrucks,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    refetchAvailable,
-    fetchTruckById,
-    createTruck: createTruck.mutateAsync,
-    updateTruck: updateTruck.mutateAsync,
-    deleteTruck: deleteTruck.mutateAsync,
-    setMaintenanceTruck: setMaintenanceTruck.mutateAsync,
-  };
-}
+// Hook to toggle truck availability
+export const useToggleTruckAvailability = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: toggleTruckAvailability,
+    onSuccess: (data, truckId) => {
+      // Update the specific truck in cache
+      queryClient.setQueryData(["truck", truckId], data);
+      // Invalidate trucks lists to refetch
+      queryClient.invalidateQueries({ queryKey: ["trucks"] });
+      queryClient.invalidateQueries({ queryKey: ["trucks", "available"] });
+    },
+    onError: (error) => {
+      console.error("Toggle truck availability error:", error);
+    },
+  });
+};
+
+// Hook to update truck maintenance
+export const useUpdateTruckMaintenance = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ truckId, data }: { truckId: string; data: MaintenanceData }) =>
+      updateTruckMaintenance(truckId, data),
+    onSuccess: (data, variables) => {
+      // Update the specific truck in cache
+      queryClient.setQueryData(["truck", variables.truckId], data);
+      // Invalidate trucks list to refetch
+      queryClient.invalidateQueries({ queryKey: ["trucks"] });
+    },
+    onError: (error) => {
+      console.error("Update truck maintenance error:", error);
+    },
+  });
+};
+
+// Query key factory for better cache management
+export const truckKeys = {
+  all: ["trucks"] as const,
+  lists: () => [...truckKeys.all, "list"] as const,
+  list: (filters: Record<string, any>) => [...truckKeys.lists(), { filters }] as const,
+  details: () => [...truckKeys.all, "detail"] as const,
+  detail: (id: string) => [...truckKeys.details(), id] as const,
+  available: () => [...truckKeys.all, "available"] as const,
+};

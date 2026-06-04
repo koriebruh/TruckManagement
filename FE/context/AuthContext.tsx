@@ -1,229 +1,240 @@
-import {jwtDecode} from "jwt-decode";
-import * as SecureStore from "expo-secure-store";
-import React, {
-  createContext,
-  ReactNode,
-  
-  useContext,
-  
-  useEffect,
-  useState,
-} from "react";
-import api from "@/services/axios";
-import {  AuthContextProps, RegisterPayload, TokenPayload, User } from "@/types/auth.types";
+// context/AuthContext.tsx
+import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import * as SecureStore from 'expo-secure-store';
+import { jwtDecode } from 'jwt-decode';
+import {
+  AuthContextType,
+  User,
+  LoginRequest,
+  RegisterRequest,
+  LoginResponse,
+  TokenPayload,
+} from '@/types/auth.types';
+import api, {
+  ACCESS_TOKEN_KEY,
+  clearTokens,
+  REFRESH_TOKEN_KEY,
+  refreshAccessToken,
+} from "@/services/axios";
+import { useQueryClient } from '@tanstack/react-query';
 
-// ====== Create Context ======
- const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
-// ====== Provider ======
-export const AuthProvider = ({ children }: { children: ReactNode }) => {
+// Create context
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+// Auth Provider
+export const AuthProvider = ({ children }: { children: ReactNode}) => {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [refreshToken, setRefreshToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  // ====== Restore session on mount ======
+// Initialize auth state on app start
   useEffect(() => {
     let isMounted = true;
 
-    const restoreSession = async () => {
+    const initializeAuth = async () => {
       try {
-        const storedToken = await SecureStore.getItemAsync("token");
-        const storedUser = await SecureStore.getItemAsync("user");
+        const [storedAccessToken, storedRefreshToken, storedUser] = await Promise.all([
+          SecureStore.getItemAsync(ACCESS_TOKEN_KEY),
+          SecureStore.getItemAsync(REFRESH_TOKEN_KEY),
+          SecureStore.getItemAsync('user'),
+        ]);
 
-        if (storedToken && storedUser) {
-          api.defaults.headers.common["Authorization"] =
-            `Bearer ${storedToken}`;
-          const res = await api.get("/auth/validate");
+        if (storedAccessToken && storedRefreshToken && storedUser && isMounted) {
+          // Check if access token is still valid
+          const decoded: TokenPayload = jwtDecode(storedAccessToken);
+          const currentTime = Date.now() / 1000;
 
-          if (res.status === 200) {
+          if (decoded.exp > currentTime) {
+            // Token is still valid
             const parsedUser = JSON.parse(storedUser);
-            if (isMounted) {
-              setUser(parsedUser);
-              setToken(storedToken);
-              console.log("✅ Token restored:", storedToken);
-              console.log("👤 User restored:", parsedUser);
+            setUser(parsedUser);
+            setAccessToken(storedAccessToken);
+            setRefreshToken(storedRefreshToken);
+            console.log('✅ Auth state restored from storage');
+          } else {
+            // Token expired, try to refresh
+            console.log('🔄 Access token expired, attempting refresh...');
+            try {
+              const newAccessToken = await refreshAccessToken();
+              if (newAccessToken && isMounted) {
+                const parsedUser = JSON.parse(storedUser);
+                const newRefreshToken = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+                
+                setUser(parsedUser);
+                setAccessToken(newAccessToken);
+                setRefreshToken(newRefreshToken);
+                console.log('✅ Auth state restored with refreshed token');
+              }
+            } catch (error: unknown) {
+              console.log('❌ Token refresh failed during initialization', error);
+              await clearTokens();
             }
           }
         }
       } catch (error) {
-        console.warn("⚠️ Token invalid or expired, clearing storage");
-        await SecureStore.deleteItemAsync("token");
-        await SecureStore.deleteItemAsync("user");
-        api.defaults.headers.common["Authorization"] = "";
+        console.error('❌ Error initializing auth:', error);
+        await clearTokens();
       } finally {
-        if (isMounted) setLoading(false);
+        if (isMounted) {
+          setLoading(false);
+        }
       }
     };
 
-    restoreSession();
+    initializeAuth();
+
     return () => {
       isMounted = false;
     };
   }, []);
 
-  // ====== Login ======
-const login = async (username: string, password: string) => {
-  try {
-    // Validasi input
-    if (!username?.trim() || !password?.trim()) {
-      throw new Error("Username dan password tidak boleh kosong.");
-    }
-
-    const response = await api.post("/auth/login", {
-      username: username.trim(),
-      password,
-    });
-
-    // Validasi response structure
-    if (!response.data) {
-      throw new Error("Response data tidak ditemukan.");
-    }
-
-    // Coba berbagai struktur response yang mungkin
-    let data;
-    if (response.data.data) {
-      data = response.data.data;
-    } else if (response.data.access_token) {
-      data = response.data;
-    } else {
-      throw new Error("Struktur response tidak valid.");
-    }
-
-    // Server menggunakan snake_case, bukan camelCase
-    const {
-      access_token: accessToken,
-      refresh_token: refreshToken,
-      token_type: tokenType = "Bearer",
-    } = data;
-
-    // Validasi tokens
-    if (!accessToken || typeof accessToken !== "string") {
-      throw new Error("Access token tidak valid.");
-    }
-
-    if (!refreshToken || typeof refreshToken !== "string") {
-      throw new Error("Refresh token tidak valid.");
-    }
-
-    // Decode dan validasi JWT
-    let decoded: TokenPayload;
+  // Login function
+  const login = async (credentials: LoginRequest): Promise<void> => {
     try {
-      decoded = jwtDecode(accessToken);
-    } catch (jwtError) {
-      throw new Error("Token tidak dapat didecode.");
+      setLoading(true);
+      console.log("Sending login request:", credentials);
+      const response = await api.post<LoginResponse>(
+        "/auth/login",
+        credentials
+      );
+      console.log("Login response:", response.data);
+      const { access_token: newAccessToken, refresh_token: newRefreshToken } =
+        response.data.data;
+
+      // Store tokens and user data
+      await Promise.all([
+        SecureStore.setItemAsync(ACCESS_TOKEN_KEY, newAccessToken),
+        SecureStore.setItemAsync(REFRESH_TOKEN_KEY, newRefreshToken),
+        // SecureStore.setItemAsync('user', JSON.stringify(userData)),
+      ]);
+
+      // Update state
+      // setUser(userData);
+      setAccessToken(newAccessToken);
+      setRefreshToken(newRefreshToken);
+      // Invalidate profile and role queries to ensure fresh data
+      queryClient.invalidateQueries({ queryKey: ["user_profile"] });
+      queryClient.invalidateQueries({ queryKey: ["validate_role"] });
+
+      console.log("✅ Login successful");
+      // console.log('👤 User:', userData);
+    } catch (error: any) {
+      console.error('❌ Login failed:', error.response.data.errors || error.response);
+      throw error.response.data.errors;
+    } finally {
+      setLoading(false);
     }
+  };
 
-    // Validasi payload
-    if (!decoded.sub) {
-      throw new Error("Token payload tidak valid.");
+  // Register function
+  const register = async (userData: RegisterRequest): Promise<void> => {
+    try {
+      setLoading(true);
+
+      await api.post('/auth/register', userData);
+      
+      console.log('✅ Registration successful');
+    } catch (error: any) {
+      console.error('❌ Registration failed:', error);
+      
+      let errorMessage = 'Registrasi gagal';
+      
+      if (error?.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error?.response?.data?.error) {
+        errorMessage = error.response.data.error;
+      } else if (error?.response?.data?.errors) {
+        // Handle validation errors
+        const errors = error.response.data.errors;
+        if (typeof errors === 'object') {
+          const firstError = Object.values(errors)[0];
+          errorMessage = Array.isArray(firstError) ? firstError[0] : firstError as string;
+        }
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+      
+      throw new Error(errorMessage);
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const userData: User = {
-      username: decoded.sub,
-    };
+  // Logout function
+const logout = async (): Promise<void> => {
+  try {
+    setLoading(true);
 
-    // Simpan tokens dan user data secara parallel
-    await Promise.all([
-      SecureStore.setItemAsync("token", accessToken),
-      SecureStore.setItemAsync("refreshToken", refreshToken),
-      SecureStore.setItemAsync("user", JSON.stringify(userData)),
-    ]);
+    // Optional: Call API logout jika ada
+    // await api.post('/auth/logout');
 
-    // Set authorization header
-    api.defaults.headers.common["Authorization"] =
-      `${tokenType} ${accessToken}`;
+    // ✅ Bersihkan cache react-query
+    queryClient.clear();
 
-    // Update state
-    setToken(accessToken);
-    setUser(userData);
+    // ✅ Hapus semua token & user info
+    await clearTokens();
 
-    console.log("✅ Login berhasil");
-    console.log("👤 User:", userData);
+    console.log("👋 Logout successful");
 
-    return userData; // Return user data untuk kemudahan testing/chaining
-  } catch (error: any) {
-    console.error("❌ Login gagal:", error);
-
-    // Handle different error types
-    let errorMessage = "Login gagal. Silakan coba lagi.";
-
-    if (error.message?.includes("Username dan password")) {
-      errorMessage = error.message;
-    } else if (error.response?.status === 401) {
-      errorMessage = "Username atau password salah.";
-    } else if (error.response?.status === 429) {
-      errorMessage = "Terlalu banyak percobaan login. Coba lagi nanti.";
-    } else if (error.response?.status >= 500) {
-      errorMessage = "Server sedang bermasalah. Coba lagi nanti.";
-    } else if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
-    } else if (!navigator.onLine) {
-      errorMessage = "Tidak ada koneksi internet.";
-    }
-
-    throw new Error(errorMessage);
+    // ✅ Reset state auth
+    setUser(null);
+    setAccessToken(null);
+    setRefreshToken(null);
+  } catch (error) {
+    console.error("❌ Logout error:", error);
+    setUser(null);
+    setAccessToken(null);
+    setRefreshToken(null);
+  } finally {
+    setLoading(false);
   }
 };
 
 
-
-  // ====== Register ======
-  const register = async (payload: RegisterPayload) => {
+  // Manual refresh token function (exposed for external use)
+  const refreshAccessTokenManual = async (): Promise<string | null> => {
     try {
-      const registerPayload = {
-        ...payload,
-        role: payload.role || "user",
-      };
-      await api.post("/auth/register", registerPayload);
-      console.log("✅ Registration successful");
-    } catch (error: any) {
-      console.error("❌ Registration failed:", error);
-
-      let errorMessage = "Registration failed.";
-      if (error.response?.data?.errors) {
-        errorMessage = Object.values(error.response.data.errors).join("\n");
-      } else if (error.message) {
-        errorMessage = error.message;
+      const newAccessToken = await refreshAccessToken();
+      if (newAccessToken) {
+        setAccessToken(newAccessToken);
+        const newRefreshToken = await SecureStore.getItemAsync(REFRESH_TOKEN_KEY);
+        setRefreshToken(newRefreshToken);
       }
-      throw new Error(errorMessage);
+      return newAccessToken;
+    } catch (error) {
+      console.error('❌ Manual token refresh failed:', error);
+      await logout();
+      return null;
     }
   };
 
-  // ====== Logout ======
- const logout = async () => {
-   setUser(null);
-   setToken(null);
-   api.defaults.headers.common["Authorization"] = "";
-
-   await SecureStore.deleteItemAsync("token");
-   await SecureStore.deleteItemAsync("refreshToken"); // tambahkan ini
-   await SecureStore.deleteItemAsync("user");
-
-   console.log("👋 Logged out");
- };
-
+  const contextValue: AuthContextType = {
+    user,
+    access_token: accessToken,
+    refresh_token: refreshToken,
+    loading,
+    isAuthenticated: !!accessToken,
+    login,
+    register,
+    logout,
+    refreshaccess_token: refreshAccessTokenManual,
+  };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token,
-        loading,
-        isAuthenticated: !!token,
-        login,
-        register,
-        logout,
-      }}>
+    <AuthContext.Provider value={contextValue}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-
-export const useAuth = () => {
+// Custom hook to use auth context
+export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };

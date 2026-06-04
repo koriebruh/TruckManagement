@@ -1,0 +1,168 @@
+import { useAuth } from "@/context/AuthContext";
+import { LoginRequest, RegisterRequest } from "@/types/auth.types";
+import { useRouter } from "expo-router";
+import { useCallback, useState } from "react";
+
+export const useLogin = () => {
+  const { login } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+
+  const handleLogin = useCallback(
+    async (credentials: LoginRequest) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const payload = {
+          username: credentials.username.trim(),
+          password: credentials.password.trim(),
+        };
+
+        await login(payload);
+      } catch (err: Error | any) {
+        console.log("Login error:", err);
+        
+        // Safely extract error message from various error shapes
+        let errorMessage = "Login failed";
+        
+        if (err?.response?.data?.errors) {
+          // API validation errors - extract first error
+          const errors = err.response.data.errors;
+          errorMessage = typeof errors === 'object' 
+            ? Object.values(errors)[0] as string || "Login failed"
+            : errors;
+        } else if (err?.response?.data?.message) {
+          // API general error message
+          errorMessage = err.response.data.message;
+        } else if (err?.response?.data) {
+          // Response data exists but different structure
+          errorMessage = typeof err.response.data === 'string' 
+            ? err.response.data 
+            : "Login failed";
+        } else if (err?.message) {
+          // Network error or other Error object
+          errorMessage = err.message;
+        } else if (typeof err === 'string') {
+          errorMessage = err;
+        }
+        
+        setError(errorMessage);
+        throw new Error(errorMessage);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [login]
+  );
+
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
+
+  return {
+    handleLogin,
+    isLoading,
+    error,
+    clearError,
+  };
+};
+
+export const useRegister = () => {
+  const { register } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleRegister = useCallback(
+    async (userData: RegisterRequest) => {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const payload = {
+          username: userData.username.trim(),
+          password: userData.password,
+          email: userData.email.trim(),
+          phone_number: userData.phone_number.trim(),
+          age: userData.age,
+        };
+        await register(payload);
+      } catch (err: any) {
+        setError(err.message || "Registration failed");
+        throw err;
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [register]
+  );
+
+  const clearError = useCallback(() => {
+    setError(null);
+  }, []);
+
+  return {
+    handleRegister,
+    isLoading,
+    error,
+    clearError,
+  };
+};
+
+export const useLogout = () => {
+  const { logout } = useAuth();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleLogout = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      await logout();
+      console.log("✅ Logout pressed");
+      router.replace("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [logout, router]);
+
+  return {
+    handleLogout,
+    isLoading,
+  };
+};
+
+
+export const useTokenRefresh = () => {
+  const { refreshaccess_token } = useAuth();
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const handleRefreshToken = useCallback(async () => {
+    try {
+      setIsRefreshing(true);
+      const newToken = await refreshaccess_token();
+      return newToken;
+    } catch (error) {
+      console.error("Token refresh error:", error);
+      return null;
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [refreshaccess_token]);
+
+  return {
+    handleRefreshToken,
+    isRefreshing,
+  };
+};
+
+export const useAuthStatus = () => {
+  const { isAuthenticated, loading, user, access_token } = useAuth();
+
+  return {
+    isAuthenticated,
+    isLoading: loading,
+    user,
+    hasValidToken: !!access_token,
+  };
+};

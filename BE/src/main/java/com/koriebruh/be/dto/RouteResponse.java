@@ -16,8 +16,12 @@ public class RouteResponse {
     private String id;
 
     private String startCityName;
+    private Double startCityLat;
+    private Double startCityLon;
 
     private String endCityName;
+    private Double endCityLat;
+    private Double endCityLon;
 
     private String details;
 
