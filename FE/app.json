@@ -15,7 +15,7 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.michellee.trackingtruck", // ← tambah
+      "bundleIdentifier": "com.michellee.trackingtruck",
       "infoPlist": {
         "UIBackgroundModes": ["location"],
         "NSLocationAlwaysAndWhenInUseUsageDescription": "Tracking Truck needs your location to track deliveries even when the app is in the background.",
@@ -30,7 +30,7 @@
       },
       "edgeToEdgeEnabled": true,
       "package": "com.michellee.trackingtruck",
-      "foregroundServiceTypes": ["location"], // ← tambah
+      "foregroundServiceTypes": ["location"],
       "permissions": [
         "android.permission.ACCESS_COARSE_LOCATION",
         "android.permission.ACCESS_FINE_LOCATION",
@@ -50,7 +50,7 @@
         {
           "locationAlwaysAndWhenInUsePermission": "Tracking Truck needs your location to track deliveries even when the app is in the background.",
           "locationWhenInUsePermission": "Tracking Truck needs your location to track deliveries.",
-          "locationAlwaysPermission": "Tracking Truck needs your location to track deliveries even when the app is closed.", // ← tambah
+          "locationAlwaysPermission": "Tracking Truck needs your location to track deliveries even when the app is closed.",
           "isAndroidBackgroundLocationEnabled": true,
           "isIosBackgroundLocationEnabled": true
         }
@@ -65,7 +65,6 @@
           "backgroundColor": "#b6d0fa"
         }
       ],
-      "expo-maps",
       "expo-secure-store"
     ],
     "experiments": {

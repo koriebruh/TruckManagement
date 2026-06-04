@@ -1,6 +1,7 @@
 
 import api from "@/services/axios";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+
 
 // Types
 interface Delivery {
@@ -382,7 +383,57 @@ export const useDeliveryHistoryWithFilters = (
     queryKey: deliveryHistoryKeys.list(filters),
     queryFn: () => fetchDeliveryHistory(),
     staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
+    gcTime: 10 * 1000,
     enabled: true,
+  });
+};
+
+export interface SendAlertRequest {
+  type: string;
+  message: string;
+  delivery_id: string;
+}
+
+export const useSendAlert = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: SendAlertRequest) => {
+      const response = await api.post("/api/delivery/alert/send", data);
+      return response.data;
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["delivery_detail", variables.delivery_id],
+      });
+    },
+  });
+};
+export interface PositionGeo {
+  latitude: number;
+  longitude: number;
+  name?: string;
+  formatted_address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  recorded_at: number;
+}
+
+interface PositionsResponse {
+  status: string;
+  data: PositionGeo[];
+}
+
+const fetchDeliveryPositions = async (delivery_id: string): Promise<PositionsResponse> => {
+  const response = await api.get(`/api/delivery/positions/${delivery_id}`);
+  return response.data;
+};
+
+export const useDeliveryPositions = (delivery_id: string) => {
+  return useQuery({
+    queryKey: ["delivery_positions", delivery_id],
+    queryFn: () => fetchDeliveryPositions(delivery_id),
+    enabled: !!delivery_id,
+    refetchInterval: 30000, // Auto-refresh every 30 seconds
   });
 };

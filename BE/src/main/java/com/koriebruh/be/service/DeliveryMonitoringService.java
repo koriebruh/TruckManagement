@@ -243,18 +243,18 @@ public class DeliveryMonitoringService {
         }
 
         // INI HIT API YA BROWW
-        GeoResponseAPI apiRes = geoAPI.reverseGeocode(lastPosition.getLatitude(), lastPosition.getLongitude());
+        LocationIQResponse apiRes = geoAPI.reverseGeocode(lastPosition.getLatitude(), lastPosition.getLongitude());
 
         // MAPPING from api response to DTO
         return PositionGeoResponse.builder()
                 .latitude(lastPosition.getLatitude())
                 .longitude(lastPosition.getLongitude())
-                .name(apiRes.getFeatures().get(0).getProperties().getName())
-                .formatedAddress(apiRes.getFeatures().get(0).getProperties().getFormatted())
-                .city(apiRes.getFeatures().get(0).getProperties().getCity())
-                .state(apiRes.getFeatures().get(0).getProperties().getState())
-                .country(apiRes.getFeatures().get(0).getProperties().getCountry())
-                .plusCode(apiRes.getFeatures().get(0).getProperties().getPlus_code())
+                .name(apiRes.getDisplayName())
+                .formatedAddress(apiRes.getDisplayName())
+                .city(apiRes.getAddress() != null ? apiRes.getAddress().getCity() : null)
+                .state(apiRes.getAddress() != null ? apiRes.getAddress().getState() : null)
+                .country(apiRes.getAddress() != null ? apiRes.getAddress().getCountry() : null)
+                .plusCode(null) // LocationIQ usually doesn't provide plus_code in standard reverse
                 .recordedAt(lastPosition.getRecordedAt())
                 .build();
     }
@@ -277,6 +277,7 @@ public class DeliveryMonitoringService {
                 deliveryAlertDTO.setCreatedAt(alert.getCreatedAt());
                 deliveryAlertDTO.setSenderId(alert.getSender() != null ? alert.getSender().getId() : null);
                 deliveryAlertDTO.setSenderUsername(alert.getSender() != null ? alert.getSender().getUsername() : null);
+                deliveryAlertDTO.setDeliveryId(delivery.getId());
                 deliveryAlertDTOs.add(deliveryAlertDTO);
             }
         }
@@ -369,31 +370,31 @@ public class DeliveryMonitoringService {
     }
 
 
-    // get all position of a
+        // get all position of a
     // get /delivery/position
     public List<PositionGeoResponse> getPositions(String deliveryId) {
 
         List<Position> positions = positionRepo.findAllByDeliveryIdOrderByRecordedAtDesc(deliveryId);
 
         //SEND ALL
-        List<GeoResponseAPIBatch> batches = geoAPI.reverseGeocodeBatch(positions);
+        List<LocationIQResponse> batches = geoAPI.reverseGeocodeBatch(positions);
 
         //DO MAPPING
         List<PositionGeoResponse> responses = new ArrayList<>(batches.size());
-        for (int i = 0; i < batches.size(); i++) { // Fixed: added .size()
+        for (int i = 0; i < batches.size(); i++) {
             Position position = positions.get(i);
-            GeoResponseAPIBatch batch = batches.get(i);
+            LocationIQResponse batch = batches.get(i);
 
             // MAPPING from api response to DTO
-            PositionGeoResponse response = PositionGeoResponse.builder() // Fixed: changed variable name from apiRes to response
+            PositionGeoResponse response = PositionGeoResponse.builder()
                     .latitude(position.getLatitude())
                     .longitude(position.getLongitude())
-                    .name(batch.getName()) // Fixed: get from batch instead of apiRes
-                    .formatedAddress(batch.getFormatted()) // Fixed: get from batch and method name
-                    .city(batch.getCity()) // Fixed: get from batch
-                    .state(batch.getState()) // Fixed: get from batch
-                    .country(batch.getCountry()) // Fixed: get from batch
-                    .plusCode(batch.getPlus_code()) // Fixed: get from batch
+                    .name(batch.getDisplayName())
+                    .formatedAddress(batch.getDisplayName())
+                    .city(batch.getAddress() != null ? batch.getAddress().getCity() : null)
+                    .state(batch.getAddress() != null ? batch.getAddress().getState() : null)
+                    .country(batch.getAddress() != null ? batch.getAddress().getCountry() : null)
+                    .plusCode(null)
                     .recordedAt(position.getRecordedAt())
                     .build();
 
@@ -461,6 +462,7 @@ public class DeliveryMonitoringService {
                 deliveryAlertDTO.setCreatedAt(alert.getCreatedAt());
                 deliveryAlertDTO.setSenderId(alert.getSender() != null ? alert.getSender().getId() : null);
                 deliveryAlertDTO.setSenderUsername(alert.getSender() != null ? alert.getSender().getUsername() : null);
+                deliveryAlertDTO.setDeliveryId(delivery.getId());
                 deliveryAlertDTOs.add(deliveryAlertDTO);
             }
         }
@@ -763,12 +765,49 @@ public class DeliveryMonitoringService {
         DeliverAlert alert = new DeliverAlert();
         alert.setDelivery(delivery);
         alert.setType(request.getType());
-        alert.setMessage(request.getMessage());
         alert.setSender(driver);
         alert.setCreatedAt(Instant.now().getEpochSecond());
+
+        // Get readable address and append to message
+        String finalMessage = request.getMessage();
+        Position lastPos = positionRepo.findTopByDeliveryIdOrderByRecordedAtDesc(delivery.getId());
+        if (lastPos != null) {
+            try {
+                LocationIQResponse res = geoAPI.reverseGeocode(lastPos.getLatitude(), lastPos.getLongitude());
+                if (res != null && res.getDisplayName() != null) {
+                    finalMessage += "\n\nLokasi Kejadian: " + res.getDisplayName();
+                }
+            } catch (Exception e) {
+                // Ignore geocoding error, use original message
+            }
+        }
+        
+        alert.setMessage(finalMessage);
         deliverAlertRepo.save(alert);
 
         return "Alert sent successfully to admin and owner for delivery: " + delivery.getId();
+    }
+
+    /**
+     * Get all recent alerts from all deliveries
+     * Order by createdAt DESC
+     */
+    public List<DeliveryAlertDTO> getAllRecentAlerts() {
+        List<DeliverAlert> alerts = deliverAlertRepo.findAll();
+        
+        // Sorting manually if needed, or better use Repository findings
+        return alerts.stream()
+                .sorted((a, b) -> b.getCreatedAt().compareTo(a.getCreatedAt()))
+                .map(alert -> DeliveryAlertDTO.builder()
+                        .id(alert.getId())
+                        .type(alert.getType().toString())
+                        .message(alert.getMessage())
+                        .createdAt(alert.getCreatedAt())
+                        .senderId(alert.getSender() != null ? alert.getSender().getId() : null)
+                        .senderUsername(alert.getSender() != null ? alert.getSender().getUsername() : null)
+                        .deliveryId(alert.getDelivery().getId())
+                        .build())
+                .toList();
     }
 
 }

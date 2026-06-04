@@ -1,5 +1,5 @@
-// hooks/useAuthenticatedTracking.ts
-import { useEffect, useCallback, useState } from 'react';
+import { useEffect, useCallback, useState, useRef } from 'react';
+import { AppState, AppStateStatus } from 'react-native';
 import { useAuth } from '@/context/AuthContext';
 import { BackgroundLocationService } from '@/services/backgroundLocationService';
 import { TrackingStateService } from '@/services/trackingStateService';
@@ -166,6 +166,36 @@ export const useAuthenticatedTracking = (
       setIsLoading(false);
     }
   }, []);
+
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
+
+  /**
+   * AppState listener to send position INSTANTLY when app goes to background (Home button)
+   */
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', async (nextAppState: AppStateStatus) => {
+      if (
+        appState.current === 'active' &&
+        nextAppState.match(/inactive|background/)
+      ) {
+        console.log('📱 App has come to the background! Triggering instant update...');
+        
+        // Only force update if we are authenticated and tracking is supposed to be active
+        if (isAuthenticated && isTracking) {
+          await BackgroundLocationService.sendSingleUpdate();
+        }
+      }
+
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+      // console.log('📊 AppState changed to:', appState.current);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [isAuthenticated, isTracking]);
 
   /**
    * Check and restore tracking state on mount

@@ -12,11 +12,15 @@ import lombok.NoArgsConstructor;
 @Data
 public class RouteRequest {
 
-    @NotNull(message = "Start city ID cannot be null")
     private Long startCityId;
+    private String startCityName;
+    private Double startCityLat;
+    private Double startCityLon;
 
-    @NotNull(message = "End city ID cannot be null")
     private Long endCityId;
+    private String endCityName;
+    private Double endCityLat;
+    private Double endCityLon;
 
     @Size(max = 255, message = "Details can't exceed 255 characters")
     private String details;
@@ -30,4 +34,14 @@ public class RouteRequest {
 
     @NotNull(message = "isActive is required")
     private Boolean isActive;
+
+    public RouteRequest(Long startCityId, Long endCityId, String details, String cargoType, Double basePrice,
+            Boolean isActive) {
+        this.startCityId = startCityId;
+        this.endCityId = endCityId;
+        this.details = details;
+        this.cargoType = cargoType;
+        this.basePrice = basePrice;
+        this.isActive = isActive;
+    }
 }

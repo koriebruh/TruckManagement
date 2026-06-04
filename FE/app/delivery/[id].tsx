@@ -5,23 +5,46 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   StatusBar,
+  Modal,
+  TextInput,
+  Alert as RNAlert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { useDeliveryDetail } from "@/hooks/useDeliveryDetail";
-import { useWorker, useTruck, useRoute } from "@/hooks/useDelivery";
+import { useWorker, useTruck, useRoute, useSendAlert, useDeliveryPositions } from "@/hooks/useDelivery";
 import { getCityName, useCities } from "@/hooks/useTransit";
-import { usePositionDrivers } from "@/hooks/usePositionDrivers"; // Add this import
+import { useAuthStatus } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
+import LeafletMap from "@/components/LeafletMap";
 
 const DeliveryDetail = () => {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { id } = useLocalSearchParams();
+  const { user } = useAuthStatus();
   const [refreshInterval, setRefreshInterval] = useState<NodeJS.Timeout |number| null>(
     null
   );
+  const [isReportModalVisible, setIsReportModalVisible] = useState(false);
+  const [reportType, setReportType] = useState("DRIVER_MESSAGE");
+  const [reportMessage, setReportMessage] = useState("");
+
+  const { mutate: sendAlert, isPending: isSendingAlert } = useSendAlert();
+  const { data: profileData } = useProfile();
+  const userRole = profileData?.data?.role;
+
+  const alertTypes = [
+    { value: "accident", label: "🚨 Kecelakaan", color: "text-red-600" },
+    { value: "breakdown", label: "🔧 Kerusakan Kendaraan", color: "text-red-600" },
+    { value: "puncture", label: "🛞 Ban Pecah", color: "text-amber-600" },
+    { value: "fuel_issue", label: "⛽ Masalah Bahan Bakar", color: "text-amber-600" },
+    { value: "traffic_delay", label: "🚦 Kemacetan Parah", color: "text-blue-600" },
+    { value: "weather_delay", label: "🌧️ Kendala Cuaca", color: "text-blue-600" },
+    { value: "driver_message", label: "💬 Pesan Lainnya", color: "text-gray-600" },
+  ];
 
   const delivery_id = Array.isArray(id) ? id[0] : id;
 
@@ -30,6 +53,11 @@ const DeliveryDetail = () => {
     isLoading: delivery_loading,
     error: delivery_error,
   } = useDeliveryDetail(delivery_id);
+
+  const {
+    data: positionsData,
+    isLoading: positionsLoading
+  } = useDeliveryPositions(delivery_id);
 
   const delivery = delivery_data?.data;
   delivery?.transits.forEach((transit) => {
@@ -43,32 +71,20 @@ const DeliveryDetail = () => {
   const { data: route_data } = useRoute(delivery?.route_id || "");
   const { data: citiesData } = useCities();
 
-  // Add position tracking hook
-  const {
-    data: positionData,
-    isLoading: positionLoading,
-    error: positionError,
-    refetch: refetchPosition,
-  } = usePositionDrivers(delivery_id || "");
-
-
   const worker = worker_data?.data;
   const truck = truck_data?.data;
   const route = route_data?.data;
-  const positions = positionData?.data || [];
-  const currentPosition = positions.length > 0 ? positions[0] : null; // Latest position
+  const alerts = delivery?.alerts || [];
 
-  console.log(currentPosition);
-
-  // Auto-refresh positions for active deliveries
+  // Auto-refresh for active deliveries
   useEffect(() => {
     const isActiveDelivery =
       delivery?.started_at! > 0 && delivery?.finished_at === 0;
 
     if (isActiveDelivery) {
       const interval = setInterval(() => {
-        refetchPosition();
-      }, 900000); // Refresh every 15 minutes
+        // Placeholder for future active polling if needed
+      }, 900000); // 15 minutes
 
       setRefreshInterval(interval);
 
@@ -83,7 +99,7 @@ const DeliveryDetail = () => {
         setRefreshInterval(null);
       }
     }
-  }, [delivery?.started_at, delivery?.finished_at, refetchPosition, refreshInterval]);
+  }, [delivery?.started_at, delivery?.finished_at, refreshInterval]);
 
   const formatDate = (timestamp: number) => {
     return new Date(timestamp * 1000).toLocaleDateString("id-ID", {
@@ -173,6 +189,28 @@ const DeliveryDetail = () => {
   const status = getDeliveryStatus();
   const total_cost = calculateTotalCost();
 
+  const handleSendReport = () => {
+    if (!reportMessage.trim()) {
+      RNAlert.alert("Error", "Pesan laporan tidak boleh kosong");
+      return;
+    }
+
+    sendAlert({
+      delivery_id: delivery_id,
+      type: reportType,
+      message: reportMessage,
+    }, {
+      onSuccess: () => {
+        RNAlert.alert("Berhasil", "Laporan Anda telah terkirim ke sistem pusat.");
+        setIsReportModalVisible(false);
+        setReportMessage("");
+      },
+      onError: (err: any) => {
+        RNAlert.alert("Gagal", err?.message || "Terjadi kesalahan saat mengirim laporan.");
+      }
+    });
+  };
+
   return (
     <View style={{ flex: 1, paddingTop: insets.top }} className="bg-gray-50">
       <StatusBar barStyle="dark-content" backgroundColor="#F9FAFB" />
@@ -197,6 +235,19 @@ const DeliveryDetail = () => {
       </View>
 
       <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
+        {/* Map for Owners Only */}
+        {/* {userRole === "OWNER" && (
+          <View className="px-6 pt-6">
+            <Text className="text-gray-800 font-bold text-lg mb-2">
+              Monitoring Lokasi
+            </Text>
+            <LeafletMap 
+              positions={positionsData?.data || []} 
+              height={300} 
+            />
+          </View>
+        )} */}
+
         {/* Nota Header */}
         <View className="bg-white mx-6 mt-6 rounded-t-2xl border border-gray-200">
           <View className="bg-blue-600 rounded-t-2xl px-6 py-4">
@@ -207,6 +258,7 @@ const DeliveryDetail = () => {
               #{delivery.id.slice(-8).toUpperCase()}
             </Text>
           </View>
+
 
           {/* Delivery Info */}
           <View className="px-6 py-4">
@@ -231,57 +283,21 @@ const DeliveryDetail = () => {
               )}
             </View>
 
-            {/* Current Position (only show for active deliveries) */}
-            {delivery.started_at > 0 && delivery.finished_at === null && (
-              <View className="bg-purple-50 rounded-xl p-4 mb-4">
-                <View className="flex-row items-center justify-between mb-2">
-                  <View className="flex-row items-center">
-                    <Ionicons name="location" size={20} color="#7C3AED" />
-                    <Text className="text-purple-800 font-semibold ml-2">
-                      Posisi Saat Ini
-                    </Text>
-                  </View>
-                  {/* <TouchableOpacity onPress={() => refetchPosition()}>
-                    <Ionicons
-                      name="refresh"
-                      size={20}
-                      color={positionLoading ? "#9CA3AF" : "#7C3AED"}
-                    />
-                  </TouchableOpacity> */}
-                </View>
-
-                {positionLoading ? (
-                  <View className="flex-row items-center">
-                    <ActivityIndicator size="small" color="#7C3AED" />
-                    <Text className="text-gray-600 ml-2">Memuat posisi...</Text>
-                  </View>
-                ) : positionError || !currentPosition ? (
-                  <Text className="text-red-600 text-sm">
-                    Posisi tidak dapat dimuat
-                  </Text>
-                ) : (
-                  <>
-                    <Text className="text-gray-800 font-medium text-base mb-1">
-                      {currentPosition.city ||
-                        currentPosition.formatted_address}
-                    </Text>
-                    <Text className="text-gray-600 text-sm mb-2">
-                      {currentPosition.city}, {currentPosition.state},{" "}
-                      {currentPosition.country}
-                    </Text>
-                    <View className="flex-row items-center justify-between">
-                      <Text className="text-gray-500 text-xs">
-                        Koordinat: {currentPosition.latitude.toFixed(6)},{" "}
-                        {currentPosition.longitude.toFixed(6)}
-                      </Text>
-                      <Text className="text-gray-500 text-xs">
-                        {formatPositionTime(currentPosition.recorded_at)}
-                      </Text>
-                    </View>
-                  </>
-                )}
+            {/* Destination Info (Simplified instead of real-time map) */}
+            <View className="bg-blue-50 rounded-xl p-4 mb-4">
+              <View className="flex-row items-center mb-2">
+                <Ionicons name="location" size={20} color="#2563EB" />
+                <Text className="text-blue-800 font-semibold ml-2">
+                  Lokasi Tujuan
+                </Text>
               </View>
-            )}
+              <Text className="text-gray-800 font-medium text-base">
+                {route?.end_city_name || "Memuat..."}
+              </Text>
+              <Text className="text-gray-500 text-xs mt-1">
+                Sesuai dengan rute yang telah ditentukan
+              </Text>
+            </View>
 
             {/* Driver Info */}
             <View className="bg-blue-50 rounded-xl p-4 mb-4">
@@ -337,25 +353,30 @@ const DeliveryDetail = () => {
               )}
             </View>
 
-            {/* Position History (show last 5 positions for completed deliveries) */}
-            {delivery.finished_at > 0 && positions.length > 1 && (
-              <View className="bg-gray-50 rounded-xl p-4 mb-6">
+            {/* Alert History Section */}
+            {alerts.length > 0 && (
+              <View className="bg-red-50 rounded-xl p-4 mb-6 border border-red-100">
                 <View className="flex-row items-center mb-3">
-                  <Ionicons name="trail-sign" size={20} color="#6B7280" />
-                  <Text className="text-gray-700 font-semibold ml-2">
-                    Riwayat Perjalanan
+                  <Ionicons name="warning" size={20} color="#EF4444" />
+                  <Text className="text-red-800 font-bold ml-2">
+                    Laporan Kendala ({alerts.length})
                   </Text>
                 </View>
-                {positions.slice(0, 5).map((position, index) => (
+                {alerts.map((alert, index) => (
                   <View
-                    key={index}
-                    className="mb-2 pb-2 border-b border-gray-200 last:border-b-0">
-                    <Text className="text-gray-800 font-medium text-sm">
-                      {position.name || position.formatted_address}
-                    </Text>
-                    <Text className="text-gray-600 text-xs">
-                      {position.city}, {position.state} •{" "}
-                      {formatPositionTime(position.recorded_at)}
+                    key={alert.id}
+                    className={`pb-3 ${index !== alerts.length - 1 ? "mb-3 border-b border-red-100" : ""}`}
+                  >
+                    <View className="flex-row justify-between items-center mb-1">
+                      <Text className="text-red-700 font-bold text-sm uppercase">
+                        {alert.type.replace("_", " ")}
+                      </Text>
+                      <Text className="text-gray-500 text-[10px]">
+                        {formatPositionTime(alert.created_at)}
+                      </Text>
+                    </View>
+                    <Text className="text-gray-700 text-sm">
+                      {alert.message}
                     </Text>
                   </View>
                 ))}
@@ -424,8 +445,87 @@ const DeliveryDetail = () => {
         </View>
 
         {/* Footer */}
-        <View className="h-6" />
+        <View className="h-32" />
       </ScrollView>
+
+      {/* Floating Action Button for Emergency/Report (Driver Only) */}
+      {delivery && !delivery.finished_at && userRole === 'DRIVER' && (
+         <TouchableOpacity 
+          style={{ position: 'absolute', bottom: 30, right: 24, zIndex: 9999, elevation: 5 }}
+          className="bg-red-600 w-16 h-16 rounded-full items-center justify-center shadow-lg"
+          onPress={() => setIsReportModalVisible(true)}
+         >
+           <Ionicons name="warning" size={32} color="white" />
+         </TouchableOpacity>
+      )}
+
+      {/* Report Modal */}
+      <Modal
+        visible={isReportModalVisible}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setIsReportModalVisible(false)}
+      >
+        <View className="flex-1 justify-end bg-black/50">
+           <View className="bg-white rounded-t-3xl p-6">
+              <View className="flex-row justify-between items-center mb-6">
+                 <Text className="text-xl font-bold text-gray-800">Laporkan Kendala</Text>
+                 <TouchableOpacity onPress={() => setIsReportModalVisible(false)}>
+                    <Ionicons name="close" size={24} color="#9CA3AF" />
+                 </TouchableOpacity>
+              </View>
+
+              <Text className="text-gray-600 text-sm font-semibold mb-3 tracking-wide">PILIH TIPE KENDALA</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6 -mx-2 px-2">
+                 <View className="flex-row gap-2">
+                    {alertTypes.map((type) => (
+                       <TouchableOpacity
+                         key={type.value}
+                         onPress={() => setReportType(type.value)}
+                         className={`px-4 py-3 rounded-2xl border flex-row items-center gap-2 ${
+                           reportType === type.value 
+                             ? "bg-blue-600 border-blue-600" 
+                             : "bg-gray-50 border-gray-200"
+                         }`}
+                       >
+                          <Text className={`text-sm font-bold ${
+                            reportType === type.value ? "text-white" : "text-gray-700"
+                          }`}>
+                             {type.label}
+                          </Text>
+                       </TouchableOpacity>
+                    ))}
+                 </View>
+              </ScrollView>
+
+              <Text className="text-gray-600 text-sm font-semibold mb-3 tracking-wide">DETAIL LAPORAN</Text>
+              <TextInput
+                className="bg-gray-50 border border-gray-200 rounded-2xl p-4 text-gray-800 min-h-[120] mb-8"
+                placeholder="Jelaskan kendala yang terjadi secara detail..."
+                multiline
+                textAlignVertical="top"
+                value={reportMessage}
+                onChangeText={setReportMessage}
+              />
+
+              <TouchableOpacity 
+                className={`py-4 rounded-2xl items-center ${
+                  isSendingAlert ? "bg-red-400" : "bg-red-600"
+                }`}
+                onPress={handleSendReport}
+                disabled={isSendingAlert}
+              >
+                 {isSendingAlert ? (
+                    <ActivityIndicator color="white" />
+                 ) : (
+                    <Text className="text-white font-bold text-lg">Kirim Laporan Sekarang</Text>
+                 )}
+              </TouchableOpacity>
+              
+              <View style={{ height: insets.bottom }} />
+           </View>
+        </View>
+      </Modal>
     </View>
   );
 };

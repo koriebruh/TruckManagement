@@ -16,6 +16,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
+import java.util.List;
+
 @Service
 public class RouteService {
 
@@ -28,15 +30,22 @@ public class RouteService {
     @Autowired
     private CityRepository cityRepository;
 
+    @Autowired
+    private CityService cityService;
+
 
     public String createRoute(RouteRequest request) {
         validationService.validate(request);
 
-        City startCity = cityRepository.findById(request.getStartCityId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "cant find start city with id: " + request.getStartCityId()));
+        City startCity = request.getStartCityId() != null 
+                ? cityRepository.findById(request.getStartCityId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "cant find start city with id: " + request.getStartCityId()))
+                : cityService.findOrCreateCity(request.getStartCityName(), request.getStartCityLat(), request.getStartCityLon(), "Indonesia");
 
-        City endCity = cityRepository.findById(request.getEndCityId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "cant find end city with id: " + request.getEndCityId()));
+        City endCity = request.getEndCityId() != null
+                ? cityRepository.findById(request.getEndCityId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "cant find end city with id: " + request.getEndCityId()))
+                : cityService.findOrCreateCity(request.getEndCityName(), request.getEndCityLat(), request.getEndCityLon(), "Indonesia");
 
 
         Double distanceKM = GeoUtils.calculateDistance(
@@ -77,7 +86,11 @@ public class RouteService {
         RouteResponse response = new RouteResponse();
         response.setId(route.getId());
         response.setStartCityName(route.getStartCity().getName());
+        response.setStartCityLat(route.getStartCity().getLatitude());
+        response.setStartCityLon(route.getStartCity().getLongitude());
         response.setEndCityName(route.getEndCity().getName());
+        response.setEndCityLat(route.getEndCity().getLatitude());
+        response.setEndCityLon(route.getEndCity().getLongitude());
         response.setDetails(route.getDetails());
         response.setBasePrice(route.getBasePrice());
         response.setDistanceKM(route.getDistanceKM());
@@ -106,11 +119,15 @@ public class RouteService {
         Route route = routeRepository.findById(routeId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Route not found"));
 
-        City startCity = cityRepository.findById(request.getStartCityId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "cant find start city with id: " + request.getStartCityId()));
+        City startCity = request.getStartCityId() != null 
+                ? cityRepository.findById(request.getStartCityId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "cant find start city with id: " + request.getStartCityId()))
+                : cityService.findOrCreateCity(request.getStartCityName(), request.getStartCityLat(), request.getStartCityLon(), "Indonesia");
 
-        City endCity = cityRepository.findById(request.getEndCityId())
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "cant find end city with id: " + request.getEndCityId()));
+        City endCity = request.getEndCityId() != null
+                ? cityRepository.findById(request.getEndCityId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "cant find end city with id: " + request.getEndCityId()))
+                : cityService.findOrCreateCity(request.getEndCityName(), request.getEndCityLat(), request.getEndCityLon(), "Indonesia");
 
         Double distanceKM = GeoUtils.calculateDistance(
                 startCity.getLatitude(),
@@ -145,7 +162,11 @@ public class RouteService {
         return routes.stream().map(route -> RouteResponse.builder()
                 .id(route.getId())
                 .startCityName(route.getStartCity().getName())
+                .startCityLat(route.getStartCity().getLatitude())
+                .startCityLon(route.getStartCity().getLongitude())
                 .endCityName(route.getEndCity().getName())
+                .endCityLat(route.getEndCity().getLatitude())
+                .endCityLon(route.getEndCity().getLongitude())
                 .details(route.getDetails())
                 .cargoType(route.getCargoType())
                 .basePrice(route.getBasePrice())

@@ -88,9 +88,20 @@ public class DetectionService {
                             DeliverAlert locationIllegalAlert = new DeliverAlert();
                             locationIllegalAlert.setDelivery(delivery);
                             locationIllegalAlert.setType(DeliverAlertType.ILLEGAL_STOP);
+                            
+                            // Get readable address
+                            String locationText;
+                            try {
+                                com.koriebruh.be.dto.LocationIQResponse res = geoAPI.reverseGeocode(latest.getLatitude(), latest.getLongitude());
+                                locationText = (res != null && res.getDisplayName() != null) ? res.getDisplayName() : 
+                                        String.format("(%.6f, %.6f)", latest.getLatitude(), latest.getLongitude());
+                            } catch (Exception e) {
+                                locationText = String.format("(%.6f, %.6f)", latest.getLatitude(), latest.getLongitude());
+                            }
+
                             locationIllegalAlert.setMessage(String.format(
-                                    "Vehicle stationary at same location for 45+ minutes. Possible puncture, busy traffic, or breakdown. Location: (%.6f, %.6f)",
-                                    latest.getLatitude(), latest.getLongitude()));
+                                    "Vehicle stationary at same location for 45+ minutes. Possible puncture, busy traffic, or breakdown. Location: %s",
+                                    locationText));
                             locationIllegalAlert.setCreatedAt(now);
                             deliverAlertRepo.save(locationIllegalAlert);
                         }

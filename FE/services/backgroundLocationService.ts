@@ -174,6 +174,55 @@ export class BackgroundLocationService {
   }
 
   /**
+   * Send a single location update immediately
+   * Used for instant backgrounding updates
+   */
+  static async sendSingleUpdate(): Promise<boolean> {
+    try {
+      console.log('📤 Background: Sending instant single update...');
+
+      // 1. Get access token
+      const accessToken = await SecureStore.getItemAsync(ACCESS_TOKEN_KEY);
+      if (!accessToken) {
+        console.warn('⚠️ Background: No token, skipping single update');
+        return false;
+      }
+
+      // 2. Get current location (high accuracy)
+      const location = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
+
+      const payload: PositionPayload = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+        recorded_at: Math.floor(location.timestamp / 1000),
+      };
+
+      // 3. Send to server
+      const response = await axios.post(
+        `${BASE_URL}/api/delivery/position`,
+        payload,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        console.log('✅ Background: Instant position sent successfully');
+        return true;
+      }
+      return false;
+    } catch (error: any) {
+      console.error('❌ Background: Failed to send instant update:', error.message);
+      return false;
+    }
+  }
+
+  /**
    * Check if background location is currently running
    */
   static async isRunning(): Promise<boolean> {

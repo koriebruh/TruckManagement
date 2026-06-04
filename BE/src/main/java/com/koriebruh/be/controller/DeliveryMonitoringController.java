@@ -351,5 +351,18 @@ public class DeliveryMonitoringController {
         );
     }
 
+    @GetMapping(value = "/alert",
+            produces = "application/json"
+    )
+    public ResponseEntity<WebResponse<List<DeliveryAlertDTO>>> getAllAlerts() {
+        List<DeliveryAlertDTO> alerts = deliveryMonitoringService.getAllRecentAlerts();
+        return ResponseEntity.ok(
+                WebResponse.<List<DeliveryAlertDTO>>builder()
+                        .status("OK")
+                        .data(alerts)
+                        .build()
+        );
+    }
+
 
 }
